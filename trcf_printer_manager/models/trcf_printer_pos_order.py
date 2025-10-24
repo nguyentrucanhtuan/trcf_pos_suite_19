@@ -148,29 +148,22 @@ class TrcfPrinterPosOrder(models.Model):
     @api.model
     def _print_label_tspl(self, order_data):
         
-        # KẾT NỐI MÁY IN
-        printer_search = self.env['trcf.printer.manager'].search([
-            ('active', '=', True),
-            ('printer_type', '=', 'label')
-        ], limit=1)
-
-        if printer_search:
-            printer_ip = printer_search.ip_address
-            printer_port = printer_search.port
-        else: 
-            return False
-
         # LẤY THÔNG TIN ĐƠN HÀNG TỪ ODOO
         order_id = order_data.get('id')
         table_id = order_data.get('table_id', False)
         order = self.browse(order_id)
-
         pos_preset_id = order.preset_id.id
-        printer_label_pos_preset_ids = set(printer_search.printer_label_pos_preset_ids.ids)
 
-        # Thực hiện kiểm tra pos_preset_id của đơn hàng không có trong danh sách của máy in
-        if pos_preset_id not in printer_label_pos_preset_ids:
-            return False
+        # Lấy mã đơn hàng
+        order_code = order.pos_reference
+
+        # Tính tổng số tem cần in (tổng tất cả số lượng)
+        total_labels = sum(int(line.qty) for line in order.lines)
+        
+
+        # Lấy thời gian hiện tại
+        now = datetime.now()
+        datetime_str = now.strftime("%d.%m.%Y %H:%M:%S")
 
         # Xử lý số bàn
         if table_id:
@@ -182,62 +175,68 @@ class TrcfPrinterPosOrder(models.Model):
         else:
             table_name = "MANG VE"
 
-        # Lấy mã đơn hàng
-        order_code = order.pos_reference
+        # KẾT NỐI ĐẾN CÁC MÁY IN
+        printer_search = self.env['trcf.printer.manager'].search([
+            ('active', '=', True),
+            ('printer_type', '=', 'label')
+        ])
 
-        # Tính tổng số tem cần in (tổng tất cả số lượng)
-        total_labels = sum(int(line.qty) for line in order.lines)
-        label_counter = 0
+        for printer_one in printer_search:
+            printer_ip = printer_one.ip_address
+            printer_port = printer_one.port
 
-        # Lấy thời gian hiện tại
-        now = datetime.now()
-        datetime_str = now.strftime("%d.%m.%Y %H:%M:%S")
+            printer_label_pos_preset_ids = set(printer_one.printer_label_pos_preset_ids.ids)
+            label_counter = 0
 
-        for line in order.lines:
-            # Lấy thông tin món
-            product_name = line.product_id.name.upper()  # Chuyển thành chữ hoa
-            
-            # Xử lý ghi chú - format đẹp hơn
-            note = ""
-            if line.note:
-                note = line.note.upper()
-                # Giới hạn độ dài ghi chú để vừa tem (max 30 ký tự)
-                if len(note) > 30:
-                    note = note[:27] + "..."
-            
-            # Format giá tiền VNĐ
-            price = f"{line.price_unit:,.0f}".replace(",", ".")
-            
-            # Số lượng cần in
-            quantity = int(line.qty)
+            # Thực hiện kiểm tra pos_preset_id của đơn hàng không có trong danh sách của máy in
+            if pos_preset_id not in printer_label_pos_preset_ids:
+                continue
 
-            for qty_idx in range(1, quantity + 1):
-                label_counter += 1
-                # Tạo lệnh cho mỗi nhãn
-                commands = f"""SIZE 37 mm, 30 mm
-                    GAP 2 mm, 0 mm
-                    DIRECTION 1,0
-                    CLS
+            for line in order.lines:
+                # Lấy thông tin món
+                product_name = line.product_id.name.upper()  # Chuyển thành chữ hoa
+                
+                # Xử lý ghi chú - format đẹp hơn
+                note = ""
+                if line.note:
+                    note = line.note.upper()
+                    # Giới hạn độ dài ghi chú để vừa tem (max 30 ký tự)
+                    if len(note) > 30:
+                        note = note[:27] + "..."
+                
+                # Format giá tiền VNĐ
+                price = f"{line.price_unit:,.0f}".replace(",", ".")
+                
+                # Số lượng cần in
+                quantity = int(line.qty)
 
-                    TEXT 25,25,"2",0,1,1,"BAN {table_name} - ({label_counter}/{total_labels})"
-                    TEXT 25,50,"0",0,1,1,"{order_code}"
-                    BAR 25,85,276,1
-                    TEXT 25,100,"2",0,1,1,"{product_name}"
-                    TEXT 25,125,"0",0,1,1,"{note}"
-                    BAR 25,160,276,1
-                    TEXT 25,175,"0",0,1,1,"{price}"
-                    TEXT 25,200,"0",0,1,1,"{datetime_str}"
+                for qty_idx in range(1, quantity + 1):
+                    label_counter += 1
+                    # Tạo lệnh cho mỗi nhãn
+                    commands = f"""SIZE 37 mm, 30 mm
+                        GAP 2 mm, 0 mm
+                        DIRECTION 1,0
+                        CLS
 
-                    PRINT 1,1
-                    """
-                try:
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    sock.connect((printer_ip, printer_port))
-                    sock.send(commands.encode('utf-8'))
-                    sock.close()
-                                    
-                except Exception as e:
-                    print(f"✗ Lỗi in nhãn: {e}")
+                        TEXT 25,25,"2",0,1,1,"BAN {table_name} - ({label_counter}/{total_labels})"
+                        TEXT 25,50,"0",0,1,1,"{order_code}"
+                        BAR 25,85,276,1
+                        TEXT 25,100,"2",0,1,1,"{product_name}"
+                        TEXT 25,125,"0",0,1,1,"{note}"
+                        BAR 25,160,276,1
+                        TEXT 25,175,"0",0,1,1,"{price}"
+                        TEXT 25,200,"0",0,1,1,"{datetime_str}"
+
+                        PRINT 1,1
+                        """
+                    try:
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        sock.connect((printer_ip, printer_port))
+                        sock.send(commands.encode('utf-8'))
+                        sock.close()
+                                        
+                    except Exception as e:
+                        print(f"✗ Lỗi in nhãn: {e}")
 
         return True
 
