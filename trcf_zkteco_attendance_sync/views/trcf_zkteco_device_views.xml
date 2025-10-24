@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View (Odoo 18) -->
+    <record id="view_trcf_zkteco_device_list" model="ir.ui.view">
+        <field name="name">trcf.zkteco.device.list</field>
+        <field name="model">trcf.zkteco.device</field>
+        <field name="arch" type="xml">
+            <list string="Danh sách thiết bị ZKTeco">
+                <field name="name"/>
+                <field name="ip_address"/>
+                <field name="port"/>
+                <!-- <field name="is_connected"/> -->
+                <field name="last_sync_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_trcf_zkteco_device_form" model="ir.ui.view">
+        <field name="name">trcf.zkteco.device.form</field>
+        <field name="model">trcf.zkteco.device</field>
+        <field name="arch" type="xml">
+            <form string="Thiết bị ZKTeco">
+                <!-- Header với nút action -->
+                <header>
+                    <button name="action_check_connection" 
+                            type="object" 
+                            string="Kiểm tra kết nối"
+                            class="btn-primary"
+                            icon="fa-wifi"
+                            help="Kiểm tra kết nối đến thiết bị ZKTeco"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Lấy dữ liệu từ máy chấm công">
+                            <field name="sync_date_from"/>
+                            <field name="sync_date_to"/>
+                            <button name="action_sync_data" 
+                                    type="object" 
+                                    string="Tải dữ liệu từ máy chấm công"
+                                    class="btn-success"
+                                    icon="fa-download"
+                                    help="Lấy dữ liệu từ thiết bịL: Xoá dữ liệu cũ và lấy lại dữ liệu từ máy chấm công trong thời gian đã chọn" 
+                                    context="{'sync_from': sync_date_from, 'sync_to': sync_date_to}"
+                                    />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Thông tin thiết bị">
+                            <field name="name"/>
+                            <field name="ip_address"/>
+                            <field name="port"/>
+                            <field name="password" password="True"/>
+                            <field name="timeout"/>
+                        </group>
+                        <group string="Trạng thái">
+                            <field name="is_connected" readonly="1"/>
+                            <field name="last_sync_date" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Thông tin chi tiết">
+                        <field name="device_info" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_trcf_zkteco_device_search" model="ir.ui.view">
+        <field name="name">trcf.zkteco.device.search</field>
+        <field name="model">trcf.zkteco.device</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm thiết bị">
+                <field name="name"/>
+                <field name="ip_address"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_trcf_zkteco_device" model="ir.actions.act_window">
+        <field name="name">Thiết Bị ZKTeco</field>
+        <field name="res_model">trcf.zkteco.device</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_trcf_zkteco_device_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Thêm thiết bị ZKTeco
+            </p>
+        </field>
+    </record>
+</odoo>

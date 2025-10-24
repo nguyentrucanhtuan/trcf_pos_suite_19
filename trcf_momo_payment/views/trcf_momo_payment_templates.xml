@@ -1,0 +1,12 @@
+<odoo>
+    <template id="trcf_payment_momo_qr_template" inherit_id="payment_gateway.payment_form">
+        <xpath expr="//div[@id='payment_gateway_confirmation']" position="inside">
+            <t t-if="provider.code == 'trcf_momo_provider'">
+                <div style="text-align:center;">
+                    <img t-att-src="'https://placehold.co/200x200/EEE/31343C'" width="200" height="200"/>
+                    <p>Quét mã QR MoMo để thanh toán (Tuấn Rang Cà Phê)</p>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

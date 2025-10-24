@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="trcf_kitchen_screen.KitchenDashboardTemplate">
+        <div class="kitchen-container">
+            <!-- Header -->
+            <header class="header">
+                <h1>🍳 Kitchen Screen - Màn hình bếp</h1>
+                <div class="datetime" id="datetime"></div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Order Header -->
+                <div class="order-header">
+                    <div class="order-title">📋 Đơn mới</div>
+                    <div class="order-counter" id="orderCounter">
+                        <t t-esc="state.draft_count"/>
+                    </div>
+                </div>
+
+                <!-- Orders Grid -->
+                <div class="orders-grid" id="ordersGrid">
+                    <t t-foreach="getOrdersByStatus('draft')" t-as="order" t-key="order.id">
+                        <div class="order-card">
+                            <div class="order-info">
+                                <div class="order-number"><t t-esc="order.table_id[1]"/> - <t t-esc="order.id"/></div>
+                                <div class="order-time"><t t-esc="order.date_order"/> (5 phút trước)</div>
+                                <!-- <div class="order-status">Đơn mới</div> -->
+                            </div>
+                            
+                            <div class="order-items">
+                                
+                                <ul class="items-list">
+                                    <t t-foreach="getOrderLines(order.id)" t-as="line" t-key="line.id">
+                                        <li t-att-class="line.trcf_order_status != 'draft' ? 'completed' : ''">
+                                            <span class="item-quantity"><t t-esc="line.qty" /></span>
+                                            <span class="item-name"
+                                                t-on-click="() => this.markOrderLineReady(line.id)"
+                                                >
+                                                <t t-esc="line.full_product_name" />
+                                            </span>
+                                            <span class="item-status">✅</span>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                            
+                            <div class="order-actions">
+                                <button 
+                                    t-on-click="() => this.markAsDone(order.id)" 
+                                    t-att-disabled="isOrderLoading(order.id)"
+                                    class="action-btn btn-ready">
+                                    <t t-if="isOrderLoading(order.id)">⏳ Đang xử lý...</t>
+                                    <t t-else="">➡️ Sẵn sàng</t>
+                                </button>
+                                <!-- <button class="action-btn btn-complete">
+                                    ✅ HUỶ
+                                </button> -->
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Empty State (Hidden by default) -->
+                <!-- <div class="empty-state" style="display: none;">
+                    <div class="empty-icon">📝</div>
+                    <h3>Không có đơn hàng mới</h3>
+                    <p>Tất cả đơn hàng đã được xử lý</p>
+                </div> -->
+            </main>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_trcf_zkteco_device_user,trcf.zkteco.device.user,model_trcf_zkteco_device,base.group_user,1,0,0,0
+access_trcf_zkteco_device_hr_officer,trcf.zkteco.device.hr.officer,model_trcf_zkteco_device,hr.group_hr_user,1,1,1,0
+access_trcf_zkteco_device_hr_manager,trcf.zkteco.device.hr.manager,model_trcf_zkteco_device,hr.group_hr_manager,1,1,1,1
+access_trcf_zkteco_device_system,trcf.zkteco.device.system,model_trcf_zkteco_device,base.group_system,1,1,1,1

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extend List View - Hiển thị trong danh sách -->
+    <record id="view_attendance_list_inherit" model="ir.ui.view">
+        <field name="name">hr.attendance.list.inherit</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='worked_hours']" position="after">
+                <field name="trcf_hourly_salary_display" optional="show"/>
+                <field name="trcf_hourly_salary_sum" sum="Tổng tiền lương"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend Form View - Hiển thị trong form chi tiết -->
+    <record id="view_attendance_form_inherit" model="ir.ui.view">
+        <field name="name">hr.attendance.form.inherit</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='worked_hours']" position="after">
+                <field name="trcf_hourly_salary_display" readonly="1"/>
+                <field name="trcf_hourly_salary_sum" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

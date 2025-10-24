@@ -1,0 +1,45 @@
+# Compiled Python files
+*.py[co]
+__pycache__/
+
+# Odoo cache, log and temp files
+.log
+.cache
+odoo.pid
+.lock
+*.lock
+~*.py
+~*.xml
+~*.js
+~*.css
+
+# Filestore (Odoo's document storage)
+/odoo/filestore
+/filestore
+
+# IDE files (e.g., PyCharm)
+.idea/
+.vscode/
+
+# Environment files
+.env
+.env.prod
+.env.dev
+
+# Virtual environment directory
+/venv/
+/env/
+
+# Custom addons (if they are separate git repositories)
+# If your custom_addons directory contains separate git repos (submodules),
+# you can ignore them.
+# custom_addons/
+
+# Ignore files created by common editors
+*~
+*.orig
+*.bak
+
+# Ignore system files
+.DS_Store
+Thumbs.db

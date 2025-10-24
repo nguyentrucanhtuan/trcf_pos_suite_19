@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_trcf_ai_assistant,access_trcf_ai_assistant,model_trcf_ai_business_assistant,base.group_user,1,1,1,1

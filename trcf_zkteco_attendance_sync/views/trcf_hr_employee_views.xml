@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extend Employee Form View -->
+    <record id="view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <!-- Thêm vào cuối sheet -->
+            <xpath expr="//page[@name='hr_settings']" position="inside">
+                <group string="Thông tin lương và thiết bị" col="2">
+                    <field name="trcf_hourly_salary"/>
+                    <field name="trcf_device_id_num"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend Employee List View -->
+    <record id="view_employee_list_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.list.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_phone']" position="after">
+                <field name="trcf_hourly_salary" optional="hide"/>
+                <field name="trcf_device_id_num" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

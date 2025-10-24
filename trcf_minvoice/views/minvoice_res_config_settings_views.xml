@@ -1,0 +1,31 @@
+<odoo>
+    <record id="res_config_settings_view_form_minvoice" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.minvoice</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Thêm vào cuối form, trước footer -->
+            <xpath expr="//form" position="inside">
+                <app string="TRCF MInvoice" name="trcf_minvoice">
+                    <block title="Cấu hình TRCF MInvoice" name="minvoice_settings">
+                        <setting id="minvoice_tax_code_setting" help="Mã số thuế công ty (10 hoặc 13 số)">
+                            <field name="minvoice_tax_code" placeholder="0123456789"/>
+                        </setting>
+                        
+                        <setting id="minvoice_invoice_series_setting" help="Ký hiệu hóa đơn (Ví dụ: 1C25TYY)">
+                            <field name="minvoice_invoice_series" placeholder="1C25TYY"/>
+                        </setting>
+                        
+                        <setting id="minvoice_username_setting" help="Tên đăng nhập MInvoice">
+                            <field name="minvoice_username" placeholder="admin"/>
+                        </setting>
+                        
+                        <setting id="minvoice_password_setting" help="Mật khẩu MInvoice">
+                            <field name="minvoice_password" password="True" placeholder="••••••••"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

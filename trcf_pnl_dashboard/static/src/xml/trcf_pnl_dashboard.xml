@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="trcf_pnl_dashboard.dashboard_template" owl="1">
+        <div class="trcf_pnl_dashboard">
+            <div class="trcf_pnl_container">
+                <h1 class="trcf_pnl_title">BÁO CÁO TÀI CHÍNH (PROFIT AND LOST)</h1>
+
+                <div class="trcf_date_selector">
+                    <label for="month-select">Chọn tháng:</label>
+                    <input type="month" id="month-select" t-att-value="data.currentMonth"/>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="trcf_summary_cards">
+                    <div class="trcf_card">
+                        <h3>Tổng Doanh thu</h3>
+                        <p class="trcf_positive" t-esc="formatCurrency(data.totalRevenue)"/>
+                    </div>
+                    <div class="trcf_card">
+                        <h3>Tổng Chi phí</h3>
+                        <p class="trcf_negative" t-esc="formatCurrency(calculateExpenseTotal())"/>
+                    </div>
+                    <div class="trcf_card trcf_profit_card">
+                        <h3>Lợi nhuận gộp</h3>
+                        <p class="trcf_positive" t-esc="formatCurrency(data.grossProfit)"/>
+                    </div>
+                    <div class="trcf_card trcf_profit_card">
+                        <h3>Lợi nhuận ròng</h3>
+                        <p class="trcf_positive" t-esc="formatCurrency(data.netProfit)"/>
+                    </div>
+                </div>
+
+                <!-- Revenue Details -->
+                <h2 class="trcf_section_title">CHI TIẾT DOANH THU</h2>
+                <table class="trcf_table">
+                    <thead>
+                        <tr>
+                            <th>Mục</th>
+                            <th>Số tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="data.revenueDetails" t-as="item" t-key="item_index">
+                            <td t-esc="item.name"/>
+                            <td class="trcf_positive" t-esc="formatCurrency(item.amount)"/>
+                        </tr>
+                        <tr class="trcf_total_row">
+                            <td>TỔNG DOANH THU</td>
+                            <td class="trcf_positive" t-esc="formatCurrency(data.totalRevenue)"/>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Expense Details -->
+                <h2 class="trcf_section_title">CHI TIẾT CHI PHÍ HOẠT ĐỘNG</h2>
+                <table class="trcf_table">
+                    <thead>
+                        <tr>
+                            <th>MỤC</th>
+                            <th>SỐ TIỀN</th>
+                            <th>SỐ TIỀN / DOANH THU</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="state.expenseCategories" t-as="item" t-key="item.id">
+                            <td t-esc="item.name"/>
+                            <td class="trcf_negative" t-esc="formatCurrency(calculateCategoryTotals(item.id))"/>
+                            <td class="trcf_negative" t-esc="(((calculateCategoryTotals(item.id) / 300000000) * 100).toFixed(2)) + '%'"/>
+                        </tr>
+                        <tr class="trcf_total_row">
+                            <td>TỔNG CHI PHÍ</td>
+                            <td class="trcf_negative" t-esc="formatCurrency(calculateExpenseTotal())"/>
+                            <td t-esc="(((calculateExpenseTotal() / 300000000) * 100).toFixed(2)) + '%'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Profit Details -->
+                <h2 class="trcf_section_title">LỢI NHUẬN</h2>
+                <table class="trcf_table">
+                    <thead>
+                        <tr>
+                            <th>Mục</th>
+                            <th>Số tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- <tr t-foreach="data.profitDetails" t-as="item" t-key="item_index"
+                            t-att-class="item.isTotal ? 'trcf_total_row' : ''">
+                            <td t-esc="item.name"/>
+                            <td t-att-class="getAmountClass(item.type)" t-esc="formatCurrency(item.amount)"/>
+                        </tr> -->
+
+                        <tr>
+                            <td> Doanh thu thuần </td>
+                            <td t-att-class="getAmountClass('positive')" t-esc="formatCurrency(300000000)"/>
+                        </tr>
+
+                        <tr>
+                            <td> Chi phí nguyên liệu - dụng cụ</td>
+                            <td t-att-class="getAmountClass('negative')" t-esc="formatCurrency(300000000)"/>
+                        </tr>
+
+                        <tr t-att-class="'trcf_total_row'">
+                            <td> Lợi nhuận gộp</td>
+                            <td t-att-class="getAmountClass('positive')" t-esc="formatCurrency(300000000)"/>
+                        </tr>
+
+                        <tr>
+                            <td> Chi phí hoạt động (Luơng, thuê, điện nước, marketing...) </td>
+                            <td t-att-class="getAmountClass('negative')" t-esc="formatCurrency(calculateExpenseTotal())"/>
+                        </tr>
+
+                        <tr t-att-class="'trcf_total_row'">
+                            <td> Lợi nhuận ròng </td>
+                            <td t-att-class="getAmountClass('positive')" t-esc="formatCurrency(300000000)"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_trcf_printer_root"
+        name="Quản lý máy in"
+        parent="point_of_sale.menu_point_root"
+        sequence="11"
+        action="action_trcf_printer_manager"/>
+</odoo>

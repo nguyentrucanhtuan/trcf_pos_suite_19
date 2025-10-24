@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Single Menu in Attendance Module - Right after Overview -->
+    <menuitem id="menu_attendance_zkteco_devices"
+              name="ZKTeco Devices"
+              parent="hr_attendance.menu_hr_attendance_root"
+              action="action_trcf_zkteco_device"
+              sequence="15"
+              groups="hr.group_hr_user"/>
+</odoo>
