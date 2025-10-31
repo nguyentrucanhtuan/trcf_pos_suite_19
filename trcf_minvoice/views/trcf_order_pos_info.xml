@@ -1,0 +1,32 @@
+<odoo>
+    <data>
+        <!-- Kế thừa form view của pos.order -->
+        <record id="view_pos_order_form_inherit_vat_info" model="ir.ui.view">
+            <field name="name">pos.order.form.inherit.vat.info</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <!-- Thêm một tab mới vào notebook -->
+                <xpath expr="//notebook" position="inside">
+                    <page name="vat_info" string="Thông tin VAT">
+                        <group>
+                            <field name="vat_type"/>
+                            <field name="vat_customer_name"/>
+                            <field name="vat_company_name"/>
+                            <field name="vat_tax_id"/>
+                            <field name="vat_address"/>
+                            <field name="vat_phone"/>
+                            <field name="vat_email"/>
+                            <field name="vat_citizen_id"/>
+                            <field name="vat_passport_number"/>
+                            <field name="vat_account_number"/>
+                            <field name="vat_bank_name"/>
+                            <field name="vat_estimated_unit_code"/>
+                            <field name="vat_note"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

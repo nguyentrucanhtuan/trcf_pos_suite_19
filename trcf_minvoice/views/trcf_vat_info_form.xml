@@ -1,0 +1,126 @@
+<odoo>
+    <data>
+        <!-- Template cho form nhập liệu VAT với thiết kế mới -->
+        <template id="vat_info_form_template" name="VAT Information Form">
+
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" type="text/css" href="/trcf_minvoice/static/src/css/trcf_vat_info_form.css?v=2"/>
+            </xpath>
+
+            <div id="wrap" class="container">
+                <h1>Thông tin VAT</h1>
+
+                <div class="info-box">
+                    <p>Chú ý: Bạn cần nhập đúng thông tin email để nhận được hóa đơn điện tử</p>
+                </div>
+
+                <form id="vatForm" action="/vat_info_submit" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="order_id" t-att-value="order_id"/>
+                    <input type="hidden" name="pos_reference" t-att-value="pos_reference"/>
+                    
+
+                    <!-- Trường chọn Loại VAT dạng radio buttons -->
+                    <div class="form-group">
+                        <label class="d-block">Loại VAT <span class="required">*</span></label>
+                        <div class="form-flexbox">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="vat_type" id="vat_type_company" value="company"/>
+                                <label class="form-check-label" for="vat_type_company">Doanh nghiệp</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="vat_type" id="vat_type_individual" value="individual"/>
+                                <label class="form-check-label" for="vat_type_individual">Cá nhân</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin công ty -->
+                    <div class="form-group">
+                        <label for="vat_email">Email</label>
+                        <input type="email" name="vat_email"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_tax_id">Mã số thuế <span class="required">*</span></label>
+                        <input type="text" name="vat_tax_id" required="True" pattern="[0-9]{10,13}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_customer_name">Tên khách hàng</label>
+                        <input type="text" name="vat_customer_name" required="True"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_company_name">Tên công ty <span class="required">*</span></label>
+                        <input type="text" name="vat_company_name" required="True"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_address">Địa chỉ</label>
+                        <input type="text" name="vat_address" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_phone">Số điện thoại</label>
+                        <input type="text" name="vat_phone" pattern="[0-9]{10,11}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_citizen_id">CMTND/CCCD</label>
+                        <input type="text" name="vat_citizen_id" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_note">Ghi chú</label>
+                        <input type="text" name="vat_note" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_account_number">Số tài khoản</label>
+                        <input type="text" name="vat_account_number" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_bank_name">Tên ngân hàng</label>
+                        <input type="text" name="vat_bank_name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_estimated_unit_code">Mã đơn vị dự toán</label>
+                        <input type="text" name="vat_estimated_unit_code" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vat_passport_number">Số hộ chiếu</label>
+                        <input type="text" name="vat_passport_number" />
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">XUẤT VAT</button>
+                    </div>
+                </form>
+            </div>
+        </template>
+        
+        <!-- Template trang xác nhận thành công -->
+        <template id="vat_info_thanks_template" name="Thanks">
+            <div id="wrap" class="container py-5 text-center">
+                <div class="alert alert-success mt-5 d-inline-block">
+                    <h4 class="alert-heading">Thành công!</h4>
+                    <p>Cảm ơn bạn đã cung cấp thông tin xuất hóa đơn. Chúng tôi đã ghi nhận thành công!</p>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Template trang báo lỗi -->
+        <template id="vat_info_error_template" name="Error">
+            <div id="wrap" class="container py-5 text-center">
+                <div class="alert alert-danger mt-5 d-inline-block">
+                    <h4 class="alert-heading">Đã xảy ra lỗi!</h4>
+                    <p>Không tìm thấy đơn hàng hoặc có lỗi trong quá trình xử lý.</p>
+                </div>
+            </div>
+        </template>
+    </data>
+</odoo>

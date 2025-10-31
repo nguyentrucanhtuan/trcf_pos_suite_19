@@ -4,6 +4,7 @@ import requests
 import json
 
 import logging
+import pprint
 
 # KHAI BÁO LOGGER Ở ĐÂY
 _logger = logging.getLogger(__name__)
@@ -31,76 +32,122 @@ class TrcfMinvoicePosOrder(models.Model):
 
 
     def action_send_vat_minvoice_api(self):
-        # Lấy danh sách pos_reference
-        pos_references = self.mapped('pos_reference')
+
+        minvoice_tax_code = self.env['ir.config_parameter'].sudo().get_param('trcf_minvoice.tax_code')
+        minvoice_invoice_series = self.env['ir.config_parameter'].sudo().get_param('trcf_minvoice.invoice_series')
+        minvoice_api_token = self.env['ir.config_parameter'].sudo().get_param('trcf_minvoice.api_token')
+        minvoice_company_name = self.env['ir.config_parameter'].sudo().get_param('trcf_minvoice.company_name')
 
         # URL API
-        API_URL = "https://0106026495-999.minvoice.app/api/InvoiceApi78/Save"
-        API_TOKEN = "O87316arj5+Od3Fqyy5hzdBfIuPk73eKqpAzBSvv8sY=123"
-
+        if not minvoice_tax_code or not minvoice_invoice_series or not minvoice_api_token:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': '✅ Cần điền thông tin VAT INVOICE',
+                    'message': f'Cần điền thông tin VAT INVOICE mới được phát hành hoá đơn',
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+        
+        API_URL = f"https://{minvoice_tax_code}.minvoice.app/api/InvoiceApi78/Save"
+                
         for order in self:
-            # Dữ liệu mẫu theo format Minvoice
+            # pprint.pprint(order.read())
+            # pprint.pprint(order.lines.read())
+            if order.vat_type == "company":
+                inv_buyerEmail = order.vat_email
+                inv_buyerTaxCode = order.vat_tax_id
+                inv_buyerDisplayName = order.vat_customer_name
+                inv_buyerLegalName =  order.vat_company_name
+                inv_buyerAddressLine = order.vat_address
+                #phone
+                cccdan = order.vat_citizen_id
+                #note
+                inv_buyerBankAccount = order.vat_account_number
+                inv_buyerBankName = order.vat_bank_name
+                mdvqhnsach_nmua = order.vat_estimated_unit_code
+                so_hchieu = order.vat_passport_number
+
+            elif order.vat_type == "individual": 
+                inv_buyerDisplayName = order.vat_customer_name
+                inv_buyerLegalName =  "."
+                inv_buyerTaxCode = ""
+                inv_buyerAddressLine = order.vat_address
+                inv_buyerEmail = order.vat_email
+                #phone
+                cccdan = order.vat_citizen_id
+                #note
+                inv_buyerBankAccount = order.vat_account_number
+                inv_buyerBankName = order.vat_bank_name
+                mdvqhnsach_nmua = order.vat_estimated_unit_code
+                so_hchieu = order.vat_passport_number
+                
+            else:
+                inv_buyerDisplayName = "khách không lấy hoá đơn"
+                inv_buyerLegalName = "khách không lấy hoá đơn"
+                inv_buyerTaxCode = ""
+                inv_buyerAddressLine = "."
+                inv_buyerEmail = ""
+                inv_buyerBankAccount = "."
+                inv_buyerBankName = "."
+                cccdan = ""
+                mdvqhnsach_nmua = ""
+                so_hchieu = ""
+
+            # --- Bắt đầu phần code mới để tạo dữ liệu chi tiết sản phẩm ---
+            invoice_details = []
+            stt = 1
+            for line in order.lines:
+                # Lấy thông tin từ order line
+                invoice_details.append({
+                    "tchat": 1,
+                    "stt_rec0": stt,
+                    "inv_itemCode": line.product_id.default_code or '',
+                    "inv_itemName": line.full_product_name,
+                    "inv_unitCode": line.product_uom_id.name,
+                    "inv_quantity": line.qty,
+                    "inv_unitPrice": line.price_unit,
+                    "inv_discountPercentage": line.discount,
+                    "inv_discountAmount": (line.price_unit * line.qty) * (line.discount / 100.0),
+                    "inv_TotalAmountWithoutVat": line.price_subtotal,
+                    "ma_thue": 8,
+                    "inv_vatAmount": line.price_subtotal_incl - line.price_subtotal,
+                    "inv_TotalAmount": line.price_subtotal_incl
+                })
+                stt += 1
+            
             payload = {
                 "editmode": 1,
                 "data": [
                     {
-                        "inv_invoiceSeries": "1C25MYY",
-                        "inv_invoiceIssuedDate": "2025-10-07",
+                        "inv_invoiceSeries": minvoice_invoice_series,
+                        "inv_invoiceIssuedDate": order.date_order.strftime('%Y-%m-%d'),
                         "inv_currencyCode": "VND",
                         "inv_exchangeRate": 1,
                         "so_benh_an": order.pos_reference,
-                        "inv_buyerDisplayName": "Nguyễn Văn A",
-                        "inv_buyerLegalName": "CÔNG TY M-INVOICE",
-                        "inv_buyerTaxCode": "0106026495-999",
-                        "inv_buyerAddressLine": "Giáp Bát, Hoàng Mai, Hà Nội",
-                        "inv_buyerEmail": "abc@gmail.com",
-                        "inv_buyerBankAccount": "100003131",
-                        "inv_buyerBankName": "Ngân hàng TMCP Á Châu - ACB",
+                        "inv_buyerDisplayName": inv_buyerDisplayName or "",
+                        "inv_buyerLegalName": inv_buyerLegalName or "",
+                        "inv_buyerTaxCode": inv_buyerTaxCode,
+                        "inv_buyerAddressLine": inv_buyerAddressLine or "", 
+                        "inv_buyerEmail": inv_buyerEmail or "",
+                        "inv_buyerBankAccount": inv_buyerBankAccount or "",
+                        "inv_buyerBankName": inv_buyerBankName or "",
                         "inv_paymentMethodName": "TM/CK",
                         "inv_discountAmount": 0,
-                        "inv_TotalAmountWithoutVat": 610000,
-                        "inv_vatAmount": 48800,
-                        "inv_TotalAmount": 658800,
+                        "inv_TotalAmountWithoutVat": order.amount_total - order.amount_tax,
+                        "inv_vatAmount": order.amount_tax,
+                        "inv_TotalAmount": order.amount_total,
                         "key_api": order.pos_reference,
-                        "cccdan": "034090008484",
-                        "so_hchieu": "G1A2B3C4D",
-                        "mdvqhnsach_nmua": "",
+                        "cccdan": cccdan or "",
+                        "so_hchieu": so_hchieu or "",
+                        "mdvqhnsach_nmua": mdvqhnsach_nmua ,
                         "ma_ch": "",
-                        "ten_ch": "CÔNG TY TNHH TNT DRINK",
+                        "ten_ch": minvoice_company_name or "",
                         "details": [
                             {
-                                "data": [
-                                    {
-                                        "tchat": 1,
-                                        "stt_rec0": 1,
-                                        "inv_itemCode": "HH001",
-                                        "inv_itemName": "Hàng hóa 001",
-                                        "inv_unitCode": "Phần",
-                                        "inv_quantity": 1,
-                                        "inv_unitPrice": 120000,
-                                        "inv_discountPercentage": 0,
-                                        "inv_discountAmount": 0,
-                                        "inv_TotalAmountWithoutVat": 120000,
-                                        "ma_thue": 8,
-                                        "inv_vatAmount": 9600,
-                                        "inv_TotalAmount": 129600
-                                    },
-                                    {
-                                        "tchat": 1,
-                                        "stt_rec0": 2,
-                                        "inv_itemCode": "HH002",
-                                        "inv_itemName": "Hàng hóa 002",
-                                        "inv_unitCode": "Phần",
-                                        "inv_quantity": 2,
-                                        "inv_unitPrice": 245000,
-                                        "inv_discountPercentage": 0,
-                                        "inv_discountAmount": 0,
-                                        "inv_TotalAmountWithoutVat": 490000,
-                                        "ma_thue": 8,
-                                        "inv_vatAmount": 39200,
-                                        "inv_TotalAmount": 529200
-                                    }
-                                ]
+                                "data" : invoice_details
                             }
                         ]
                     }
@@ -111,7 +158,7 @@ class TrcfMinvoicePosOrder(models.Model):
                 # Headers
                 headers = {
                     'Content-Type': 'application/json',
-                    'Authorization': f'Bearer {API_TOKEN}'
+                    'Authorization': f'Bearer {minvoice_api_token}'
                 }
                 
                 response = requests.post(

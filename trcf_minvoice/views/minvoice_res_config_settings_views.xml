@@ -8,21 +8,41 @@
             <xpath expr="//form" position="inside">
                 <app string="TRCF MInvoice" name="trcf_minvoice">
                     <block title="Cấu hình TRCF MInvoice" name="minvoice_settings">
-                        <setting id="minvoice_tax_code_setting" help="Mã số thuế công ty (10 hoặc 13 số)">
-                            <field name="minvoice_tax_code" placeholder="0123456789"/>
-                        </setting>
-                        
-                        <setting id="minvoice_invoice_series_setting" help="Ký hiệu hóa đơn (Ví dụ: 1C25TYY)">
-                            <field name="minvoice_invoice_series" placeholder="1C25TYY"/>
-                        </setting>
                         
                         <setting id="minvoice_username_setting" help="Tên đăng nhập MInvoice">
-                            <field name="minvoice_username" placeholder="admin"/>
+                            <field name="minvoice_username" placeholder="Tên đăng nhập"/>
                         </setting>
                         
                         <setting id="minvoice_password_setting" help="Mật khẩu MInvoice">
-                            <field name="minvoice_password" password="True" placeholder="••••••••"/>
+                            <field name="minvoice_password" password="True" placeholder="Mật khẩu"/>
                         </setting>
+
+                        <setting id="minvoice_company_name_setting" help="Tên đăng ký kinh doanh (VD: CTY TNHH TNT DRINK)">
+                            <field name="minvoice_company_name" placeholder="Tên cửa hàng/Công ty"/>
+                        </setting>
+
+                        <setting id="minvoice_tax_code_setting" help="Mã số thuế công ty (10 hoặc 13 số)">
+                            <field name="minvoice_tax_code" placeholder="Mã số thuế"/>
+                        </setting>
+
+                        <setting id="minvoice_api_token_setting" help="Token lấy từ MInvoice">
+                            <field name="minvoice_api_token_display" readonly="1"/>
+                            <button 
+                                string="Lấy Token"
+                                name = "action_get_minvoice_token"
+                                type="object"
+                                class="oe_highlight"/>
+                        </setting>
+
+                        <setting id="minvoice_invoice_series_setting" help="Ký hiệu hóa đơn (Ví dụ: 1C25TYY)">
+                            <field name="minvoice_invoice_series"/>
+                            <button
+                                string="Lấy ký hiệu hoá đơn"
+                                name = "action_get_minvoice_series"
+                                type="object"
+                                class="oe_highlight"/>
+                        </setting>
+
                     </block>
                 </app>
             </xpath>

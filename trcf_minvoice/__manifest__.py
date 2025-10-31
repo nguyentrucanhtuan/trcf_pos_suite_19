@@ -5,11 +5,13 @@
     'category': 'Point of Sale',
     'summary': 'Xuất hóa đơn điện tử qua MInvoice API',
     'author': 'Tuấn Rang Cà Phê',
-    'depends': ['point_of_sale'],
+    'depends': ['point_of_sale', 'website'],
     'data': [
         'security/ir.model.access.csv',
         'views/minvoice_res_config_settings_views.xml',
-        'views/trcf_order_pending_vat_views.xml'
+        'views/trcf_order_pending_vat_views.xml',
+        'views/trcf_order_pos_info.xml',
+        'views/trcf_vat_info_form.xml'
     ],
     'installable': True,
     'application': True,
