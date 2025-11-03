@@ -1,8 +1,7 @@
 <odoo>
     <data>
         <!-- Template cho form nhập liệu VAT với thiết kế mới -->
-        <template id="vat_info_form_template" name="VAT Information Form">
-
+        <template id="vat_info_form_template1" name="VAT Information Form">
             <xpath expr="." position="inside">
                 <link rel="stylesheet" type="text/css" href="/trcf_minvoice/static/src/css/trcf_vat_info_form.css?v=2"/>
             </xpath>
@@ -102,11 +101,240 @@
                 </form>
             </div>
         </template>
+
+        <template id="vat_info_form_template" name="VAT Information Form">
+            <!-- Add custom CSS and JS to head -->
+            <xpath expr="//head" position="inside">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>Thông tin xuất VAT</title>
+                <script src="https://cdn.tailwindcss.com"></script>
+                <style>
+                    .floating-label {
+                        transition: all 0.2s ease-out;
+                    }
+                </style>
+            </xpath>
+            
+            <div id="wrap" class="oe_structure">
+                <div class="bg-gray-50 min-h-screen py-12">
+                    <div class="max-w-4xl mx-auto px-4">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+                            Thông tin VAT
+                        </h1>
+                        <div class="info-box">
+                            <p class="mt-2 text-sm text-gray-600">Chú ý: Bạn cần nhập đúng thông tin email để nhận được hóa đơn điện tử</p>
+                        </div>
+                        
+
+                        <form id="vatForm" action="/vat_info_submit" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="order_id" t-att-value="order_id"/>
+                            <input type="hidden" name="pos_reference" t-att-value="pos_reference"/>
+                            
+                            <section class="bg-white rounded-xl shadow-sm p-8 mb-8">
+                                
+                                <div class="space-y-6">
+                                    <div class="relative">
+                                        <input
+                                            type="email"
+                                            name="vat_email"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Email"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Email
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_tax_id"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Mã số thuế"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Mã số thuế
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_customer_name"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Tên khách hàng"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                        Tên khách hàng
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_company_name"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Tên công ty"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Tên công ty
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_address"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Địa chỉ"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Địa chỉ
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_phone"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Số điện thoại"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Số điện thoại
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_citizen_id"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="CMND/CCCD"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            CMND/CCCD
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_note"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Ghi chú"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Ghi chú
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_account_number"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Số tài khoản"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Số tài khoản
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_bank_name"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Tên ngân hàng"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Tên ngân hàng
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_estimated_unit_code"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Mã đơn vị dự toán"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Mã đơn vị dự toán
+                                        </label>
+                                    </div>
+
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            name="vat_passport_number"
+                                            class="peer w-full px-4 py-3 bg-transparent border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 placeholder-transparent"
+                                            placeholder="Số hộ chiếu"
+                                        />
+                                        <label
+                                            for="outline-input"
+                                            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-500"
+                                        >
+                                            Số hộ chiếu
+                                        </label>
+                                    </div>
+
+                                    <button type="submit" class="w-full bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                                        XUẤT VAT
+                                    </button>
+                                </div>
+                            </section>
+                        </form>
+                        <!-- Footer -->
+                        <footer class="text-center mt-12 text-gray-600">
+                            <p class="mt-2 text-sm">Copy Right ©  TRCF. All rights reserved.</p>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </template>
         
+
+
         <!-- Template trang xác nhận thành công -->
         <template id="vat_info_thanks_template" name="Thanks">
-            <div id="wrap" class="container py-5 text-center">
-                <div class="alert alert-success mt-5 d-inline-block">
+            <div id="wrap" class="container text-center">
+                <div class="alert alert-success">
                     <h4 class="alert-heading">Thành công!</h4>
                     <p>Cảm ơn bạn đã cung cấp thông tin xuất hóa đơn. Chúng tôi đã ghi nhận thành công!</p>
                 </div>
@@ -115,8 +343,8 @@
         
         <!-- Template trang báo lỗi -->
         <template id="vat_info_error_template" name="Error">
-            <div id="wrap" class="container py-5 text-center">
-                <div class="alert alert-danger mt-5 d-inline-block">
+            <div id="wrap" class="container text-center">
+                <div class="alert alert-danger">
                     <h4 class="alert-heading">Đã xảy ra lỗi!</h4>
                     <p>Không tìm thấy đơn hàng hoặc có lỗi trong quá trình xử lý.</p>
                 </div>

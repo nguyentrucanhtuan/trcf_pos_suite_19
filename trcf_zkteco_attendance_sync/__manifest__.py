@@ -28,9 +28,6 @@
         'hr',
         'hr_attendance',
     ],
-    'external_dependencies': {
-        'python': ['pyzk'],
-    },
     'data': [
         'security/ir.model.access.csv',
         'views/trcf_zkteco_device_views.xml',

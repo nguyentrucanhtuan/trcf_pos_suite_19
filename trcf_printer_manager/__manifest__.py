@@ -13,9 +13,6 @@
         'views/trcf_printer_manager_views.xml',
         'views/trcf_printer_manager_menu.xml',
     ],
-    'external_dependencies': {
-        'python': ['python-escpos'],
-    },
     'installable': True,
     'application': True,
 }
