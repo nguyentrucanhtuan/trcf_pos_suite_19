@@ -1,0 +1,38 @@
+{
+    'name': 'TRCF FNB Inventory',
+    "author": "Tuấn Rang Cà Phê",
+    'version': '1.0',
+    'category': 'Inventory',
+    'summary': 'Quản lý tồn kho đơn giản khoa học cho quán cà phê của bạn từ Tuấn Rang Cà Phê.',
+    'depends': ['base', 'web'],
+    'data': [
+        # 'security/ir.model.access.csv', # Uncomment if you add access rights
+        'views/trcf_sidebar_template.xml',
+        'views/trcf_fnb_inventory_menus.xml',
+        'views/trcf_daily_report_views.xml',
+        # 'views/trcf_purchase_list_views.xml',
+        # 'views/trcf_purchase_form_views.xml',
+        # 'views/trcf_scrap_list_views.xml',
+        # 'views/trcf_scrap_form_views.xml',
+        'views/trcf_expense_list_views.xml',
+        'views/trcf_expense_form_views.xml',
+        # 'views/trcf_processing_list_views.xml', 
+        # 'views/trcf_processing_form_views.xml',
+        # 'views/trcf_check_inventory_list_views.xml',
+        # 'views/trcf_check_inventory_form_views.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            '/trcf_fnb_inventory/static/src/css/report_styles.css',
+        ],
+        'web.assets_common': [
+            'https://cdn.tailwindcss.com?plugins=forms,container-queries',
+            'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
+            'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined',
+            '/trcf_fnb_inventory/static/src/js/tailwind_config.js',
+        ],
+    },
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

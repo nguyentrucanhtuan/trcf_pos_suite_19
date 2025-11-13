@@ -40,7 +40,7 @@
 
     <!-- Action cho Order Pending VAT -->
     <record id="action_trcf_order_pending_vat" model="ir.actions.act_window">
-        <field name="name">Order Pending VAT</field>
+        <field name="name">Hoá đơn chờ xuất VAT</field>
         <field name="res_model">pos.order</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('state', 'in', ['paid', 'done'])]</field>
@@ -55,21 +55,9 @@
         </field>
     </record>
 
-    <!-- Server Action - Xuất hiện trong menu Action
-    <record id="action_send_vat_minvoice_server" model="ir.actions.server">
-        <field name="name">Phát hành VAT</field>
-        <field name="model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-            action = records.action_send_vat_minvoice_api()
-        </field>
-    </record> -->
-
     <!-- Menu Item dưới Point of Sale > Orders -->
     <menuitem id="menu_trcf_order_pending_vat"
-              name="Order Pending VAT"
+              name="Hoá đơn chờ xuất VAT"
               parent="point_of_sale.menu_point_of_sale"
               action="action_trcf_order_pending_vat"
               sequence="1"/>

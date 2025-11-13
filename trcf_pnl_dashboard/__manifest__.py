@@ -6,7 +6,6 @@
     'description': "BÁO CÁO LÃI LỖ CỦA DOANH NGHIỆP",
     'author': 'Tuấn rang cà phê',
     'website': 'https://coffeetree.vn',
-    'license': 'LGPL-3',
     'depends': ['base'],
     'data': [
         # 'security/ir.model.access.csv',
@@ -21,6 +20,6 @@
         ]
     },
     'installable': True,
-    'auto_install': False,
     'application': True,
+    'license': 'LGPL-3',
 }

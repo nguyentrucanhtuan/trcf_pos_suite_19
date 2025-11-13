@@ -1,0 +1,81 @@
+<odoo>
+    <data>
+        <record id="trcf_daily_report_controller_action" model="ir.actions.act_url">
+            <field name="name">Báo cáo Hàng ngày</field>
+            <field name="url">/trcf_fnb_inventory/daily_report</field>
+            <field name="target">self</field>
+        </record>
+
+        <!-- <record id="trcf_purchase_list_controller_action" model="ir.actions.act_url">
+            <field name="name">Danh sách Nhập hàng</field>
+            <field name="url">/trcf_fnb_inventory/purchase_list</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_purchase_add_controller_action" model="ir.actions.act_url">
+            <field name="name">Thêm Nhập hàng</field>
+            <field name="url">/trcf_fnb_inventory/purchase_add</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_expense_list_controller_action" model="ir.actions.act_url">
+            <field name="name">Danh sách chi phí</field>
+            <field name="url">/trcf_fnb_inventory/expense_list</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_expense_add_controller_action" model="ir.actions.act_url">
+            <field name="name">Thêm chi phí</field>
+            <field name="url">/trcf_fnb_inventory/expense_add</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_scrap_list_controller_action" model="ir.actions.act_url">
+            <field name="name">Danh sách huỷ</field>
+            <field name="url">/trcf_fnb_inventory/scrap_list</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_scrap_add_controller_action" model="ir.actions.act_url">
+            <field name="name">Huỷ sản phẩm</field>
+            <field name="url">/trcf_fnb_inventory/scrap_add</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_processing_list_controller_action" model="ir.actions.act_url">
+            <field name="name">Danh sách chế biến</field>
+            <field name="url">/trcf_fnb_inventory/processing_list</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_processing_add_controller_action" model="ir.actions.act_url">
+            <field name="name">Thêm chế biến</field>
+            <field name="url">/trcf_fnb_inventory/processing_add</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_check_inventory_list_controller_action" model="ir.actions.act_url">
+            <field name="name">Danh sách kiểm tồn kho</field>
+            <field name="url">/trcf_fnb_inventory/check_inventory_list</field>
+            <field name="target">main</field>
+        </record>
+
+        <record id="trcf_check_inventory_add_controller_action" model="ir.actions.act_url">
+            <field name="name">Kiểm tồn kho</field>
+            <field name="url">/trcf_fnb_inventory/check_inventory_add</field>
+            <field name="target">main</field>
+        </record> -->
+
+        <!-- Root Menu: Xóa thuộc tính 'action' -->
+        <menuitem id="trcf_fnb_inventory_root_menu"
+            name="TRCF FNB Inventory"
+            sequence="10" /> 
+        
+        <!-- Menu con: Thêm thuộc tính 'parent' và 'action' -->
+        <menuitem id="trcf_daily_report_menu"
+            name="Báo cáo Hàng ngày"
+            parent="trcf_fnb_inventory_root_menu"
+            action="trcf_daily_report_controller_action"
+            sequence="1" />
+    </data>
+</odoo>

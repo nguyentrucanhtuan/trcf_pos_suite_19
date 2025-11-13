@@ -1,0 +1,63 @@
+<odoo>
+    <template id="sidebar_layout_template">
+
+        <aside class="flex w-64 flex-col bg-white p-4 dark:bg-background-dark dark:border-r dark:border-gray-700/50">
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeOsAlV_kN5CiucZser69FgmTC5AAnDme1lxSTY3AbhvESPQf4U4WqKxU4eJtzWd0BsCvuf2RDHkAl4EsCHIF1KfhzkY3kqtGH8Bo8cpF00UHeM-Q2HGYLE6e-10npr1MkzJMiXOS7Y0gY2Q9Fc9JlkJjV2dvk1e-8Us1XLt6k3N6Fx2wPWWtCSG2gt2GuXP0FSXLteHZiS_8GrTgSDLCmDmVKkWAgKq4Ws14ejlPDsR6FEsBIyFmFZgZvF1qSoeJRbtehkWfY10Ly");'></div>
+                    <div class="flex flex-col">
+                        <h1 class="text-slate-900 dark:text-slate-200 text-base font-medium leading-normal">Tuấn Rang Cà Phê</h1>
+                        <p class="text-neutral-text dark:text-gray-400 text-sm font-normal leading-normal">Quản trị viên</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-2">
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <p class="text-sm font-medium leading-normal">TỔNG QUAN</p>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                        <span class="material-symbols-outlined">archive</span>
+                        <p class="text-sm font-medium leading-normal">NHẬP HÀNG</p>
+                    </a>
+               
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                        <span class="material-symbols-outlined">restaurant_menu</span>
+                        <p class="text-sm font-medium leading-normal">CHẾ BIẾN</p>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                        <span class="material-symbols-outlined">cancel</span>
+                        <p class="text-sm font-medium leading-normal">HUỶ HÀNG</p>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="/trcf_fnb_inventory/expense_list">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+                        <p class="text-sm font-medium leading-normal">CHI PHÍ</p>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                        <span class="material-symbols-outlined">inventory</span>
+                        <p class="text-sm font-medium leading-normal">KIỂM KÊ</p>
+                    </a>
+                    
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 hover:bg-primary/10" href="/trcf_fnb_inventory/daily_report">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+                        <p class="text-sm font-medium leading-normal">BÁO CÁO</p>
+                    </a>
+                </nav>
+            </div>
+            <div class="mt-auto flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                    <span class="material-symbols-outlined">settings</span>
+                    <p class="text-sm font-medium leading-normal">Cài đặt</p>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                    <span class="material-symbols-outlined">help_center</span>
+                    <p class="text-sm font-medium leading-normal">Hỗ trợ</p>
+                </a>
+            </div>
+        </aside>
+
+    </template>
+</odoo>
