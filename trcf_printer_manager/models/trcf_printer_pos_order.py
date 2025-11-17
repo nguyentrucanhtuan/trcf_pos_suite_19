@@ -339,7 +339,7 @@ class TrcfPrinterPosOrder(models.Model):
             except Exception as e:
                 _logger.error(f"Lỗi khi in phiếu yêu cầu bếp: {str(e)}")
 
-    def _convert_vi_to_unsigned(text):
+    def _convert_vi_to_unsigned(self, text):
         """
         Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu.
         Ví dụ: "Cà phê sữa đá" -> "Ca phe sua da"
