@@ -3,6 +3,7 @@ import logging
 import socket
 from datetime import datetime
 from escpos.printer import Network
+import unicodedata
 
 _logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class TrcfPrinterPosOrder(models.Model):
         order_id = order_data.get('id')
         table_id = order_data.get('table_id')
         date_order = order_data.get('date_order')
-        
+
         # LẤY CHI TIẾT MÓN ĂN
         order = self.browse(order_id)
 
@@ -57,14 +58,14 @@ class TrcfPrinterPosOrder(models.Model):
                 printer = Network(printer_ip, printer_port, timeout=5)
                 # IN HEADER
                 printer.set(bold=True, width=2, height=2, align='center')
-                printer.text(f"{company_name}\n")
+                printer.text(f"{self._convert_vi_to_unsigned(company_name)}\n")
                 printer.set(bold=False, width=1, height=1, align='center')
-                printer.text(f"{company_address}\n")
+                printer.text(f"{self._convert_vi_to_unsigned(company_address)}\n")
                 printer.text("-" * 48 + "\n")
                 
                 # IN THÔNG TIN BÀN
                 printer.set(bold=True, width=3, height=3, align='center')
-                printer.text(f"BAN {table_id} - {order_number}\n")
+                printer.text(f"BAN {order.table_id.display_name} - {order_number}\n")
                 printer.set(bold=False, width=2, height=2, align='center')
                 printer.text(f"THOI GIAN: {date_order}\n")
                 printer.text("-" * 48 + "\n\n")
@@ -75,7 +76,7 @@ class TrcfPrinterPosOrder(models.Model):
                 for line in order.lines:
                     # TÊN MÓN (dòng đầu)
                     printer.set(bold=True, width=1, height=1)
-                    printer.text(f"{line.product_id.name}\n")
+                    printer.text(f"{self._convert_vi_to_unsigned(line.product_id.name)}\n")
                     
                     # SỐ LƯỢNG x GIÁ = TỔNG (dòng thứ 2, căn phải)
                     printer.set(bold=False, width=1, height=1)
@@ -103,9 +104,9 @@ class TrcfPrinterPosOrder(models.Model):
                 printer.text(f"TAM TINH:" + " " * (48 - 9 - len(subtotal)) + subtotal + "\n")
                 
                 # Thuế (nếu có)
-                if order.amount_tax > 0:
-                    tax = f"{order.amount_tax:,.0f}"
-                    printer.text(f"THUE:" + " " * (48 - 5 - len(tax)) + tax + "\n")
+                # if order.amount_tax > 0:
+                #     tax = f"{order.amount_tax:,.0f}"
+                #     printer.text(f"THUE:" + " " * (48 - 5 - len(tax)) + tax + "\n")
                 
                 # Tổng thanh toán
                 printer.set(bold=True, width=2, height=2)
@@ -164,11 +165,7 @@ class TrcfPrinterPosOrder(models.Model):
 
         # Xử lý số bàn
         if table_id:
-            # table_id có thể là tuple (id, name) hoặc chỉ là id
-            if isinstance(table_id, (list, tuple)):
-                table_name = str(table_id[1])  # Lấy tên bàn
-            else:
-                table_name = str(table_id)
+            table_name = order.table_id.display_name
         else:
             table_name = "MANG VE"
 
@@ -191,7 +188,7 @@ class TrcfPrinterPosOrder(models.Model):
 
             for line in order.lines:
                 # Lấy thông tin món
-                product_name = line.product_id.name.upper()  # Chuyển thành chữ hoa
+                product_name = self._convert_vi_to_unsigned(line.product_id.name.upper())  # Chuyển thành chữ hoa
                 
                 # Xử lý ghi chú - format đẹp hơn
                 note = ""
@@ -301,10 +298,12 @@ class TrcfPrinterPosOrder(models.Model):
                 
                 # IN DÒNG 1: Bàn X - Mã hóa đơn
                 printer.set(bold=True, width=2, height=2, align='center')
+
                 if table_id:
-                    table_name = f"Ban {table_id[1]}" if isinstance(table_id, (list, tuple)) else f"Ban {table_id}"
+                    table_name = f"BAN {order.table_id.display_name}"
                 else:
-                    table_name = "Mang ve"
+                    table_name = "MANG VE"
+
                 printer.text(f"{table_name} - {order_number}\n")
                 
                 # IN DÒNG 2: Ngày giờ - số thứ tự
@@ -317,14 +316,14 @@ class TrcfPrinterPosOrder(models.Model):
                 
                 for line in lines_to_print:
                     # Lấy tên món
-                    product_name = line.product_id.name
+                    product_name = self._convert_vi_to_unsigned(line.product_id.name)
                     
                     # Lấy số lượng (format số nguyên nếu không có phần thập phân)
                     qty = int(line.qty) if line.qty == int(line.qty) else line.qty
                     
                     # Thêm ghi chú vào tên món nếu có
                     if line.note:
-                        product_display = f"{product_name} ({line.note})"
+                        product_display = f"{product_name} ({self._convert_vi_to_unsigned(line.note)})"
                     else:
                         product_display = product_name
                     
@@ -339,3 +338,17 @@ class TrcfPrinterPosOrder(models.Model):
                 
             except Exception as e:
                 _logger.error(f"Lỗi khi in phiếu yêu cầu bếp: {str(e)}")
+
+    def _convert_vi_to_unsigned(text):
+        """
+        Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu.
+        Ví dụ: "Cà phê sữa đá" -> "Ca phe sua da"
+        """
+        # 1. Chuẩn hóa chuỗi Unicode (NFD - Normalization Form D)
+        # Tách các ký tự có dấu thành ký tự cơ bản và dấu thanh riêng biệt.
+        normalized_text = unicodedata.normalize('NFD', text)
+        
+        # 2. Lọc bỏ các ký tự dấu (nhóm Category 'Mn' - Mark, Nonspacing)
+        unsigned_text = "".join([c for c in normalized_text if unicodedata.category(c) != 'Mn'])
+        
+        return unsigned_text
