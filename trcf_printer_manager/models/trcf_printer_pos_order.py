@@ -120,7 +120,7 @@ class TrcfPrinterPosOrder(models.Model):
                 printer.text("\nPHUONG THUC THANH TOAN:\n")
                 
                 for payment in order.payment_ids:
-                    payment_method = payment.payment_method_id.name
+                    payment_method = self._convert_vi_to_unsigned(payment.payment_method_id.name)
                     payment_amount = f"{payment.amount:,.0f}"
                     
                     printer.set(bold=False, width=1, height=1)
@@ -344,11 +344,15 @@ class TrcfPrinterPosOrder(models.Model):
         Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu.
         Ví dụ: "Cà phê sữa đá" -> "Ca phe sua da"
         """
-        # 1. Chuẩn hóa chuỗi Unicode (NFD - Normalization Form D)
+
+        # Bước 1: Thay thế 'Đ' và 'đ' trước khi chuẩn hóa Unicode
+        text = text.replace('Đ', 'D').replace('đ', 'd')
+
+        # Bước 2: Chuẩn hóa chuỗi Unicode (NFD - Normalization Form D)
         # Tách các ký tự có dấu thành ký tự cơ bản và dấu thanh riêng biệt.
         normalized_text = unicodedata.normalize('NFD', text)
         
-        # 2. Lọc bỏ các ký tự dấu (nhóm Category 'Mn' - Mark, Nonspacing)
+        # Bước 3: Lọc bỏ các ký tự dấu (combining characters)
         unsigned_text = "".join([c for c in normalized_text if unicodedata.category(c) != 'Mn'])
         
         return unsigned_text
