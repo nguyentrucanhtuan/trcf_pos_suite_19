@@ -46,6 +46,15 @@
                             </group>
                         </page>
                     </notebook>
+
+                    <notebook>
+                        <page string="CHÂN TRANG HOÁ ĐƠN" invisible="printer_type != 'invoice'">
+                            <group>
+                                <field name="invoice_footer_text"/>
+                            </group>
+                        </page>
+                    </notebook>
+
                 </sheet>
             </form>
         </field>

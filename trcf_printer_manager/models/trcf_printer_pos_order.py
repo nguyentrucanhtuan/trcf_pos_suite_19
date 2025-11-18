@@ -56,6 +56,7 @@ class TrcfPrinterPosOrder(models.Model):
         for one_printer in printer_search: 
             printer_ip = one_printer.ip_address
             printer_port = one_printer.port
+            invoice_footer_text = one_printer.invoice_footer_text or ""
 
             try: 
                 printer = Network(printer_ip, printer_port, timeout=5)
@@ -139,6 +140,7 @@ class TrcfPrinterPosOrder(models.Model):
                 printer.text("WIFI: COFFEETREE ROASTERS\n")
                 printer.text("coffeetree123@\n")
                 printer.text("-" * 48 + "\n")
+                printer.text(self._convert_vi_to_unsigned(invoice_footer_text))
                 printer.text("\n\n")
                 printer.cut()
                 printer.close()

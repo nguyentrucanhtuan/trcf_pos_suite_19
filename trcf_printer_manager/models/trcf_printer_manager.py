@@ -33,3 +33,9 @@ class TrcfPrinterManager(models.Model):
         'kot_pos_category_id',
         string='Danh mục sản phẩm'
     )
+
+    # Field cấu hình dành cho đơn invoice
+    invoice_footer_text = fields.Text(
+        string='Chân trang hóa đơn',
+        help="Nội dung sẽ được in ở cuối hóa đơn"
+    )
