@@ -42,7 +42,10 @@ class TrcfPrinterPosOrder(models.Model):
         # LẤY THÔNG TIN ĐƠN HÀNG
         order_id = order_data.get('id')
         table_id = order_data.get('table_id')
-        date_order = order_data.get('date_order')
+
+        date_order_utc = order_data.get('date_order')
+        date_order_local = fields.Datetime.context_timestamp(self, date_order_utc)
+        print_date_time = date_order_local.strftime('%d/%m/%Y %H:%M:%S') 
 
         # LẤY CHI TIẾT MÓN ĂN
         order = self.browse(order_id)
@@ -67,7 +70,7 @@ class TrcfPrinterPosOrder(models.Model):
                 printer.set(bold=True, width=3, height=3, align='center')
                 printer.text(f"BAN {order.table_id.display_name} - {order_number}\n")
                 printer.set(bold=False, width=2, height=2, align='center')
-                printer.text(f"THOI GIAN: {date_order}\n")
+                printer.text(f"THOI GIAN: {print_date_time}\n")
                 printer.text("-" * 48 + "\n\n")
                 
                 # IN DANH SÁCH MÓN ĂN
@@ -82,7 +85,7 @@ class TrcfPrinterPosOrder(models.Model):
                     printer.set(bold=False, width=1, height=1)
                     qty = int(line.qty) if line.qty == int(line.qty) else line.qty
                     price_unit = f"{line.price_unit:,.0f}"
-                    price_subtotal = f"{line.price_subtotal:,.0f}"
+                    price_subtotal = f"{(qty*price_unit):,.0f}"
                     
                     # Format: "  2 x 50,000 =          100,000"
                     detail_line = f"  {qty} x {price_unit}"
@@ -160,8 +163,12 @@ class TrcfPrinterPosOrder(models.Model):
         total_labels = sum(int(line.qty) for line in order.lines)
         
         # Lấy thời gian hiện tại
-        now = datetime.now()
-        datetime_str = now.strftime("%d.%m.%Y %H:%M:%S")
+        # now = datetime.now()
+        # datetime_str = now.strftime("%d.%m.%Y %H:%M:%S")
+
+        date_order_utc = order_data.get('date_order')
+        date_order_local = fields.Datetime.context_timestamp(self, date_order_utc)
+        print_date_time = date_order_local.strftime('%d/%m/%Y %H:%M:%S')
 
         # Xử lý số bàn
         if table_id:
@@ -219,7 +226,7 @@ class TrcfPrinterPosOrder(models.Model):
                         TEXT 25,125,"0",0,1,1,"{note}"
                         BAR 25,160,276,1
                         TEXT 25,175,"0",0,1,1,"{price}"
-                        TEXT 25,200,"0",0,1,1,"{datetime_str}"
+                        TEXT 25,200,"0",0,1,1,"{print_date_time}"
 
                         PRINT 1,1
                         """
@@ -252,17 +259,21 @@ class TrcfPrinterPosOrder(models.Model):
         sequence_number = str(order.id).zfill(2)  # Pad với 0 nếu cần
         
         # Format ngày giờ
-        if order.date_order:
-            from datetime import datetime
-            try:
-                dt = order.date_order
-                if isinstance(dt, str):
-                    dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
-                date_str = dt.strftime("%d-%m-%Y")
-            except:
-                date_str = datetime.now().strftime("%d-%m-%Y")
-        else:
-            date_str = datetime.now().strftime("%d-%m-%Y")
+        # if order.date_order:
+        #     from datetime import datetime
+        #     try:
+        #         dt = order.date_order
+        #         if isinstance(dt, str):
+        #             dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+        #         date_str = dt.strftime("%d-%m-%Y")
+        #     except:
+        #         date_str = datetime.now().strftime("%d-%m-%Y")
+        # else:
+        #     date_str = datetime.now().strftime("%d-%m-%Y")
+
+        date_order_utc = order_data.get('date_order')
+        date_order_local = fields.Datetime.context_timestamp(self, date_order_utc)
+        print_date_time = date_order_local.strftime('%d/%m/%Y %H:%M:%S')
         
         # KẾT NỐI MÁY IN BẾP
         printer_search = self.env['trcf.printer.manager'].search([
@@ -308,7 +319,7 @@ class TrcfPrinterPosOrder(models.Model):
                 
                 # IN DÒNG 2: Ngày giờ - số thứ tự
                 printer.set(bold=False, width=1, height=1, align='center')
-                printer.text(f"{date_str} - {sequence_number}\n")
+                printer.text(f"{print_date_time} - {sequence_number}\n")
                 printer.text("-" * 48 + "\n")
                 
                 # IN DANH SÁCH MÓN
