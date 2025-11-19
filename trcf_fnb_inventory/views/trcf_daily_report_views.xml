@@ -49,175 +49,194 @@
                     <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8">
-                        <div class="w-full max-w-screen mx-auto">
-                            <!-- PageHeading & Chips -->
-                            <header class="mb-6">
-                                <div class="flex flex-wrap items-center justify-between gap-4">
-                                    <div class="flex flex-col gap-1">
-                                        <h1 class="text-slate-900 dark:text-slate-100 text-3xl font-bold leading-tight">Báo cáo Lãi lỗ</h1>
-                                        <p class="text-neutral-text dark:text-gray-400 text-base font-normal leading-normal">Xem tổng quan về tình hình tài chính của doanh nghiệp.</p>
+                    <main class="flex-1 p-8 overflow-y-auto">
+                        <div class="max-w-screen mx-auto">
+                            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                                <div class="flex flex-col gap-1">
+                                    <h1 class="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Báo cáo tổng quan</h1>
+                                    <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Xem nhanh hiệu suất kinh doanh của bạn.</p>
+                                </div>
+                                <!-- <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2">
+                                    <span class="material-symbols-outlined text-base">download</span>
+                                    <span class="truncate">Xuất báo cáo</span>
+                                </button> -->
+                            </div>
+                            <div class="flex gap-3 mb-6 overflow-x-auto pb-2">
+
+                                <a href="/trcf_fnb_inventory/daily_report?filter_type=today"
+                                    t-attf-class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 text-sm font-medium leading-normal 
+                                    #{filter_type == 'today' and 'bg-primary text-white' or 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'}">
+                                        <span class="material-symbols-outlined text-xl">today</span>
+                                        <p>Hôm nay</p>
+                                </a>
+
+                                <!-- 2. Nút Tuần này -->
+                                <a href="/trcf_fnb_inventory/daily_report?filter_type=week"
+                                    t-attf-class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 text-sm font-medium leading-normal 
+                                    #{filter_type == 'week' and 'bg-primary text-white' or 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'}">
+                                        <span class="material-symbols-outlined text-xl">date_range</span>
+                                        <p>Tuần này</p>
+                                </a>
+
+                                <!-- 3. Nút Tháng này -->
+                                <a href="/trcf_fnb_inventory/daily_report?filter_type=month"
+                                    t-attf-class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 text-sm font-medium leading-normal 
+                                    #{filter_type == 'month' and 'bg-primary text-white' or 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'}">
+                                        <span class="material-symbols-outlined text-xl">calendar_month</span>
+                                        <p>Tháng này</p>
+                                </a>
+
+                                <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700">
+                                    <span class="material-symbols-outlined text-xl">edit_calendar</span>
+                                    <p class="text-sm font-medium leading-normal">Tùy chỉnh</p>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tổng doanh thu</p>
+                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="total_pos_revenue"/></p>
+                                <p class="text-green-500 dark:text-green-400 text-sm font-medium leading-normal">+5.2% so với hôm qua</p>
+                            </div>
+                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Số đơn đã xử lý</p>
+                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">350</p>
+                                <p class="text-green-500 dark:text-green-400 text-sm font-medium leading-normal">+12.5% so với hôm qua</p>
+                            </div>
+                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Sản phẩm đã bán</p>
+                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">890</p>
+                                <p class="text-green-500 dark:text-green-400 text-sm font-medium leading-normal">+8.1% so với hôm qua</p>
+                            </div>
+                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tiền mặt trong két</p>
+                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">10,290,000đ</p>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">DT tiền mặt - Chi tiền mặt</p>
+                            </div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Cơ cấu doanh thu</h3>
+                                <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="relative w-48 h-48">
+                                    <svg class="size-full" viewBox="0 0 36 36">
+                                    <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+                                    <path class="stroke-cyan-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="50, 100" stroke-linecap="round" stroke-width="3"></path>
+                                    <path class="stroke-violet-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="30, 100" stroke-dashoffset="-50" stroke-linecap="round" stroke-width="3"></path>
+                                    <path class="stroke-amber-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="20, 100" stroke-dashoffset="-80" stroke-linecap="round" stroke-width="3"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                                    <div class="flex justify-between w-full gap-4">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Tiền mặt</span>
+                                        <span class="text-sm font-semibold text-gray-800 dark:text-white">12,840,000đ</span>
                                     </div>
-                                    <button class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-wide hover:bg-primary/90 transition-colors">
-                                        <span class="material-symbols-outlined text-base">download</span>
-                                        <span class="truncate">Xuất báo cáo</span>
-                                    </button>
-                                </div>
-                                <div class="flex gap-3 mt-6 overflow-x-auto">
-                                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary/10 text-primary pl-4 pr-3">
-                                        <p class="text-sm font-medium leading-normal">Tháng này</p>
-                                        <span class="material-symbols-outlined text-lg">arrow_drop_down</span>
-                                    </button>
-                                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-3 text-slate-800 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
-                                        <p class="text-sm font-medium leading-normal">Quý này</p>
-                                        <span class="material-symbols-outlined text-lg">arrow_drop_down</span>
-                                    </button>
-                                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-3 text-slate-800 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
-                                        <p class="text-sm font-medium leading-normal">Năm nay</p>
-                                        <span class="material-symbols-outlined text-lg">arrow_drop_down</span>
-                                    </button>
-                                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-3 text-slate-800 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
-                                        <p class="text-sm font-medium leading-normal">Tùy chỉnh</p>
-                                        <span class="material-symbols-outlined text-lg">date_range</span>
-                                    </button>
-                                </div>
-                            </header>
-                            <!-- Content Grid -->
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <!-- Left Column: P&L Table -->
-                                <div class="lg:col-span-2 bg-white dark:bg-background-dark/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700/50">
-                                    <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Báo cáo Kết quả Kinh doanh</h2>
-                                    <div class="space-y-1">
-                                        <!-- Table Item -->
-                                        <div class="flex justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700/50">
-                                            <span class="text-slate-800 dark:text-slate-200">Doanh thu</span>
-                                            <span class="font-semibold text-slate-900 dark:text-slate-100">2,500,000,000đ</span>
-                                        </div>
-                                        <!-- Table Item -->
-                                        <div class="flex justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700/50">
-                                            <span class="text-slate-800 dark:text-slate-200">Giá vốn hàng bán (COGS)</span>
-                                            <span class="font-semibold text-slate-900 dark:text-slate-100">(1,250,000,000đ)</span>
-                                        </div>
-                                        <!-- Table Item: Highlighted -->
-                                        <div class="flex justify-between items-center py-3 border-b-2 border-slate-300 dark:border-slate-600">
-                                            <span class="font-bold text-slate-900 dark:text-slate-100">Lợi nhuận gộp</span>
-                                            <span class="font-bold text-slate-900 dark:text-slate-100">1,250,000,000đ</span>
-                                        </div>
-                                        <!-- Table Item: Accordion -->
-                                        <details class="group py-3 border-b border-slate-200 dark:border-slate-700/50">
-                                            <summary class="flex justify-between items-center cursor-pointer list-none">
-                                                <span class="text-slate-800 dark:text-slate-200">Chi phí hoạt động</span>
-                                                <div class="flex items-center gap-4">
-                                                    <span class="font-semibold text-slate-900 dark:text-slate-100">(700,000,000đ)</span>
-                                                    <span class="material-symbols-outlined text-neutral-text group-open:rotate-180 transition-transform">expand_more</span>
-                                                </div>
-                                            </summary>
-                                            <div class="mt-2 pl-6 space-y-1 text-neutral-text dark:text-gray-400">
-                                                <div class="flex justify-between items-center py-1">
-                                                    <span>Chi phí bán hàng &amp; marketing</span>
-                                                    <span>(250,000,000đ)</span>
-                                                </div>
-                                                <div class="flex justify-between items-center py-1">
-                                                    <span>Chi phí quản lý doanh nghiệp</span>
-                                                    <span>(450,000,000đ)</span>
-                                                </div>
-                                            </div>
-                                        </details>
-                                        <!-- Table Item: Highlighted -->
-                                        <div class="flex justify-between items-center py-3 border-b-2 border-slate-300 dark:border-slate-600">
-                                            <span class="font-bold text-slate-900 dark:text-slate-100">Lợi nhuận hoạt động</span>
-                                            <span class="font-bold text-slate-900 dark:text-slate-100">550,000,000đ</span>
-                                        </div>
-                                        <!-- Table Item -->
-                                        <div class="flex justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700/50">
-                                            <span class="text-slate-800 dark:text-slate-200">Thu nhập/Chi phí khác</span>
-                                            <span class="font-semibold text-slate-900 dark:text-slate-100">(10,000,000đ)</span>
-                                        </div>
-                                        <!-- Table Item -->
-                                        <div class="flex justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700/50">
-                                            <span class="text-slate-800 dark:text-slate-200">Lợi nhuận trước thuế</span>
-                                            <span class="font-semibold text-slate-900 dark:text-slate-100">540,000,000đ</span>
-                                        </div>
-                                        <!-- Table Item -->
-                                        <div class="flex justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700/50">
-                                            <span class="text-slate-800 dark:text-slate-200">Thuế</span>
-                                            <span class="font-semibold text-slate-900 dark:text-slate-100">(90,000,000đ)</span>
-                                        </div>
-                                        <!-- Table Item: Final -->
-                                        <div class="flex justify-between items-center pt-4">
-                                            <span class="font-bold text-xl text-slate-900 dark:text-slate-100">Lợi nhuận ròng</span>
-                                            <span class="font-bold text-xl text-slate-900 dark:text-slate-100">450,000,000đ</span>
-                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-violet-500"></div>
+                                    <div class="flex justify-between w-full gap-4">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Chuyển khoản</span>
+                                        <span class="text-sm font-semibold text-gray-800 dark:text-white">7,704,000đ</span>
+                                    </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                                    <div class="flex justify-between w-full gap-4">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Momo</span>
+                                        <span class="text-sm font-semibold text-gray-800 dark:text-white">5,136,000đ</span>
+                                    </div>
                                     </div>
                                 </div>
-                                <!-- Right Column: Visualization -->
-                                <div class="lg:col-span-1 flex flex-col gap-6">
-                                    <!-- Stats Cards -->
-                                    <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 bg-white dark:bg-background-dark/50 border border-slate-200 dark:border-slate-700/50">
-                                        <p class="text-neutral-text dark:text-gray-400 text-base font-medium leading-normal">Lợi nhuận gộp</p>
-                                        <p class="text-slate-900 dark:text-slate-100 tracking-tight text-3xl font-bold leading-tight">1,250tr</p>
-                                        <div class="flex items-center gap-1 text-success">
-                                            <span class="material-symbols-outlined text-lg">arrow_upward</span>
-                                            <p class="text-base font-medium leading-normal">15.2% vs. kỳ trước</p>
-                                        </div>
+                                </div>
+                            </div>
+                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Phân loại đơn hàng</h3>
+                                <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="relative w-48 h-48">
+                                    <svg class="size-full" viewBox="0 0 36 36">
+                                    <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+                                    <path class="stroke-green-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="60, 100" stroke-linecap="round" stroke-width="3"></path>
+                                    <path class="stroke-blue-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="25, 100" stroke-dashoffset="-60" stroke-linecap="round" stroke-width="3"></path>
+                                    <path class="stroke-orange-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="15, 100" stroke-dashoffset="-85" stroke-linecap="round" stroke-width="3"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                    <div class="flex justify-between w-full gap-4">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Tại chỗ</span>
+                                        <span class="text-sm font-semibold text-gray-800 dark:text-white">210 đơn</span>
                                     </div>
-                                    <div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 bg-white dark:bg-background-dark/50 border border-slate-200 dark:border-slate-700/50">
-                                        <p class="text-neutral-text dark:text-gray-400 text-base font-medium leading-normal">Lợi nhuận ròng</p>
-                                        <p class="text-slate-900 dark:text-slate-100 tracking-tight text-3xl font-bold leading-tight">450tr</p>
-                                        <div class="flex items-center gap-1 text-success">
-                                            <span class="material-symbols-outlined text-lg">arrow_upward</span>
-                                            <p class="text-base font-medium leading-normal">8.5% vs. kỳ trước</p>
-                                        </div>
                                     </div>
-                                    <!-- Chart -->
-                                    <div class="bg-white dark:bg-background-dark/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700/50">
-                                        <div class="flex min-w-72 flex-1 flex-col gap-2">
-                                            <p class="text-slate-900 dark:text-slate-100 text-base font-bold leading-normal">Xu hướng Lãi lỗ theo Tháng</p>
-                                            <p class="text-slate-900 dark:text-slate-100 tracking-tight text-3xl font-bold leading-tight truncate">450,000,000đ</p>
-                                            <div class="flex gap-2 items-center">
-                                                <p class="text-neutral-text dark:text-gray-400 text-sm font-normal leading-normal">Lợi nhuận ròng tháng này</p>
-                                                <p class="text-success text-sm font-medium leading-normal flex items-center"><span class="material-symbols-outlined text-sm">arrow_upward</span>8.5%</p>
-                                            </div>
-                                            <div class="flex min-h-[180px] flex-1 flex-col gap-4 py-4">
-                                                <svg fill="none" height="100%" preserveaspectratio="none" viewbox="0 0 475 150" width="100%" xmlns="http://www.w3.org/2000/svg">
-                                                    <!-- Doanh thu line (Primary) -->
-                                                    <path d="M0 41C18.15 41 18.15 21 36.3 21C54.46 21 54.46 33 72.61 33C90.76 33 90.76 1 108.92 1C127.07 1 127.07 15 145.23 15C163.38 15 163.38 45 181.53 45C199.69 45 199.69 25 217.84 25C236 25 236 41 254.15 41C272.3 41 272.3 61 290.46 61C308.61 61 308.61 15 326.76 15C344.92 15 344.92 25 363.07 25C381.23 25 381.23 1 399.38 1C417.53 1 417.53 10 435.69 10C453.84 10 453.84 21 472 21" stroke="#137fec" stroke-linecap="round" stroke-width="2.5"></path>
-                                                    <!-- Chi phí line (Danger) -->
-                                                    <path d="M0 109C18.15 109 18.15 81 36.3 81C54.46 81 54.46 93 72.61 93C90.76 93 90.76 73 108.92 73C127.07 73 127.07 93 145.23 93C163.38 93 163.38 101 181.53 101C199.69 101 199.69 121 217.84 121C236 121 236 95 254.15 95C272.3 95 272.3 111 290.46 111C308.61 111 308.61 89 326.76 89C344.92 89 344.92 101 363.07 101C381.23 101 381.23 81 399.38 81C417.53 81 417.53 119 435.69 119C453.84 119 453.84 95 472 95" stroke="#dc3545" stroke-linecap="round" stroke-width="2.5"></path>
-                                                    <!-- Lợi nhuận net area (Success) -->
-                                                    <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H0V109Z" fill="url(#paint0_linear_chart)"></path>
-                                                    <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#28a745" stroke-linecap="round" stroke-width="2.5"></path>
-                                                    <defs>
-                                                        <lineargradient gradientunits="userSpaceOnUse" id="paint0_linear_chart" x1="236" x2="236" y1="1" y2="149">
-                                                            <stop stop-color="#28a745" stop-opacity="0.2"></stop>
-                                                            <stop offset="1" stop-color="#28a745" stop-opacity="0"></stop>
-                                                        </lineargradient>
-                                                    </defs>
-                                                </svg>
-                                                <div class="flex justify-around">
-                                                    <p class="text-neutral-text dark:text-gray-400 text-xs font-medium">Tuần 1</p>
-                                                    <p class="text-neutral-text dark:text-gray-400 text-xs font-medium">Tuần 2</p>
-                                                    <p class="text-neutral-text dark:text-gray-400 text-xs font-medium">Tuần 3</p>
-                                                    <p class="text-neutral-text dark:text-gray-400 text-xs font-medium">Tuần 4</p>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col gap-2 text-xs">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-3 h-3 rounded-full bg-success"></div>
-                                                    <span class="text-slate-700 dark:text-slate-300">Lợi nhuận ròng</span>
-                                                </div>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-3 h-3 rounded-full bg-primary"></div>
-                                                    <span class="text-slate-700 dark:text-slate-300">Doanh thu</span>
-                                                </div>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-3 h-3 rounded-full bg-danger"></div>
-                                                    <span class="text-slate-700 dark:text-slate-300">Tổng chi phí</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                    <div class="flex justify-between w-full gap-4">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Mang về</span>
+                                        <span class="text-sm font-semibold text-gray-800 dark:text-white">87 đơn</span>
+                                    </div>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+                                    <div class="flex justify-between w-full gap-4">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Shopee Food</span>
+                                        <span class="text-sm font-semibold text-gray-800 dark:text-white">53 đơn</span>
+                                    </div>
                                     </div>
                                 </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                            <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Danh sách chi phí</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                <thead class="border-b border-gray-200 dark:border-slate-700">
+                                    <tr>
+                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Nội dung chi</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Số tiền</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Hình thức</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Ngày</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-100 dark:border-slate-800">
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">Nhập nguyên liệu pha chế</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">5,250,000đ</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">Chuyển khoản</span>
+                                    </td>
+                                    <td class="p-3 text-sm text-gray-500 dark:text-gray-400">18/05/2024</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100 dark:border-slate-800">
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">Trả tiền điện</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">1,800,000đ</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-300">Tiền mặt</span>
+                                    </td>
+                                    <td class="p-3 text-sm text-gray-500 dark:text-gray-400">18/05/2024</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100 dark:border-slate-800">
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">Mua ly, ống hút</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">750,000đ</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800 dark:bg-cyan-900/50 dark:text-cyan-300">Tiền mặt</span>
+                                    </td>
+                                    <td class="p-3 text-sm text-gray-500 dark:text-gray-400">17/05/2024</td>
+                                    </tr>
+                                    <tr class="border-b-0 dark:border-slate-800">
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">Tiền thuê mặt bằng</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">12,000,000đ</td>
+                                    <td class="p-3 text-sm text-gray-800 dark:text-gray-200">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">Chuyển khoản</span>
+                                    </td>
+                                    <td class="p-3 text-sm text-gray-500 dark:text-gray-400">15/05/2024</td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                            </div>
                             </div>
                         </div>
                     </main>
