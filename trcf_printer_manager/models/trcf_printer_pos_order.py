@@ -49,6 +49,7 @@ class TrcfPrinterPosOrder(models.Model):
 
         # LẤY CHI TIẾT MÓN ĂN
         order = self.browse(order_id)
+        #print("order", order.lines.read())
 
         # Lấy phần số cuối của mã đơn hàng
         order_number = order.pos_reference.split('-')[-1]
@@ -80,7 +81,7 @@ class TrcfPrinterPosOrder(models.Model):
                 for line in order.lines:
                     # TÊN MÓN (dòng đầu)
                     printer.set(bold=True, width=1, height=1)
-                    printer.text(f"{self._convert_vi_to_unsigned(line.product_id.name)}\n")
+                    printer.text(f"{self._convert_vi_to_unsigned(line.full_product_name)}\n")
                     
                     # SỐ LƯỢNG x GIÁ = TỔNG (dòng thứ 2, căn phải)
                     printer.set(bold=False, width=1, height=1)
@@ -197,7 +198,7 @@ class TrcfPrinterPosOrder(models.Model):
 
             for line in order.lines:
                 # Lấy thông tin món
-                product_name = self._convert_vi_to_unsigned(line.product_id.name.upper())  # Chuyển thành chữ hoa
+                full_product_name = self._convert_vi_to_unsigned(line.full_product_name.upper())  # Chuyển thành chữ hoa
                 
                 # Xử lý ghi chú - format đẹp hơn
                 note = ""
@@ -224,7 +225,7 @@ class TrcfPrinterPosOrder(models.Model):
                         TEXT 25,25,"2",0,1,1,"BAN {table_name} - ({label_counter}/{total_labels})"
                         TEXT 25,50,"0",0,1,1,"{order_code}"
                         BAR 25,85,276,1
-                        TEXT 25,100,"2",0,1,1,"{product_name}"
+                        TEXT 25,100,"2",0,1,1,"{full_product_name}"
                         TEXT 25,125,"0",0,1,1,"{note}"
                         BAR 25,160,276,1
                         TEXT 25,175,"0",0,1,1,"{price}"
@@ -329,16 +330,16 @@ class TrcfPrinterPosOrder(models.Model):
                 
                 for line in lines_to_print:
                     # Lấy tên món
-                    product_name = self._convert_vi_to_unsigned(line.product_id.name)
+                    full_product_name = self._convert_vi_to_unsigned(line.full_product_name)
                     
                     # Lấy số lượng (format số nguyên nếu không có phần thập phân)
                     qty = int(line.qty) if line.qty == int(line.qty) else line.qty
                     
                     # Thêm ghi chú vào tên món nếu có
                     if line.note:
-                        product_display = f"{product_name} ({self._convert_vi_to_unsigned(line.note)})"
+                        product_display = f"{full_product_name} ({self._convert_vi_to_unsigned(line.note)})"
                     else:
-                        product_display = product_name
+                        product_display = full_product_name
                     
                     # In theo format: Tên món x số lượng
                     printer.text(f"{product_display} x {qty}\n")
