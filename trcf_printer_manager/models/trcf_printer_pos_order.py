@@ -86,7 +86,7 @@ class TrcfPrinterPosOrder(models.Model):
                     printer.set(bold=False, width=1, height=1)
                     qty = int(line.qty) if line.qty == int(line.qty) else line.qty
                     price_unit = f"{line.price_unit:,.0f}"
-                    price_subtotal = f"{(qty*price_unit):,.0f}"
+                    price_subtotal = f"{(int(line.qty)*int(line.price_unit)):,.0f}"
                     
                     # Format: "  2 x 50,000 =          100,000"
                     detail_line = f"  {qty} x {price_unit}"
