@@ -4,6 +4,7 @@ import socket
 from datetime import datetime
 from escpos.printer import Network
 import unicodedata
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class TrcfPrinterPosOrder(models.Model):
 
         # LẤY CHI TIẾT MÓN ĂN
         order = self.browse(order_id)
-        #print("order", order.lines.read())
+        print("order", order.lines.read())
 
         # Lấy phần số cuối của mã đơn hàng
         order_number = order.pos_reference.split('-')[-1]
@@ -138,10 +139,9 @@ class TrcfPrinterPosOrder(models.Model):
                 printer.text("\n")
                 printer.set(bold=True, width=1, height=1, align='center')
                 printer.text("-" * 48 + "\n")
-                printer.text("WIFI: COFFEETREE ROASTERS\n")
-                printer.text("coffeetree123@\n")
-                printer.text("-" * 48 + "\n")
                 printer.text(self._convert_vi_to_unsigned(invoice_footer_text))
+                printer.text("\n")
+                printer.text("-" * 48 + "\n")
                 printer.text("\n\n")
                 printer.cut()
                 printer.close()
@@ -260,19 +260,6 @@ class TrcfPrinterPosOrder(models.Model):
         
         # Lấy số thứ tự (có thể dùng id hoặc sequence number)
         sequence_number = str(order.id).zfill(2)  # Pad với 0 nếu cần
-        
-        # Format ngày giờ
-        # if order.date_order:
-        #     from datetime import datetime
-        #     try:
-        #         dt = order.date_order
-        #         if isinstance(dt, str):
-        #             dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
-        #         date_str = dt.strftime("%d-%m-%Y")
-        #     except:
-        #         date_str = datetime.now().strftime("%d-%m-%Y")
-        # else:
-        #     date_str = datetime.now().strftime("%d-%m-%Y")
 
         date_order_utc = order_data.get('date_order')
         date_order_local = fields.Datetime.context_timestamp(self, date_order_utc)
@@ -335,9 +322,17 @@ class TrcfPrinterPosOrder(models.Model):
                     # Lấy số lượng (format số nguyên nếu không có phần thập phân)
                     qty = int(line.qty) if line.qty == int(line.qty) else line.qty
                     
+                    # Xử lý ghi chú - kiểm tra trước khi parse JSON
+                    notes_list = []
+                    if line.note and line.note.strip():
+                        try:
+                            notes_list = json.loads(line.note)
+                        except (json.JSONDecodeError, ValueError):
+                            _logger.warning(f"Không thể parse ghi chú JSON cho món {full_product_name}: {line.note}")
+                    
                     # Thêm ghi chú vào tên món nếu có
-                    if line.note:
-                        product_display = f"{full_product_name} ({self._convert_vi_to_unsigned(line.note)})"
+                    if notes_list and len(notes_list) > 0 and 'text' in notes_list[0]:
+                        product_display = f"{full_product_name} ({self._convert_vi_to_unsigned(notes_list[0]['text'])})"
                     else:
                         product_display = full_product_name
                     
