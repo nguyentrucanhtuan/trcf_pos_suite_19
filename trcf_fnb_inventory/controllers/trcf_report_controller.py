@@ -63,6 +63,9 @@ class TrcfReportController(http.Controller):
         # 2. Sử dụng hàm format có sẵn của Odoo
         formatted_total_revenue = currency.format(total_pos_revenue)
 
+        # Lấy thống kê chi phí
+        expense_stats = self.get_expense_stats(current_start, current_end)
+        
         vals = {
             'filter_type': filter_type,
             'date_from': date_from,
@@ -76,6 +79,8 @@ class TrcfReportController(http.Controller):
             'orders_comparison': orders_comparison,
             'qty_comparison': qty_comparison,
             'comparison_text': comparison_text,
+            'expense_total': expense_stats['total_formatted'],
+            'expense_by_payment_method': expense_stats['by_payment_method'],
         }
 
         return request.render('trcf_fnb_inventory.daily_report_template', vals)
@@ -306,3 +311,52 @@ class TrcfReportController(http.Controller):
                 })
         
         return order_presets
+
+    def get_expense_stats(self, start_date, end_date):
+        """Lấy thống kê chi phí theo phương thức thanh toán"""
+        # 1. Setup Timezone
+        user_tz = pytz.timezone(request.env.user.tz or 'UTC')
+        
+        dt_start = datetime.combine(start_date, time.min)
+        dt_end = datetime.combine(end_date, time.max)
+        
+        # 2. Convert to UTC
+        dt_start_utc = user_tz.localize(dt_start).astimezone(pytz.utc).replace(tzinfo=None)
+        dt_end_utc = user_tz.localize(dt_end).astimezone(pytz.utc).replace(tzinfo=None)
+
+        # 3. Lấy tất cả chi phí trong khoảng thời gian
+        domain = [
+            ('create_date', '>=', dt_start_utc),
+            ('create_date', '<=', dt_end_utc),
+        ]
+        
+        expenses = request.env['hr.expense'].sudo().search(domain)
+        
+        # 4. Tính tổng và nhóm theo payment method
+        total_amount = 0
+        payment_method_stats = {}
+        
+        for expense in expenses:
+            total_amount += expense.total_amount
+            
+            pm_name = expense.payment_method_line_id.name if expense.payment_method_line_id else 'N/A'
+            if pm_name not in payment_method_stats:
+                payment_method_stats[pm_name] = 0
+            payment_method_stats[pm_name] += expense.total_amount
+        
+        # 5. Format kết quả
+        currency = request.env.company.currency_id
+        payment_method_list = []
+        
+        for pm, amount in payment_method_stats.items():
+            payment_method_list.append({
+                'name': pm,
+                'amount': amount,
+                'formatted_amount': currency.format(amount)
+            })
+        
+        return {
+            'total': total_amount,
+            'total_formatted': currency.format(total_amount),
+            'by_payment_method': payment_method_list
+        }
