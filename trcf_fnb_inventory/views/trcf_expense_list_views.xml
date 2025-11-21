@@ -63,41 +63,38 @@
                             <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em]">Danh Sách Chi Phí</p>
                             </header>
                             <div class="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-border-light dark:border-border-dark">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <button class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-border-light dark:border-border-dark text-text-light-secondary dark:text-text-dark-secondary hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium">
-                                <span class="material-symbols-outlined text-base">filter_list</span>
-                                <span>Bộ lọc</span>
-                                </button>
-                                <button class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-border-light dark:border-border-dark text-text-light-secondary dark:text-text-dark-secondary hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium">
-                                <span class="material-symbols-outlined text-base">calendar_today</span>
-                                <span>Thời gian</span>
-                                </button>
-                                <div class="relative">
-                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">search</span>
-                                <input class="h-10 w-64 pl-10 pr-4 rounded-lg bg-white dark:bg-slate-800 border border-border-light dark:border-border-dark focus:ring-2 focus:ring-primary/50 text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500" placeholder="Tìm kiếm chi phí..." type="text" />
+                                <a href="/trcf_fnb_inventory/expense_add" class="inline-block">
+                                    <button class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-sm font-bold">
+                                        <span class="material-symbols-outlined text-base">add_circle</span>
+                                        <span>Thêm chi phí</span>
+                                    </button>
+                                </a>
+                            </div>
+                            
+                            <!-- Statistics Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <!-- Total Expenses Card -->
+                                <div class="p-6 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl shadow-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <p class="text-white/80 text-sm font-medium">Tổng Chi Phí</p>
+                                        <span class="material-symbols-outlined text-white/60">payments</span>
+                                    </div>
+                                    <p class="text-white text-3xl font-bold"><t t-esc="total_amount_formatted"/> <t t-esc="currency_symbol"/></p>
+                                    <p class="text-white/70 text-xs mt-1">Hôm nay</p>
                                 </div>
+                                
+                                <!-- Payment Method Stats -->
+                                <t t-foreach="payment_method_stats" t-as="pm_stat">
+                                    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-border-light dark:border-border-dark shadow-sm">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium"><t t-esc="pm_stat['name']"/></p>
+                                            <span class="material-symbols-outlined text-primary dark:text-blue-400">account_balance_wallet</span>
+                                        </div>
+                                        <p class="text-text-light-primary dark:text-white text-2xl font-bold"><t t-esc="pm_stat['amount_formatted']"/> <t t-esc="currency_symbol"/></p>
+                                    </div>
+                                </t>
                             </div>
-                            <a href="/trcf_fnb_inventory/expense_add" class="inline-block">
-                                <button class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-sm font-bold">
-                                    <span class="material-symbols-outlined text-base">add_circle</span>
-                                    <span>Thêm chi phí</span>
-                                </button>
-                            </a>
-                            </div>
-                            <div class="flex gap-3 mb-6 px-1 overflow-x-auto pb-2">
-                            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary-light dark:bg-primary/30 pl-4 pr-4">
-                                <p class="text-primary dark:text-white text-sm font-semibold leading-normal">Tất cả</p>
-                            </button>
-                            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 pl-4 pr-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal">Nguyên vật liệu</p>
-                            </button>
-                            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 pl-4 pr-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal">Vận hành</p>
-                            </button>
-                            <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 pl-4 pr-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal">Marketing</p>
-                            </button>
-                            </div>
+                            
                             <div class="overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-slate-900">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
@@ -115,49 +112,13 @@
                                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                             <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap"><t t-esc="expense['expense_type']"/></td>
                                             <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap"><t t-esc="expense['expense_name']"/></td>
-                                            <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap"><t t-esc="int(expense['expense_total_amount'])"/> <t t-esc="expense['expense_currency']"/></td>
+                                            <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap"><t t-esc="expense['expense_total_amount_formatted']"/> <t t-esc="expense['expense_currency']"/></td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary"><t t-esc="expense['expense_currency']"/></span>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary"><t t-esc="expense['payment_method']"/></span>
                                             </td>
-                                            <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap"><t t-esc="expense['expense_date']"/></td>
+                                            <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap"><t t-esc="expense['create_date']"/></td>
                                         </tr>
                                     </t>
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">Vận hành</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap">Trả tiền điện tháng 11</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap">850.000đ</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary">Chuyển khoản</span>
-                                        </td>
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">24/11/2023 10:15</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">Marketing</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap">Chạy quảng cáo Facebook</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap">2.000.000đ</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary">Momo</span>
-                                        </td>
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">23/11/2023 18:00</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">Nguyên vật liệu</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap">Nhập rau củ quả</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap">700.000đ</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary">Tiền mặt</span>
-                                        </td>
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">22/11/2023 09:00</td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">Vận hành</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap">Thuê mặt bằng</td>
-                                        <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap">15.000.000đ</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary">Chuyển khoản</span>
-                                        </td>
-                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">20/11/2023 11:45</td>
-                                    </tr>
                                 </tbody>
                                 </table>
                             </div>

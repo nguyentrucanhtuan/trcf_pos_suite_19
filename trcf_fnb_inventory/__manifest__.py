@@ -4,7 +4,7 @@
     'version': '1.0',
     'category': 'Inventory',
     'summary': 'Quản lý tồn kho đơn giản khoa học cho quán cà phê của bạn từ Tuấn Rang Cà Phê.',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'web', 'hr_expense'],
     'data': [
         # 'security/ir.model.access.csv', # Uncomment if you add access rights
         'views/trcf_sidebar_template.xml',

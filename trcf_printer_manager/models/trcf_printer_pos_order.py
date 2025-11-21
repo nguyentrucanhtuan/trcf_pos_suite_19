@@ -50,7 +50,7 @@ class TrcfPrinterPosOrder(models.Model):
 
         # LẤY CHI TIẾT MÓN ĂN
         order = self.browse(order_id)
-        print("order", order.lines.read())
+        #print("order", order.lines.read())
 
         # Lấy phần số cuối của mã đơn hàng
         order_number = order.pos_reference.split('-')[-1]

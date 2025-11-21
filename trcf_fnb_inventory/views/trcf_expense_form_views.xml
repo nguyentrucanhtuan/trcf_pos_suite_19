@@ -63,15 +63,19 @@
                                 <p class="text-text-light-primary dark:text-text-dark-primary text-3xl font-bold leading-tight">Tạo Phiếu Chi Mới</p>
                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-base font-normal leading-normal mt-2">Điền các thông tin dưới đây để ghi nhận một khoản chi phí mới.</p>
                             </div>
+                            <div t-if="error_message" class="mb-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                                <span class="font-medium">Lỗi!</span> <t t-esc="error_message"/>
+                            </div>
                             <div class="bg-white dark:bg-background-dark p-8 rounded-xl shadow-sm border border-border-light dark:border-border-dark">
                             <form method="POST" action="/trcf_fnb_inventory/expense_add" class="space-y-6">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <label class="flex flex-col">
                                     <p class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal pb-2">Loại chi phí</p>
-                                    <select name="expense_type" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal">
+                                    <select name="expense_type" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal" required="required">
                                         <option disabled="" selected="" value="">Chọn loại chi phí</option>
-                                        <option value="40">Tiền nguyên liệu</option>
-                                        <option value="41">Tiền rác</option>
+                                        <t t-foreach="expense_products" t-as="product">
+                                            <option t-att-value="product.id"><t t-esc="product.name"/></option>
+                                        </t>
                                     </select>
                                 </label>
                                 <label class="flex flex-col">
@@ -84,11 +88,11 @@
                                 </label>
                                 <label class="flex flex-col">
                                     <p class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal pb-2">Hình thức thanh toán</p>
-                                    <select name="payment_method" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal">
+                                    <select name="payment_method_line_id" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal" required="required">
                                         <option disabled="" selected="" value="">Chọn hình thức thanh toán</option>
-                                        <option value="chuyen-khoan">Chuyển khoản</option>
-                                        <option value="momo">MoMo</option>
-                                        <option value="tien-mat">Tiền mặt</option>
+                                        <t t-foreach="payment_method_lines" t-as="pml">
+                                            <option t-att-value="pml.id"><t t-esc="pml.name"/></option>
+                                        </t>
                                     </select>
                                 </label>
                                 <div class="flex items-center justify-end gap-4 pt-4">
