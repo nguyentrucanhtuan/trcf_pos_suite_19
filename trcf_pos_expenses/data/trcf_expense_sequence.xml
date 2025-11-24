@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Expense Sequence -->
+        <record id="seq_trcf_expense" model="ir.sequence">
+            <field name="name">Expense Sequence</field>
+            <field name="code">trcf.expense</field>
+            <field name="prefix">EXP/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+            <field name="implementation">standard</field>
+        </record>
+    </data>
+</odoo>

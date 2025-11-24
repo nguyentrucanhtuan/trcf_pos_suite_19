@@ -1,0 +1,537 @@
+<odoo>
+    <template id="purchase_form_template">
+
+        <xpath expr="//head" position="inside">
+            <meta charset="utf-8"/>
+            <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+            <title>Nhập hàng</title>
+            <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+            
+            <!-- Flatpickr Date Picker -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"/>
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+            
+            <script>
+                tailwind.config = {
+                    darkMode: "class",
+                    theme: {
+                        extend: {
+                            colors: {
+                                primary: '#2563eb',
+                                'primary-light': '#eff6ff',
+                                'primary-dark': '#1e40af',
+                                'background-light': '#f8fafc',
+                                'background-dark': '#020617',
+                                'text-light-primary': '#1e293b',
+                                'text-light-secondary': '#64748b',
+                                'text-dark-primary': '#f8fafc',
+                                'text-dark-secondary': '#94a3b8',
+                                'border-light': '#e2e8f0',
+                                'border-dark': '#1e293b',
+                            },
+                            fontFamily: {
+                                "display": ["Inter", "sans-serif"]
+                            },
+                            borderRadius: {
+                                "DEFAULT": "0.5rem",
+                                "lg": "0.75rem",
+                                "xl": "1rem",
+                                "full": "9999px"
+                            },
+                        },
+                    },
+                }
+            </script>
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+                .material-symbols-outlined {
+                    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+                
+                /* Flatpickr custom styling */
+                .flatpickr-calendar {
+                    font-family: 'Inter', sans-serif;
+                    border-radius: 0.75rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                }
+                .flatpickr-day.selected {
+                    background: #2563eb;
+                    border-color: #2563eb;
+                }
+                .flatpickr-day:hover {
+                    background: #eff6ff;
+                    border-color: #eff6ff;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//body" position="replace">
+
+            <body class="font-display bg-background-light dark:bg-background-dark">
+                <div class="flex min-h-screen">
+                    <!-- SideNavBar -->
+                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+
+                    <!-- Main Content -->
+                    <main class="flex-1 p-8 overflow-auto">
+                        <div class="max-w-7xl mx-auto">
+                            
+                            <!-- Error Message -->
+                            <t t-if="error">
+                                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                    <p class="text-red-800 dark:text-red-200 text-sm font-medium">
+                                        <span class="material-symbols-outlined inline-block align-middle mr-2">error</span>
+                                        <t t-esc="error"/>
+                                    </p>
+                                </div>
+                            </t>
+                            
+                            <form id="purchaseForm" method="POST" action="/trcf_fnb_inventory/purchase_add">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="products_data" id="products_data" value="[]"/>
+                                <input type="hidden" name="action" id="form_action" value="draft"/>
+                                
+                                <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
+                                    <h1 class="text-text-dark-green dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Tạo Phiếu Nhập Hàng</h1>
+                                    <div class="flex items-center gap-3">
+                                        <button type="button" onclick="submitForm('confirm')" class="px-5 py-2.5 rounded-lg bg-primary text-background-dark text-sm font-bold leading-normal hover:opacity-90 transition-opacity">Tạo đơn mua hàng</button>
+                                    </div>
+                                </header>
+                                
+                                <div class="flex flex-col gap-8">
+                                    <!-- Thông tin đơn hàng -->
+                                    <div class="bg-light-green-bg dark:bg-background-dark border border-border-green/50 dark:border-gray-800 rounded-xl p-6">
+                                        <h2 class="text-text-dark-green dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-6">Thông tin đơn hàng</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            
+                                            <!-- Ngày nhập hàng (tự động) -->
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Ngày nhập hàng</p>
+                                                <div class="relative">
+                                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary-green dark:text-gray-400">calendar_today</span>
+                                                    <input readonly="readonly" class="form-input pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white border border-border-green dark:border-gray-700 bg-slate-100 dark:bg-gray-900 h-14 p-[15px] text-base font-normal leading-normal cursor-not-allowed" type="text" t-att-value="today" title="Ngày nhập hàng được tự động lấy từ thời gian tạo đơn"/>
+                                                </div>
+                                            </label>
+                                            
+                                            <!-- Mã tham chiếu -->
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Mã tham chiếu</p>
+                                                <input name="reference" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 placeholder:text-primary-green/70 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" placeholder="Mã phiếu tự sinh hoặc tự nhập" t-att-value="reference or ''"/>
+                                            </label>
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Thông tin thanh toán -->
+                                    <div class="bg-light-green-bg dark:bg-background-dark border border-border-green/50 dark:border-gray-800 rounded-xl p-6">
+                                        <h2 class="text-text-dark-green dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-6">Thông tin thanh toán</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            
+                                            <!-- Nhà cung cấp -->
+                                            <label class="flex flex-col w-full md:col-span-2">
+                                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">
+                                                    Nhà cung cấp <span class="text-red-500">*</span>
+                                                </p>
+                                                <select name="partner_id" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 px-3.5 text-base font-normal leading-normal">
+                                                    <option value="">-- Chọn nhà cung cấp --</option>
+                                                    <t t-foreach="suppliers" t-as="supplier">
+                                                        <option t-att-value="supplier.id" t-esc="supplier.name"/>
+                                                    </t>
+                                                </select>
+                                            </label>
+                                            
+                                            <!-- Trạng thái thanh toán -->
+                                            <div class="flex flex-col w-full">
+                                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Trạng thái thanh toán</p>
+                                                <div class="flex items-center gap-6 h-14">
+                                                    <label class="flex items-center gap-2 cursor-pointer">
+                                                        <input class="form-radio text-primary focus:ring-primary/50 w-4 h-4" name="payment_status" type="radio" value="paid"/>
+                                                        <span class="text-text-dark-green dark:text-white">Đã thanh toán</span>
+                                                    </label>
+                                                    <label class="flex items-center gap-2 cursor-pointer">
+                                                        <input checked="checked" class="form-radio text-primary focus:ring-primary/50 w-4 h-4" name="payment_status" type="radio" value="unpaid"/>
+                                                        <span class="text-text-dark-green dark:text-white">Chưa thanh toán</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Phương thức thanh toán -->
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Phương thức thanh toán</p>
+                                                <select name="payment_method_id" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 px-3.5 text-base font-normal leading-normal">
+                                                    <option value="">-- Chọn phương thức --</option>
+                                                    <t t-foreach="payment_methods" t-as="pm">
+                                                        <option t-att-value="pm.get('id')" t-esc="pm.get('name')"/>
+                                                    </t>
+                                                </select>
+                                            </label>
+                                            
+                                            <!-- Ngày thanh toán -->
+                                            <label class="flex flex-col w-full md:col-span-2">
+                                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Ngày thanh toán</p>
+                                                <div class="relative">
+                                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary-green dark:text-gray-400 pointer-events-none">calendar_today</span>
+                                                    <input id="payment_date_input" name="payment_date" class="form-input pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 p-[15px] text-base font-normal leading-normal cursor-pointer" placeholder="DD/MM/YYYY HH:MM:SS" type="text" readonly="readonly"/>
+                                                </div>
+                                            </label>
+                                            
+                                            <!-- Ghi chú đơn hàng -->
+                                            <label class="flex flex-col w-full md:col-span-2">
+                                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Ghi chú đơn hàng</p>
+                                                <input name="notes" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 placeholder:text-primary-green/70 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" placeholder="Thêm ghi chú về đơn hàng..."/>
+                                            </label>
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Chi tiết sản phẩm -->
+                                    <div class="bg-light-green-bg dark:bg-background-dark border border-border-green/50 dark:border-gray-800 rounded-xl p-6">
+                                        <h2 class="text-text-dark-green dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-6">Chi tiết Sản phẩm</h2>
+                                        <div class="flow-root">
+                                            <div class="-mx-6 -my-2 overflow-x-auto">
+                                                <div class="inline-block min-w-full py-2 align-middle sm:px-6">
+                                                    <div class="overflow-hidden">
+                                                        <table class="min-w-full" id="productsTable">
+                                                            <thead class="border-b border-border-green dark:border-gray-700">
+                                                                <tr>
+                                                                    <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 sm:pl-0 w-[25%]" scope="col">Sản phẩm</th>
+                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 w-[15%]" scope="col">Đơn vị tính</th>
+                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 w-[15%]" scope="col">Số lượng</th>
+                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 w-[20%]" scope="col">Đơn giá</th>
+                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 w-[15%]" scope="col">VAT (%)</th>
+                                                                    <th class="relative py-3.5 pl-3 pr-4 sm:pr-0" scope="col">
+                                                                        <span class="sr-only">Hành động</span>
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="text-text-dark-green dark:text-white" id="productLines">
+                                                                <!-- Product lines will be added here by JavaScript -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mt-6 flex flex-col md:flex-row items-start gap-6">
+                                            <div class="w-full md:w-auto flex-grow">
+                                                <button type="button" onclick="addProductLine()" class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-lg bg-primary/20 dark:bg-primary/20 text-primary-green dark:text-primary text-sm font-bold leading-normal hover:bg-primary/30 dark:hover:bg-primary/40 transition-colors">
+                                                    <span class="material-symbols-outlined">add_circle</span> Thêm sản phẩm
+                                                </button>
+                                            </div>
+                                            <div class="w-full md:w-2/5 lg:w-1/3">
+                                                <div class="space-y-3 text-text-dark-green dark:text-gray-300 text-base">
+                                                    <div class="flex justify-between items-center">
+                                                        <p>Số tiền trước thuế</p>
+                                                        <p class="font-medium text-text-dark-green dark:text-white" id="subtotal">0đ</p>
+                                                    </div>
+                                                    <div id="vatBreakdown">
+                                                        <!-- VAT breakdown will be added here -->
+                                                    </div>
+                                                    <div class="border-t border-border-green dark:border-gray-700 my-3"></div>
+                                                    <div class="flex justify-between items-center text-lg">
+                                                        <p class="font-bold text-text-dark-green dark:text-white">Tổng cộng</p>
+                                                        <p class="font-bold text-primary-green dark:text-primary" id="total">0đ</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </main>
+                </div>
+                
+                <!-- JavaScript -->
+                <script>
+                <![CDATA[
+                    // Data from backend - these will be populated by Odoo template engine before CDATA
+                    let productsData = [];
+                    let uomsData = [];
+                    
+                    // This function will be called after data is loaded
+                    function initializeData(products, uoms) {
+                        productsData = products;
+                        uomsData = uoms;
+                    }
+                    
+                    let lineCounter = 0;
+                    let paymentDatePicker = null;
+                    
+                    // Initialize date picker and add initial product line
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Initialize Flatpickr for payment date with time (date + time)
+                        const now = new Date();
+                        paymentDatePicker = flatpickr("#payment_date_input", {
+                            dateFormat: "d/m/Y H:i:S",
+                            enableTime: true,
+                            enableSeconds: true,
+                            time_24hr: true,
+                            allowInput: true,
+                            defaultDate: now,
+                            locale: {
+                                firstDayOfWeek: 1,
+                                weekdays: {
+                                    shorthand: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                                    longhand: ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy']
+                                },
+                                months: {
+                                    shorthand: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'],
+                                    longhand: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
+                                }
+                            }
+                        });
+                        
+                        // Add event listeners for payment status radio buttons
+                        const paymentStatusRadios = document.querySelectorAll('input[name="payment_status"]');
+                        paymentStatusRadios.forEach(function(radio) {
+                            radio.addEventListener('change', handlePaymentStatusChange);
+                        });
+                        
+                        // Set initial state (unpaid is default)
+                        handlePaymentStatusChange();
+                        
+                        addProductLine();
+                    });
+                    
+                    function handlePaymentStatusChange() {
+                        const paymentStatus = document.querySelector('input[name="payment_status"]:checked').value;
+                        const paymentMethodSelect = document.querySelector('select[name="payment_method_id"]');
+                        const paymentDateInput = document.getElementById('payment_date_input');
+                        
+                        if (paymentStatus === 'unpaid') {
+                            // Disable payment method and payment date
+                            paymentMethodSelect.disabled = true;
+                            paymentMethodSelect.classList.add('bg-slate-100', 'dark:bg-gray-900', 'cursor-not-allowed', 'opacity-60');
+                            paymentMethodSelect.classList.remove('bg-background-light', 'dark:bg-gray-800');
+                            
+                            paymentDateInput.disabled = true;
+                            paymentDateInput.classList.add('bg-slate-100', 'dark:bg-gray-900', 'cursor-not-allowed', 'opacity-60');
+                            paymentDateInput.classList.remove('bg-background-light', 'dark:bg-gray-800', 'cursor-pointer');
+                            
+                            // Clear values
+                            paymentMethodSelect.value = '';
+                            if (paymentDatePicker) {
+                                paymentDatePicker.clear();
+                            }
+                        } else {
+                            // Enable payment method and payment date
+                            paymentMethodSelect.disabled = false;
+                            paymentMethodSelect.classList.remove('bg-slate-100', 'dark:bg-gray-900', 'cursor-not-allowed', 'opacity-60');
+                            paymentMethodSelect.classList.add('bg-background-light', 'dark:bg-gray-800');
+                            
+                            paymentDateInput.disabled = false;
+                            paymentDateInput.classList.remove('bg-slate-100', 'dark:bg-gray-900', 'cursor-not-allowed', 'opacity-60');
+                            paymentDateInput.classList.add('bg-background-light', 'dark:bg-gray-800', 'cursor-pointer');
+                            
+                            // Set payment date to current date/time
+                            if (paymentDatePicker && !paymentDateInput.value) {
+                                paymentDatePicker.setDate(new Date());
+                            }
+                        }
+                    }
+                    
+                    function addProductLine() {
+                        const tbody = document.getElementById('productLines');
+                        const lineId = lineCounter++;
+                        
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-border-green dark:border-gray-800';
+                        tr.id = 'line_' + lineId;
+                        
+                        // Build product options
+                        let productOptions = '<option value="">-- Chọn sản phẩm --</option>';
+                        productsData.forEach(function(p) {
+                            productOptions += '<option value="' + p.id + '" data-uom="' + p.uom_id + '">' + p.name + '</option>';
+                        });
+                        
+                        // Build UOM options
+                        let uomOptions = '';
+                        uomsData.forEach(function(u) {
+                            uomOptions += '<option value="' + u.id + '">' + u.name + '</option>';
+                        });
+                        
+                        tr.innerHTML = 
+                            '<td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0">' +
+                                '<select onchange="updateProductUOM(' + lineId + ')" class="product-select form-select w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base">' +
+                                    productOptions +
+                                '</select>' +
+                            '</td>' +
+                            '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
+                                '<select class="uom-select form-select w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base">' +
+                                    uomOptions +
+                                '</select>' +
+                            '</td>' +
+                            '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
+                                '<input onchange="calculateTotals()" class="qty-input form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" min="0" step="0.01" value="1"/>' +
+                            '</td>' +
+                            '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
+                                '<input onchange="calculateTotals()" class="price-input form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" min="0" step="1000" value="0"/>' +
+                            '</td>' +
+                            '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
+                                '<input onchange="calculateTotals()" class="vat-input form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" min="0" max="100" step="1" value="0"/>' +
+                            '</td>' +
+                            '<td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">' +
+                                '<button type="button" onclick="removeProductLine(' + lineId + ')" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">' +
+                                    '<span class="material-symbols-outlined">delete</span>' +
+                                '</button>' +
+                            '</td>';
+                        
+                        tbody.appendChild(tr);
+                        calculateTotals();
+                    }
+                    
+                    function updateProductUOM(lineId) {
+                        const line = document.getElementById('line_' + lineId);
+                        const productSelect = line.querySelector('.product-select');
+                        const uomSelect = line.querySelector('.uom-select');
+                        
+                        const selectedOption = productSelect.options[productSelect.selectedIndex];
+                        const defaultUomId = selectedOption.getAttribute('data-uom');
+                        
+                        if (defaultUomId) {
+                            uomSelect.value = defaultUomId;
+                        }
+                    }
+                    
+                    function removeProductLine(lineId) {
+                        const line = document.getElementById('line_' + lineId);
+                        if (line) {
+                            line.remove();
+                            calculateTotals();
+                        }
+                    }
+                    
+                    function calculateTotals() {
+                        const lines = document.querySelectorAll('#productLines tr');
+                        let subtotal = 0;
+                        const vatGroups = {};
+                        
+                        lines.forEach(function(line) {
+                            const qty = parseFloat(line.querySelector('.qty-input').value) || 0;
+                            const price = parseFloat(line.querySelector('.price-input').value) || 0;
+                            const vatPercent = parseFloat(line.querySelector('.vat-input').value) || 0;
+                            
+                            const lineSubtotal = qty * price;
+                            const lineVat = lineSubtotal * (vatPercent / 100);
+                            
+                            subtotal += lineSubtotal;
+                            
+                            if (vatPercent > 0) {
+                                if (!vatGroups[vatPercent]) {
+                                    vatGroups[vatPercent] = 0;
+                                }
+                                vatGroups[vatPercent] += lineVat;
+                            }
+                        });
+                        
+                        // Update subtotal
+                        document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+                        
+                        // Update VAT breakdown
+                        const vatBreakdown = document.getElementById('vatBreakdown');
+                        vatBreakdown.innerHTML = '';
+                        let totalVat = 0;
+                        
+                        Object.keys(vatGroups).sort().forEach(function(percent) {
+                            const amount = vatGroups[percent];
+                            totalVat += amount;
+                            
+                            const div = document.createElement('div');
+                            div.className = 'flex justify-between items-center';
+                            div.innerHTML = 
+                                '<p>VAT (' + percent + '%)</p>' +
+                                '<p class="font-medium text-text-dark-green dark:text-white">' + formatCurrency(amount) + '</p>';
+                            vatBreakdown.appendChild(div);
+                        });
+                        
+                        // Update total
+                        const total = subtotal + totalVat;
+                        document.getElementById('total').textContent = formatCurrency(total);
+                    }
+                    
+                    function formatCurrency(amount) {
+                        return new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND'
+                        }).format(amount);
+                    }
+                    
+                    function submitForm(action) {
+                        // Validate
+                        const partnerSelect = document.querySelector('select[name="partner_id"]');
+                        if (!partnerSelect.value) {
+                            alert('Vui lòng chọn nhà cung cấp');
+                            return;
+                        }
+                        
+                        const lines = document.querySelectorAll('#productLines tr');
+                        console.log('Number of product lines:', lines.length);
+                        
+                        if (lines.length === 0) {
+                            alert('Vui lòng thêm ít nhất một sản phẩm');
+                            return;
+                        }
+                        
+                        // Collect product data
+                        const productsData = [];
+                        let hasValidProduct = false;
+                        
+                        lines.forEach(function(line) {
+                            const productId = line.querySelector('.product-select').value;
+                            const uomId = line.querySelector('.uom-select').value;
+                            const qty = parseFloat(line.querySelector('.qty-input').value) || 0;
+                            const price = parseFloat(line.querySelector('.price-input').value) || 0;
+                            const vat = parseFloat(line.querySelector('.vat-input').value) || 0;
+                            
+                            console.log('Processing line:', {productId, uomId, qty, price, vat});
+                            
+                            if (productId && qty > 0) {
+                                hasValidProduct = true;
+                                productsData.push({
+                                    product_id: productId,
+                                    uom_id: uomId,
+                                    qty: qty,
+                                    price_unit: price,
+                                    vat_percent: vat
+                                });
+                            }
+                        });
+                        
+                        console.log('Products data collected:', productsData);
+                        console.log('Has valid product:', hasValidProduct);
+                        
+                        if (!hasValidProduct) {
+                            alert('Vui lòng chọn sản phẩm và nhập số lượng hợp lệ');
+                            return;
+                        }
+                        
+                        // Set products data and action
+                        const jsonData = JSON.stringify(productsData);
+                        console.log('JSON data to submit:', jsonData);
+                        document.getElementById('products_data').value = jsonData;
+                        document.getElementById('form_action').value = action;
+                        
+                        // Submit form
+                        document.getElementById('purchaseForm').submit();
+                    }
+                ]]>
+                </script>
+                <script>
+                    // Initialize data from backend (outside CDATA to allow Odoo template processing)
+                    initializeData(
+                        <t t-esc="json.dumps([{'id': p.id, 'name': p.name, 'uom_id': p.uom_id.id} for p in products])"/>,
+                        <t t-esc="json.dumps([{'id': u.id, 'name': u.name} for u in uoms])"/>
+                    );
+                </script>
+            </body>
+            
+        </xpath>
+
+    </template>
+</odoo>

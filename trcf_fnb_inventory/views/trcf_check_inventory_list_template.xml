@@ -1,0 +1,222 @@
+<odoo>
+    <template id="check_inventory_list_template">
+
+        <xpath expr="//head" position="inside">
+            <meta charset="utf-8"/>
+            <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+            <title>Nhập hàng</title>
+            <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+            <script>
+                tailwind.config = {
+                    darkMode: "class",
+                    theme: {
+                        extend: {
+                            colors: {
+                                primary: '#2563eb',
+                                'primary-light': '#eff6ff',
+                                'primary-dark': '#1e40af',
+                                'background-light': '#f8fafc',
+                                'background-dark': '#020617',
+                                'text-light-primary': '#1e293b',
+                                'text-light-secondary': '#64748b',
+                                'text-dark-primary': '#f8fafc',
+                                'text-dark-secondary': '#94a3b8',
+                                'border-light': '#e2e8f0',
+                                'border-dark': '#1e293b',
+                            },
+                            fontFamily: {
+                                "display": ["Inter", "sans-serif"]
+                            },
+                            borderRadius: {
+                                "DEFAULT": "0.5rem",
+                                "lg": "0.75rem",
+                                "xl": "1rem",
+                                "full": "9999px"
+                            },
+                        },
+                    },
+                }
+            </script>
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+                .material-symbols-outlined {
+                    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//body" position="replace">
+
+            <body class="font-display bg-background-light dark:bg-background-dark">
+                <div class="flex min-h-screen">
+                    <!-- SideNavBar -->
+                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+
+                    <!-- Main Content -->
+                    <main class="flex-1">
+                        <div class="px-4 sm:px-8 md:px-12 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
+                            <div class="layout-content-container flex flex-col w-full max-w-7xl flex-1">
+                            <div class="flex flex-wrap justify-between items-center gap-4 p-4">
+                                <h1 class="text-3xl md:text-4xl font-black tracking-tighter">Quản lý Kiểm kho</h1>
+                                <a href="/trcf_fnb_inventory/check_inventory_add" class="flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+                                    <span class="material-symbols-outlined">add_circle</span>
+                                    <span class="truncate">Tạo Phiếu Kiểm Mới</span>
+                                </a>
+                            </div>
+                            <div class="p-4 bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="lg:col-span-2">
+                                    <label class="flex flex-col w-full">
+                                    <span class="text-sm font-medium mb-1.5 text-text-muted-light dark:text-text-muted-dark">Tìm kiếm</span>
+                                    <div class="flex w-full flex-1 items-stretch rounded-lg h-10 bg-background-light dark:bg-background-dark">
+                                        <div class="text-text-muted-light dark:text-text-muted-dark flex items-center justify-center pl-3">
+                                        <span class="material-symbols-outlined">search</span>
+                                        </div>
+                                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-text-light dark:text-text-dark focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-text-muted-light dark:placeholder:text-text-muted-dark px-2 text-sm" placeholder="Tìm theo tên người kiểm hoặc mã phiếu..." value="" />
+                                    </div>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="flex flex-col w-full">
+                                    <span class="text-sm font-medium mb-1.5 text-text-muted-light dark:text-text-muted-dark">Phạm vi ngày</span>
+                                    <button class="flex items-center justify-between text-left w-full h-10 px-3 rounded-lg bg-background-light dark:bg-background-dark text-sm">
+                                        <p class="text-text-light dark:text-text-dark">Tất cả thời gian</p>
+                                        <span class="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark">calendar_today</span>
+                                    </button>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="flex flex-col w-full">
+                                    <span class="text-sm font-medium mb-1.5 text-text-muted-light dark:text-text-muted-dark">Trạng thái</span>
+                                    <button class="flex items-center justify-between text-left w-full h-10 px-3 rounded-lg bg-background-light dark:bg-background-dark text-sm">
+                                        <p class="text-text-light dark:text-text-dark">Tất cả</p>
+                                        <span class="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark">expand_more</span>
+                                    </button>
+                                    </label>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="px-4 py-3 mt-4">
+                                <div class="flex overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-sm">
+                                <div class="w-full overflow-x-auto">
+                                    <table class="w-full min-w-[800px]">
+                                    <thead class="border-b border-border-light dark:border-border-dark">
+                                        <tr class="bg-background-light dark:bg-background-dark">
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-text-muted-light dark:text-text-muted-dark">Người Kiểm Kho</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-text-muted-light dark:text-text-muted-dark">Thời Gian</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-text-muted-light dark:text-text-muted-dark">Trạng thái</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-text-muted-light dark:text-text-muted-dark">Giá Trị Chênh Lệch</th>
+                                        <th class="px-4 py-3 text-center text-sm font-medium text-text-muted-light dark:text-text-muted-dark">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-t border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+                                        <td class="h-[72px] px-4 py-2 font-medium">Nguyễn Văn A</td>
+                                        <td class="h-[72px] px-4 py-2 text-text-muted-light dark:text-text-muted-dark text-sm">15/10/2023 09:30</td>
+                                        <td class="h-[72px] px-4 py-2">
+                                            <span class="inline-flex items-center justify-center rounded-full h-7 px-3 bg-success/20 text-success text-xs font-bold">Đã xác nhận</span>
+                                        </td>
+                                        <td class="h-[72px] px-4 py-2 text-right text-sm font-medium text-success">+1,500,000đ</td>
+                                        <td class="h-[72px] px-4 py-2 text-center">
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">visibility</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">edit</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-danger/20 text-text-muted-light dark:text-text-muted-dark hover:text-danger transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">delete</span>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                        <tr class="border-t border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+                                        <td class="h-[72px] px-4 py-2 font-medium">Trần Thị B</td>
+                                        <td class="h-[72px] px-4 py-2 text-text-muted-light dark:text-text-muted-dark text-sm">14/10/2023 14:00</td>
+                                        <td class="h-[72px] px-4 py-2">
+                                            <span class="inline-flex items-center justify-center rounded-full h-7 px-3 bg-warning/20 text-warning text-xs font-bold">Nháp</span>
+                                        </td>
+                                        <td class="h-[72px] px-4 py-2 text-right text-sm font-medium text-danger">-500,000đ</td>
+                                        <td class="h-[72px] px-4 py-2 text-center">
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">visibility</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">edit</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-danger/20 text-text-muted-light dark:text-text-muted-dark hover:text-danger transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">delete</span>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                        <tr class="border-t border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+                                        <td class="h-[72px] px-4 py-2 font-medium">Lê Văn C</td>
+                                        <td class="h-[72px] px-4 py-2 text-text-muted-light dark:text-text-muted-dark text-sm">12/10/2023 11:15</td>
+                                        <td class="h-[72px] px-4 py-2">
+                                            <span class="inline-flex items-center justify-center rounded-full h-7 px-3 bg-success/20 text-success text-xs font-bold">Đã xác nhận</span>
+                                        </td>
+                                        <td class="h-[72px] px-4 py-2 text-right text-sm font-medium">0đ</td>
+                                        <td class="h-[72px] px-4 py-2 text-center">
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">visibility</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">edit</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-danger/20 text-text-muted-light dark:text-text-muted-dark hover:text-danger transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">delete</span>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                        <tr class="border-t border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+                                        <td class="h-[72px] px-4 py-2 font-medium">Phạm Thị D</td>
+                                        <td class="h-[72px] px-4 py-2 text-text-muted-light dark:text-text-muted-dark text-sm">11/10/2023 16:45</td>
+                                        <td class="h-[72px] px-4 py-2">
+                                            <span class="inline-flex items-center justify-center rounded-full h-7 px-3 bg-danger/20 text-danger text-xs font-bold">Đã hủy</span>
+                                        </td>
+                                        <td class="h-[72px] px-4 py-2 text-right text-sm font-medium text-success">+250,000đ</td>
+                                        <td class="h-[72px] px-4 py-2 text-center">
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">visibility</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-primary/20 text-text-muted-light dark:text-text-muted-dark hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">edit</span>
+                                            </button>
+                                            <button class="p-2 rounded-full hover:bg-danger/20 text-text-muted-light dark:text-text-muted-dark hover:text-danger transition-colors">
+                                            <span class="material-symbols-outlined !text-[20px]">delete</span>
+                                            </button>
+                                        </td>
+                                        </tr>
+                                    </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-center p-4 mt-4">
+                                <nav class="flex items-center gap-1">
+                                <a class="flex size-9 items-center justify-center rounded-full hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors" href="#">
+                                    <span class="material-symbols-outlined !text-[20px]">chevron_left</span>
+                                </a>
+                                <a class="text-sm font-bold flex size-9 items-center justify-center rounded-full bg-primary/20 dark:bg-primary/30 text-primary" href="#">1</a>
+                                <a class="text-sm font-medium flex size-9 items-center justify-center rounded-full hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors" href="#">2</a>
+                                <a class="text-sm font-medium flex size-9 items-center justify-center rounded-full hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors" href="#">3</a>
+                                <span class="text-sm font-medium flex size-9 items-center justify-center">...</span>
+                                <a class="text-sm font-medium flex size-9 items-center justify-center rounded-full hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors" href="#">10</a>
+                                <a class="flex size-9 items-center justify-center rounded-full hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors" href="#">
+                                    <span class="material-symbols-outlined !text-[20px]">chevron_right</span>
+                                </a>
+                                </nav>
+                            </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </body>
+            
+        </xpath>
+
+    </template>
+</odoo>

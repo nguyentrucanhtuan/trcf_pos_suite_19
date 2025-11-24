@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_trcf_expenses_root"
+              name="TRCF POS Expenses"
+              sequence="10"
+              web_icon="trcf_pos_expenses,static/description/icon.png"/>
+
+    <!-- Expenses Submenu -->
+    <menuitem id="menu_trcf_expenses"
+              name="Expenses"
+              parent="menu_trcf_expenses_root"
+              action="action_trcf_expense"
+              sequence="10"/>
+
+    <!-- Categories Submenu -->
+    <menuitem id="menu_trcf_expense_categories"
+              name="Categories"
+              parent="menu_trcf_expenses_root"
+              action="action_trcf_expense_category"
+              sequence="20"/>
+</odoo>

@@ -16,27 +16,27 @@
                         <p class="text-sm font-medium leading-normal">TỔNG QUAN</p>
                     </a>
 
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
-                        <span class="material-symbols-outlined">archive</span>
-                        <p class="text-sm font-medium leading-normal">NHẬP HÀNG</p>
-                    </a>
-               
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
-                        <span class="material-symbols-outlined">restaurant_menu</span>
-                        <p class="text-sm font-medium leading-normal">CHẾ BIẾN</p>
-                    </a>
-
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
-                        <span class="material-symbols-outlined">cancel</span>
-                        <p class="text-sm font-medium leading-normal">HUỶ HÀNG</p>
-                    </a>
-
                     <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="/trcf_fnb_inventory/expense_list">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
                         <p class="text-sm font-medium leading-normal">CHI PHÍ</p>
                     </a>
 
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/purchase_list">
+                        <span class="material-symbols-outlined">archive</span>
+                        <p class="text-sm font-medium leading-normal">NHẬP HÀNG</p>
+                    </a>
+               
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/processing_list">
+                        <span class="material-symbols-outlined">restaurant_menu</span>
+                        <p class="text-sm font-medium leading-normal">CHẾ BIẾN</p>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/scrap_list">
+                        <span class="material-symbols-outlined">cancel</span>
+                        <p class="text-sm font-medium leading-normal">HUỶ HÀNG</p>
+                    </a>
+
+                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/check_inventory_list">
                         <span class="material-symbols-outlined">inventory</span>
                         <p class="text-sm font-medium leading-normal">KIỂM KÊ</p>
                     </a>

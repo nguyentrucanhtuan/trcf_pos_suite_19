@@ -114,9 +114,11 @@
                                 </p>
                             </div>
                             <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tổng chi phí</p>
-                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="expense_total"/></p>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">Chi phí trong kỳ</p>
+                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tiền mặt</p>
+                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="cash_balance"/></p>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">
+                                    <t t-esc="cash_balance_detail['pos_cash_formatted']"/> - <t t-esc="cash_balance_detail['expense_cash_formatted']"/> - <t t-esc="cash_balance_detail['purchase_cash_formatted']"/>
+                                </p>
                             </div>
                             </div>
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -183,9 +185,9 @@
                                 </div>
                             </div>
                             </div>
-                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 mb-8">
                                 <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Chi phí theo phương thức thanh toán</h3>
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">BÁO CÁO CHI PHÍ</h3>
                                     <div class="text-lg font-bold text-gray-900 dark:text-white">
                                         Tổng: <t t-esc="expense_total"/>
                                     </div>
@@ -217,6 +219,48 @@
                                                         </td>
                                                         <td class="p-3 text-right">
                                                             <span class="text-sm font-bold text-gray-900 dark:text-white" t-esc="expense_pm['formatted_amount']"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">BÁO CÁO NHẬP HÀNG</h3>
+                                    <div class="text-lg font-bold text-gray-900 dark:text-white">
+                                        Tổng: <t t-esc="purchase_total"/>
+                                    </div>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <t t-if="not purchase_by_payment_method">
+                                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
+                                            Không có đơn nhập hàng trong kỳ này
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <table class="w-full text-left">
+                                            <thead class="border-b border-gray-200 dark:border-slate-700">
+                                                <tr>
+                                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Phương thức thanh toán</th>
+                                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400 text-right">Số tiền</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="purchase_by_payment_method" t-as="purchase_pm">
+                                                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
+                                                        <td class="p-3">
+                                                            <div class="flex items-center gap-3">
+                                                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center flex-shrink-0">
+                                                                    <span class="material-symbols-outlined text-white text-sm">shopping_cart</span>
+                                                                </div>
+                                                                <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="purchase_pm['name']"/>
+                                                            </div>
+                                                        </td>
+                                                        <td class="p-3 text-right">
+                                                            <span class="text-sm font-bold text-gray-900 dark:text-white" t-esc="purchase_pm['formatted_amount']"/>
                                                         </td>
                                                     </tr>
                                                 </t>

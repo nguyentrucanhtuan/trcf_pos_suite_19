@@ -1,0 +1,127 @@
+<odoo>
+    <template id="scrap_form_template">
+
+        <xpath expr="//head" position="inside">
+            <meta charset="utf-8"/>
+            <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+            <title>Nhập hàng</title>
+            <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+            <script>
+                tailwind.config = {
+                    darkMode: "class",
+                    theme: {
+                        extend: {
+                            colors: {
+                                primary: '#2563eb',
+                                'primary-light': '#eff6ff',
+                                'primary-dark': '#1e40af',
+                                'background-light': '#f8fafc',
+                                'background-dark': '#020617',
+                                'text-light-primary': '#1e293b',
+                                'text-light-secondary': '#64748b',
+                                'text-dark-primary': '#f8fafc',
+                                'text-dark-secondary': '#94a3b8',
+                                'border-light': '#e2e8f0',
+                                'border-dark': '#1e293b',
+                            },
+                            fontFamily: {
+                                "display": ["Inter", "sans-serif"]
+                            },
+                            borderRadius: {
+                                "DEFAULT": "0.5rem",
+                                "lg": "0.75rem",
+                                "xl": "1rem",
+                                "full": "9999px"
+                            },
+                        },
+                    },
+                }
+            </script>
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+                .material-symbols-outlined {
+                    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//body" position="replace">
+
+            <body class="font-display bg-background-light dark:bg-background-dark">
+                <div class="flex min-h-screen">
+                    <!-- SideNavBar -->
+                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+
+                    <!-- Main Content -->
+                    <main class="px-4 sm:px-6 lg:px-8 xl:px-40 flex flex-1 justify-center items-center py-5">
+                        <div class="layout-content-container flex flex-col w-full max-w-lg flex-1">
+                            <div class="flex flex-wrap justify-center text-center gap-3 p-4">
+                            <div class="flex min-w-72 flex-col gap-3">
+                                <h1 class="text-4xl font-black leading-tight tracking-[-0.033em] text-[#0d1b12] dark:text-white">Hủy Sản Phẩm</h1>
+                                <p class="text-base font-normal leading-normal text-[#4c9a66] dark:text-primary/80">Chọn sản phẩm, nhập số lượng và đơn vị cần hủy.</p>
+                            </div>
+                            </div>
+                            <div class="p-6 rounded-xl bg-white dark:bg-background-dark dark:border dark:border-gray-700/50 shadow-lg mt-6">
+                            <form class="flex flex-col gap-6">
+                                <div>
+                                <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="product-select">Chọn sản phẩm</label>
+                                <div class="relative">
+                                    <select class="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 h-12 placeholder:text-[#4c9a66] p-[15px] pl-4 pr-10 text-base font-normal leading-normal" id="product-select">
+                                    <option selected="">-- Chọn sản phẩm --</option>
+                                    <option value="prod1">Gạo ST25 (Bao 5kg)</option>
+                                    <option value="prod2">Nước mắm Chinsu (Chai 500ml)</option>
+                                    <option value="prod3">Dầu ăn Tường An (Chai 1L)</option>
+                                    <option value="prod4">Sữa đặc Ông Thọ (Hộp 380g)</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#4c9a66] dark:text-primary/90">
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                                <div class="sm:col-span-3">
+                                    <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="quantity-input">Số lượng hủy</label>
+                                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 h-12 placeholder:text-[#4c9a66] dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" id="quantity-input" placeholder="Nhập số lượng..." type="number" value="" />
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="unit-select">Đơn vị</label>
+                                    <div class="relative">
+                                    <select class="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 h-12 placeholder:text-[#4c9a66] p-[15px] pl-4 pr-10 text-base font-normal leading-normal" id="unit-select">
+                                        <option selected="">-- Chọn --</option>
+                                        <option value="cai">Cái</option>
+                                        <option value="hop">Hộp</option>
+                                        <option value="thung">Thùng</option>
+                                        <option value="bao">Bao</option>
+                                        <option value="kg">Kg</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#4c9a66] dark:text-primary/90">
+                                        <span class="material-symbols-outlined">expand_more</span>
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                                <div>
+                                <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="reason-textarea">Lý do hủy hàng (không bắt buộc)</label>
+                                <textarea class="form-textarea w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 placeholder:text-[#4c9a66] dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" id="reason-textarea" placeholder="Ví dụ: Sản phẩm hỏng, hết hạn sử dụng..." rows="4"></textarea>
+                                </div>
+                                <div class="pt-2">
+                                <button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-danger text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] hover:bg-danger/90 transition-colors" type="submit">
+                                    <span class="material-symbols-outlined text-lg">delete_forever</span>
+                                    <span class="truncate">Xác Nhận Hủy</span>
+                                </button>
+                                </div>
+                            </form>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </body>
+            
+        </xpath>
+
+    </template>
+</odoo>

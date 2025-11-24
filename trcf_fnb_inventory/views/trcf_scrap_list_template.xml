@@ -1,0 +1,151 @@
+<odoo>
+    <template id="scrap_list_template">
+
+        <xpath expr="//head" position="inside">
+            <meta charset="utf-8"/>
+            <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+            <title>Nhập hàng</title>
+            <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+            <script>
+                tailwind.config = {
+                    darkMode: "class",
+                    theme: {
+                        extend: {
+                            colors: {
+                                primary: '#2563eb',
+                                'primary-light': '#eff6ff',
+                                'primary-dark': '#1e40af',
+                                'background-light': '#f8fafc',
+                                'background-dark': '#020617',
+                                'text-light-primary': '#1e293b',
+                                'text-light-secondary': '#64748b',
+                                'text-dark-primary': '#f8fafc',
+                                'text-dark-secondary': '#94a3b8',
+                                'border-light': '#e2e8f0',
+                                'border-dark': '#1e293b',
+                            },
+                            fontFamily: {
+                                "display": ["Inter", "sans-serif"]
+                            },
+                            borderRadius: {
+                                "DEFAULT": "0.5rem",
+                                "lg": "0.75rem",
+                                "xl": "1rem",
+                                "full": "9999px"
+                            },
+                        },
+                    },
+                }
+            </script>
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+                .material-symbols-outlined {
+                    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//body" position="replace">
+
+            <body class="font-display bg-background-light dark:bg-background-dark">
+                <div class="flex min-h-screen">
+                    <!-- SideNavBar -->
+                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+
+                    <!-- Main Content -->
+                    <main class="flex-1 p-8 overflow-auto">
+                        <div class="max-w-7xl mx-auto">
+                            <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
+                            <h1 class="text-text-dark-green dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Hủy Sản Phẩm</h1>
+                            <a href="/trcf_fnb_inventory/scrap_add" class="px-5 py-2.5 rounded-lg bg-primary text-background-dark text-sm font-bold leading-normal hover:opacity-90 transition-opacity">Tạo phiếu hủy</a>
+                            </header>
+                            <div class="bg-light-green-bg dark:bg-background-dark border border-border-green/50 dark:border-gray-800 rounded-xl p-6">
+                            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                                <div class="relative flex-grow">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary-green dark:text-gray-400">search</span>
+                                <input class="form-input pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-12 placeholder:text-primary-green/70 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" placeholder="Tìm kiếm phiếu hủy theo mã, tên nhân viên" value="" />
+                                </div>
+                                <div class="flex gap-4">
+                                <button class="flex items-center justify-center gap-2 w-full md:w-auto px-4 py-2.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium leading-normal hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors">
+                                    <span class="material-symbols-outlined text-base">filter_list</span>
+                                    <span>Bộ lọc</span>
+                                </button>
+                                <button class="flex items-center justify-center gap-2 w-full md:w-auto px-4 py-2.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium leading-normal hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors">
+                                    <span class="material-symbols-outlined text-base">calendar_today</span>
+                                    <span>Thời gian</span>
+                                </button>
+                                </div>
+                            </div>
+                            <div class="flow-root">
+                                <div class="-mx-6 -my-2 overflow-x-auto">
+                                <div class="inline-block min-w-full py-2 align-middle sm:px-6">
+                                    <div class="overflow-hidden">
+                                    <table class="min-w-full">
+                                        <thead class="border-b border-border-green dark:border-gray-700">
+                                        <tr>
+                                            <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 sm:pl-0" scope="col">Mã phiếu hủy</th>
+                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Ngày hủy</th>
+                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Người tạo</th>
+                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Lý do hủy</th>
+                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Trạng thái</th>
+                                            
+                                        </tr>
+                                        </thead>
+                                        <tbody class="text-text-dark-green dark:text-white">
+                                        <tr class="border-b border-border-green dark:border-gray-800">
+                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0 text-primary-green dark:text-primary">PH-00124</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">20/05/2024</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Nguyễn Văn An</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Hàng hỏng do vận chuyển</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"> Đã xác nhận </span>
+                                            </td>
+                                           
+                                        </tr>
+                                        <tr class="border-b border-border-green dark:border-gray-800">
+                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0 text-primary-green dark:text-primary">PH-00123</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">19/05/2024</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Trần Thị Bích</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Sản phẩm hết hạn sử dụng</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"> Đã xác nhận </span>
+                                            </td>
+                                            
+                                        </tr>
+                                        <tr class="border-b border-border-green dark:border-gray-800">
+                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0 text-primary-green dark:text-primary">PH-00122</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">18/05/2024</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Lê Văn Cường</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Nhập sai thông tin</td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"> Chờ xử lý </span>
+                                            </td>
+                                            
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-between items-center">
+                                <p class="text-sm text-text-dark-green dark:text-gray-400">Hiển thị 1-3 của 15 kết quả</p>
+                                <div class="flex items-center gap-2">
+                                <button class="px-3 py-1.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors disabled:opacity-50" disabled="">Trước</button>
+                                <button class="px-3 py-1.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors">Sau</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </body>
+            
+        </xpath>
+
+    </template>
+</odoo>

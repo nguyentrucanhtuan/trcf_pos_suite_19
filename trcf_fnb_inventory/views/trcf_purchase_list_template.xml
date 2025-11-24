@@ -1,0 +1,158 @@
+<odoo>
+    <template id="purchase_list_template">
+
+        <xpath expr="//head" position="inside">
+            <meta charset="utf-8"/>
+            <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+            <title>Nhập hàng</title>
+            <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+            <script>
+                tailwind.config = {
+                    darkMode: "class",
+                    theme: {
+                        extend: {
+                            colors: {
+                                primary: '#2563eb',
+                                'primary-light': '#eff6ff',
+                                'primary-dark': '#1e40af',
+                                'background-light': '#f8fafc',
+                                'background-dark': '#020617',
+                                'text-light-primary': '#1e293b',
+                                'text-light-secondary': '#64748b',
+                                'text-dark-primary': '#f8fafc',
+                                'text-dark-secondary': '#94a3b8',
+                                'border-light': '#e2e8f0',
+                                'border-dark': '#1e293b',
+                            },
+                            fontFamily: {
+                                "display": ["Inter", "sans-serif"]
+                            },
+                            borderRadius: {
+                                "DEFAULT": "0.5rem",
+                                "lg": "0.75rem",
+                                "xl": "1rem",
+                                "full": "9999px"
+                            },
+                        },
+                    },
+                }
+            </script>
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+                .material-symbols-outlined {
+                    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//body" position="replace">
+
+            <body class="font-display bg-background-light dark:bg-background-dark">
+                <div class="flex min-h-screen">
+                    <!-- SideNavBar -->
+                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+
+                    <!-- Main Content -->
+                    <main class="flex-1 p-8 overflow-y-auto">
+                        <div class="max-w-7xl mx-auto">
+                            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                            <div class="flex flex-col gap-1">
+                                <p class="text-slate-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Quản lý Nhập hàng</p>
+                                <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Xem, tìm kiếm và quản lý tất cả các phiếu nhập hàng của bạn.</p>
+                            </div>
+                            </div>
+                            <div class="mb-6 bg-card-light dark:bg-card-dark p-4 rounded-lg border border-border-light dark:border-border-dark">
+                            <div class="flex flex-wrap items-center justify-between gap-4">
+                                <div class="flex-grow max-w-lg">
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                                    <input class="form-input w-full rounded-md h-10 pl-10 pr-4 text-slate-900 dark:text-white border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm" placeholder="Tìm theo Mã phiếu nhập, Nhà cung cấp..." value="" />
+                                </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                <button class="flex items-center justify-center overflow-hidden rounded-md h-10 px-4 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 gap-2 text-sm font-medium border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                    <span class="material-symbols-outlined text-base">filter_list</span>
+                                    <span class="truncate">Lọc</span>
+                                </button>
+                                <button class="flex items-center justify-center overflow-hidden rounded-md h-10 px-4 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 gap-2 text-sm font-medium border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">
+                                    <span class="material-symbols-outlined text-base">download</span>
+                                    <span class="truncate">Xuất File</span>
+                                </button>
+                                <a href="/trcf_fnb_inventory/purchase_add" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 bg-primary-600 text-white gap-2 text-sm font-semibold leading-normal min-w-0 px-4 hover:bg-primary-700">
+                                    <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">add</span>
+                                    <span class="truncate">Tạo Phiếu Nhập Mới</span>
+                                </a>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="bg-card-light dark:bg-card-dark rounded-lg overflow-hidden border border-border-light dark:border-border-dark">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400">
+                                <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-900/50">
+                                    <tr>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Mã phiếu</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Nhà cung cấp</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Ngày nhập</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Trạng thái</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Phương thức TT</th>
+                                    <th class="px-6 py-3 font-semibold text-right" scope="col">Tổng VAT</th>
+                                    <th class="px-6 py-3 font-semibold text-right" scope="col">Tổng tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="not purchase_orders">
+                                        <tr class="bg-card-light dark:bg-card-dark">
+                                            <td colspan="8" class="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
+                                                <div class="flex flex-col items-center gap-2">
+                                                    <span class="material-symbols-outlined text-4xl">inbox</span>
+                                                    <p>Không có đơn mua hàng nào</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-foreach="purchase_orders" t-as="po">
+                                        <tr class="bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                                            <td class="px-6 py-4 font-medium text-primary-600 dark:text-primary-400 whitespace-nowrap">
+                                                <a t-attf-href="/web#id=#{po['id']}&amp;model=purchase.order&amp;view_type=form" t-esc="po['name']"/>
+                                            </td>
+                                            <td class="px-6 py-4" t-esc="po['partner_name']"/>
+                                            <td class="px-6 py-4 text-slate-600 dark:text-slate-300" t-esc="po['date_order']"/>
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-2">
+                                                    <span t-attf-class="inline-block h-2 w-2 rounded-full bg-#{po['status_color']}-500"></span>
+                                                    <span t-attf-class="text-#{po['status_color']}-600 dark:text-#{po['status_color']}-400" t-esc="po['payment_status']"/>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4" t-esc="po['payment_method']"/>
+                                            <td class="px-6 py-4 text-right" t-esc="'{:,.0f}đ'.format(po['total_vat'])"/>
+                                            <td class="px-6 py-4 text-right font-semibold text-slate-800 dark:text-slate-100" t-esc="'{:,.0f}đ'.format(po['amount_total'])"/>
+                                            
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                </table>
+                            </div>
+                            <nav aria-label="Table navigation" class="flex items-center justify-between p-4 border-t border-border-light dark:border-border-dark">
+                                <span class="text-sm font-normal text-slate-500 dark:text-slate-400">
+                                    <t t-if="total_count > 0">
+                                        Hiển thị <span class="font-semibold text-slate-900 dark:text-white" t-esc="total_count"/> đơn mua hàng trong ngày hôm nay
+                                    </t>
+                                    <t t-else="">
+                                        Không có đơn mua hàng nào trong ngày hôm nay
+                                    </t>
+                                </span>
+                            </nav>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </body>
+            
+        </xpath>
+
+    </template>
+</odoo>

@@ -63,8 +63,12 @@ class TrcfReportController(http.Controller):
         # 2. Sử dụng hàm format có sẵn của Odoo
         formatted_total_revenue = currency.format(total_pos_revenue)
 
-        # Lấy thống kê chi phí
+        # Lấy thống kê chi phí và nhập hàng
         expense_stats = self.get_expense_stats(current_start, current_end)
+        purchase_stats = self.get_purchase_stats(current_start, current_end)
+        
+        # Tính tiền mặt trong két
+        cash_balance = self.calculate_cash_balance(payment_methods, expense_stats, purchase_stats)
         
         vals = {
             'filter_type': filter_type,
@@ -81,6 +85,10 @@ class TrcfReportController(http.Controller):
             'comparison_text': comparison_text,
             'expense_total': expense_stats['total_formatted'],
             'expense_by_payment_method': expense_stats['by_payment_method'],
+            'purchase_total': purchase_stats['total_formatted'],
+            'purchase_by_payment_method': purchase_stats['by_payment_method'],
+            'cash_balance': cash_balance['formatted'],
+            'cash_balance_detail': cash_balance['detail'],
         }
 
         return request.render('trcf_fnb_inventory.daily_report_template', vals)
@@ -324,25 +332,26 @@ class TrcfReportController(http.Controller):
         dt_start_utc = user_tz.localize(dt_start).astimezone(pytz.utc).replace(tzinfo=None)
         dt_end_utc = user_tz.localize(dt_end).astimezone(pytz.utc).replace(tzinfo=None)
 
-        # 3. Lấy tất cả chi phí trong khoảng thời gian
+        # 3. Lấy tất cả chi phí đã thanh toán trong khoảng thời gian
         domain = [
-            ('create_date', '>=', dt_start_utc),
-            ('create_date', '<=', dt_end_utc),
+            ('trcf_payment_date', '>=', dt_start_utc),
+            ('trcf_payment_date', '<=', dt_end_utc),
+            ('state', '=', 'paid'),  # Chỉ lấy chi phí đã thanh toán
         ]
         
-        expenses = request.env['hr.expense'].sudo().search(domain)
+        expenses = request.env['trcf.expense'].sudo().search(domain)
         
         # 4. Tính tổng và nhóm theo payment method
         total_amount = 0
         payment_method_stats = {}
         
         for expense in expenses:
-            total_amount += expense.total_amount
+            total_amount += expense.trcf_amount
             
-            pm_name = expense.payment_method_line_id.name if expense.payment_method_line_id else 'N/A'
+            pm_name = expense.trcf_payment_method_id.name if expense.trcf_payment_method_id else 'N/A'
             if pm_name not in payment_method_stats:
                 payment_method_stats[pm_name] = 0
-            payment_method_stats[pm_name] += expense.total_amount
+            payment_method_stats[pm_name] += expense.trcf_amount
         
         # 5. Format kết quả
         currency = request.env.company.currency_id
@@ -359,4 +368,96 @@ class TrcfReportController(http.Controller):
             'total': total_amount,
             'total_formatted': currency.format(total_amount),
             'by_payment_method': payment_method_list
+        }
+
+    def get_purchase_stats(self, start_date, end_date):
+        """Lấy thống kê nhập hàng theo phương thức thanh toán"""
+        # 1. Setup Timezone
+        user_tz = pytz.timezone(request.env.user.tz or 'UTC')
+        
+        dt_start = datetime.combine(start_date, time.min)
+        dt_end = datetime.combine(end_date, time.max)
+        
+        # 2. Convert to UTC
+        dt_start_utc = user_tz.localize(dt_start).astimezone(pytz.utc).replace(tzinfo=None)
+        dt_end_utc = user_tz.localize(dt_end).astimezone(pytz.utc).replace(tzinfo=None)
+
+        # 3. Lấy tất cả purchase orders đã thanh toán trong khoảng thời gian
+        domain = [
+            ('date_order', '>=', dt_start_utc),
+            ('date_order', '<=', dt_end_utc),
+            ('state', 'in', ['purchase', 'done']),  # Chỉ lấy đơn đã xác nhận
+            ('trcf_payment_status', '=', 'paid'),  # Chỉ lấy đơn đã thanh toán
+        ]
+        
+        purchases = request.env['purchase.order'].sudo().search(domain)
+        
+        # 4. Tính tổng và nhóm theo payment method
+        total_amount = 0
+        payment_method_stats = {}
+        
+        for purchase in purchases:
+            total_amount += purchase.amount_total
+            
+            pm_name = purchase.trcf_payment_method_id.name if purchase.trcf_payment_method_id else 'N/A'
+            if pm_name not in payment_method_stats:
+                payment_method_stats[pm_name] = 0
+            payment_method_stats[pm_name] += purchase.amount_total
+        
+        # 5. Format kết quả
+        currency = request.env.company.currency_id
+        payment_method_list = []
+        
+        for pm, amount in payment_method_stats.items():
+            payment_method_list.append({
+                'name': pm,
+                'amount': amount,
+                'formatted_amount': currency.format(amount)
+            })
+        
+        return {
+            'total': total_amount,
+            'total_formatted': currency.format(total_amount),
+            'by_payment_method': payment_method_list
+        }
+    def calculate_cash_balance(self, payment_methods, expense_stats, purchase_stats):
+        """Tính tiền mặt trong két = Tiền mặt POS - Tiền mặt chi phí - Tiền mặt mua hàng"""
+        currency = request.env.company.currency_id
+        
+        # 1. Tìm tiền mặt từ POS (payment methods)
+        cash_from_pos = 0
+        for pm in payment_methods:
+            # Kiểm tra nếu là tiền mặt (Cash, Tiền mặt, etc.)
+            if pm['name'].lower() in ['cash', 'tiền mặt', 'tien mat']:
+                cash_from_pos = pm['amount']
+                break
+        
+        # 2. Tìm tiền mặt chi phí
+        cash_expense = 0
+        for exp_pm in expense_stats['by_payment_method']:
+            if exp_pm['name'].lower() in ['cash', 'tiền mặt', 'tien mat']:
+                cash_expense = exp_pm['amount']
+                break
+        
+        # 3. Tìm tiền mặt mua hàng
+        cash_purchase = 0
+        for pur_pm in purchase_stats['by_payment_method']:
+            if pur_pm['name'].lower() in ['cash', 'tiền mặt', 'tien mat']:
+                cash_purchase = pur_pm['amount']
+                break
+        
+        # 4. Tính số dư
+        balance = cash_from_pos - cash_expense - cash_purchase
+        
+        return {
+            'amount': balance,
+            'formatted': currency.format(balance),
+            'detail': {
+                'pos_cash': cash_from_pos,
+                'pos_cash_formatted': currency.format(cash_from_pos),
+                'expense_cash': cash_expense,
+                'expense_cash_formatted': currency.format(cash_expense),
+                'purchase_cash': cash_purchase,
+                'purchase_cash_formatted': currency.format(cash_purchase),
+            }
         }

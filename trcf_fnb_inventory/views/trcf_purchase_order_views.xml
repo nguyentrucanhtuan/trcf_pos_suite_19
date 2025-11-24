@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend Purchase Order Form View -->
+    <record id="view_purchase_order_form_inherit_trcf" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.trcf</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add payment information as a new tab in the notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Thông tin thanh toán POS" name="payment_info">
+                    <group>
+                        <field name="trcf_payment_method_id"/>
+                        <field name="trcf_payment_status"/>
+                        <field name="trcf_payment_date" invisible="trcf_payment_status == 'unpaid'"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Extend Purchase Order Tree View -->
+    <record id="view_purchase_order_tree_inherit_trcf" model="ir.ui.view">
+        <field name="name">purchase.order.tree.inherit.trcf</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add payment method column after amount_total -->
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="trcf_payment_method_id" optional="show"/>
+                <field name="trcf_payment_status" optional="show" widget="badge" 
+                       decoration-success="trcf_payment_status == 'paid'"
+                       decoration-muted="trcf_payment_status == 'unpaid'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

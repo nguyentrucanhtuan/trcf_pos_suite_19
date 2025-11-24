@@ -71,10 +71,10 @@
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <label class="flex flex-col">
                                     <p class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal pb-2">Loại chi phí</p>
-                                    <select name="expense_type" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal" required="required">
+                                    <select name="expense_category" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal" required="required">
                                         <option disabled="" selected="" value="">Chọn loại chi phí</option>
-                                        <t t-foreach="expense_products" t-as="product">
-                                            <option t-att-value="product.id"><t t-esc="product.name"/></option>
+                                        <t t-foreach="expense_categories" t-as="category">
+                                            <option t-att-value="category.id"><t t-esc="category.name"/></option>
                                         </t>
                                     </select>
                                 </label>
@@ -88,10 +88,10 @@
                                 </label>
                                 <label class="flex flex-col">
                                     <p class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal pb-2">Hình thức thanh toán</p>
-                                    <select name="payment_method_line_id" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal" required="required">
+                                    <select name="payment_method_id" class="form-select w-full rounded text-text-light-primary dark:text-text-dark-primary focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:border-primary/50 h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-4 text-base font-normal leading-normal" required="required">
                                         <option disabled="" selected="" value="">Chọn hình thức thanh toán</option>
-                                        <t t-foreach="payment_method_lines" t-as="pml">
-                                            <option t-att-value="pml.id"><t t-esc="pml.name"/></option>
+                                        <t t-foreach="payment_methods" t-as="pm">
+                                            <option t-att-value="pm.id"><t t-esc="pm.name"/></option>
                                         </t>
                                     </select>
                                 </label>
