@@ -4,7 +4,8 @@
         <xpath expr="//head" position="inside">
             <meta charset="utf-8"/>
             <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-            <title>Nhập hàng</title>
+            <meta name="csrf-token" t-att-content="request.csrf_token()"/>
+            <title>Hủy Sản Phẩm</title>
             <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
             <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -25,6 +26,7 @@
                                 'text-dark-secondary': '#94a3b8',
                                 'border-light': '#e2e8f0',
                                 'border-dark': '#1e293b',
+                                danger: '#dc2626',
                             },
                             fontFamily: {
                                 "display": ["Inter", "sans-serif"]
@@ -57,68 +59,190 @@
                     <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
 
                     <!-- Main Content -->
-                    <main class="px-4 sm:px-6 lg:px-8 xl:px-40 flex flex-1 justify-center items-center py-5">
-                        <div class="layout-content-container flex flex-col w-full max-w-lg flex-1">
-                            <div class="flex flex-wrap justify-center text-center gap-3 p-4">
-                            <div class="flex min-w-72 flex-col gap-3">
-                                <h1 class="text-4xl font-black leading-tight tracking-[-0.033em] text-[#0d1b12] dark:text-white">Hủy Sản Phẩm</h1>
-                                <p class="text-base font-normal leading-normal text-[#4c9a66] dark:text-primary/80">Chọn sản phẩm, nhập số lượng và đơn vị cần hủy.</p>
-                            </div>
-                            </div>
-                            <div class="p-6 rounded-xl bg-white dark:bg-background-dark dark:border dark:border-gray-700/50 shadow-lg mt-6">
-                            <form class="flex flex-col gap-6">
-                                <div>
-                                <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="product-select">Chọn sản phẩm</label>
-                                <div class="relative">
-                                    <select class="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 h-12 placeholder:text-[#4c9a66] p-[15px] pl-4 pr-10 text-base font-normal leading-normal" id="product-select">
-                                    <option selected="">-- Chọn sản phẩm --</option>
-                                    <option value="prod1">Gạo ST25 (Bao 5kg)</option>
-                                    <option value="prod2">Nước mắm Chinsu (Chai 500ml)</option>
-                                    <option value="prod3">Dầu ăn Tường An (Chai 1L)</option>
-                                    <option value="prod4">Sữa đặc Ông Thọ (Hộp 380g)</option>
-                                    </select>
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#4c9a66] dark:text-primary/90">
-                                    <span class="material-symbols-outlined">expand_more</span>
+                    <main class="flex-1 p-8">
+                        <div class="w-full max-w-2xl mx-auto">
+                            
+                            <!-- Error Message -->
+                            <t t-if="error">
+                                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                                    <p class="text-red-800 dark:text-red-200 text-sm font-medium">
+                                        <span class="material-symbols-outlined inline-block align-middle mr-2">error</span>
+                                        <t t-esc="error"/>
+                                    </p>
+                                </div>
+                            </t>
+                            
+                            <form id="scrapForm" method="POST" action="/trcf_fnb_inventory/scrap_add">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                
+                                <header class="mb-6">
+                                    <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em] mb-2">Hủy Sản Phẩm</p>
+                                    <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm">Ghi nhận hàng hóa hư hỏng, hết hạn hoặc hao hụt</p>
+                                </header>
+                                
+                                <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
+                                    <div class="flex flex-col gap-6">
+                                        
+                                        <!-- Product Selection -->
+                                        <div>
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                    Chọn sản phẩm <span class="text-red-500">*</span>
+                                                </p>
+                                                <select id="product_select" name="product_id" required="required" onchange="updateUOM()" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                    <option value="">-- Chọn sản phẩm --</option>
+                                                    <t t-foreach="products" t-as="product">
+                                                        <option t-att-value="product['id']" 
+                                                                t-att-data-uom="product['uom_name']"
+                                                                t-att-data-qty="product['qty_available']">
+                                                            <t t-esc="product['name']"/> (<t t-esc="product['qty_available']"/> <t t-esc="product['uom_name']"/> có sẵn)
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- Quantity and UOM -->
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                            <div class="md:col-span-2">
+                                                <label class="flex flex-col w-full">
+                                                    <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                        Số lượng hủy <span class="text-red-500">*</span>
+                                                    </p>
+                                                    <input type="number" name="scrap_qty" id="scrap_qty" required="required" min="0.01" step="0.01" placeholder="Nhập số lượng..." class="form-input flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary"/>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label class="flex flex-col w-full">
+                                                    <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                        Đơn vị
+                                                    </p>
+                                                    <input type="text" id="uom_display" readonly="readonly" placeholder="--" class="form-input flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 px-3.5 text-sm font-normal leading-normal opacity-60"/>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Reason -->
+                                        <div>
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                    Lý do hủy hàng <span class="text-red-500">*</span>
+                                                </p>
+                                                <select name="reason" id="reason_select" required="required" onchange="toggleOtherReason()" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                    <option value="">-- Chọn lý do --</option>
+                                                    <t t-if="reasons">
+                                                        <t t-foreach="reasons" t-as="reason">
+                                                            <option t-att-value="reason['name']">
+                                                                <t t-esc="reason['name']"/>
+                                                            </option>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <!-- Fallback if no reasons defined in Odoo -->
+                                                        <option value="Hết hạn sử dụng">Hết hạn sử dụng</option>
+                                                        <option value="Sản phẩm hỏng/hư">Sản phẩm hỏng/hư</option>
+                                                        <option value="Bể vỡ">Bể vỡ</option>
+                                                        <option value="Chất lượng không đạt">Chất lượng không đạt</option>
+                                                        <option value="Mốc/ẩm">Mốc/ẩm</option>
+                                                        <option value="Đổ/rơi vãi">Đổ/rơi vãi</option>
+                                                    </t>
+                                                    <option value="Khác">Khác (nhập chi tiết)</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- Other Reason Input (hidden by default) -->
+                                        <div id="other_reason_container" style="display: none;">
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                    Chi tiết lý do khác
+                                                </p>
+                                                <textarea name="other_reason" id="other_reason" rows="3" placeholder="Nhập chi tiết lý do..." class="form-textarea w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary px-3.5 py-3 text-sm font-normal leading-normal placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary"></textarea>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- Submit Button -->
+                                        <div class="pt-2">
+                                            <button type="submit" class="flex w-full items-center justify-center gap-x-2 h-12 px-4 rounded-lg bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors text-sm font-bold">
+                                                <span class="material-symbols-outlined text-base">delete_forever</span>
+                                                <span>Xác Nhận Hủy</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
-                                <div class="sm:col-span-3">
-                                    <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="quantity-input">Số lượng hủy</label>
-                                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 h-12 placeholder:text-[#4c9a66] dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" id="quantity-input" placeholder="Nhập số lượng..." type="number" value="" />
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="unit-select">Đơn vị</label>
-                                    <div class="relative">
-                                    <select class="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 h-12 placeholder:text-[#4c9a66] p-[15px] pl-4 pr-10 text-base font-normal leading-normal" id="unit-select">
-                                        <option selected="">-- Chọn --</option>
-                                        <option value="cai">Cái</option>
-                                        <option value="hop">Hộp</option>
-                                        <option value="thung">Thùng</option>
-                                        <option value="bao">Bao</option>
-                                        <option value="kg">Kg</option>
-                                    </select>
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#4c9a66] dark:text-primary/90">
-                                        <span class="material-symbols-outlined">expand_more</span>
-                                    </div>
-                                    </div>
-                                </div>
-                                </div>
-                                <div>
-                                <label class="text-sm font-medium pb-2 block text-[#0d1b12] dark:text-gray-300" for="reason-textarea">Lý do hủy hàng (không bắt buộc)</label>
-                                <textarea class="form-textarea w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-1 focus:ring-primary/50 border border-[#cfe7d7] dark:border-gray-700 bg-background-light dark:bg-gray-800 placeholder:text-[#4c9a66] dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" id="reason-textarea" placeholder="Ví dụ: Sản phẩm hỏng, hết hạn sử dụng..." rows="4"></textarea>
-                                </div>
-                                <div class="pt-2">
-                                <button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-danger text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] hover:bg-danger/90 transition-colors" type="submit">
-                                    <span class="material-symbols-outlined text-lg">delete_forever</span>
-                                    <span class="truncate">Xác Nhận Hủy</span>
-                                </button>
                                 </div>
                             </form>
-                            </div>
                         </div>
                     </main>
                 </div>
+                
+                <!-- JavaScript -->
+                <script>
+                <![CDATA[
+                    function updateUOM() {
+                        const select = document.getElementById('product_select');
+                        const selectedOption = select.options[select.selectedIndex];
+                        const uomDisplay = document.getElementById('uom_display');
+                        
+                        if (selectedOption.value) {
+                            const uom = selectedOption.getAttribute('data-uom');
+                            uomDisplay.value = uom;
+                        } else {
+                            uomDisplay.value = '';
+                        }
+                    }
+                    
+                    function toggleOtherReason() {
+                        const reasonSelect = document.getElementById('reason_select');
+                        const otherContainer = document.getElementById('other_reason_container');
+                        const otherTextarea = document.getElementById('other_reason');
+                        
+                        if (reasonSelect.value === 'Khác') {
+                            otherContainer.style.display = 'block';
+                            otherTextarea.required = true;
+                        } else {
+                            otherContainer.style.display = 'none';
+                            otherTextarea.required = false;
+                            otherTextarea.value = '';
+                        }
+                    }
+                    
+                    // Form validation
+                    document.getElementById('scrapForm').addEventListener('submit', function(e) {
+                        const productId = document.getElementById('product_select').value;
+                        const qty = parseFloat(document.getElementById('scrap_qty').value);
+                        const reason = document.getElementById('reason_select').value;
+                        
+                        if (!productId) {
+                            e.preventDefault();
+                            alert('Vui lòng chọn sản phẩm');
+                            return false;
+                        }
+                        
+                        if (!qty || qty <= 0) {
+                            e.preventDefault();
+                            alert('Số lượng hủy phải lớn hơn 0');
+                            return false;
+                        }
+                        
+                        if (!reason) {
+                            e.preventDefault();
+                            alert('Vui lòng chọn lý do hủy hàng');
+                            return false;
+                        }
+                        
+                        if (reason === 'Khác') {
+                            const otherReason = document.getElementById('other_reason').value.trim();
+                            if (!otherReason) {
+                                e.preventDefault();
+                                alert('Vui lòng nhập chi tiết lý do khác');
+                                return false;
+                            }
+                        }
+                        
+                        return true;
+                    });
+                ]]>
+                </script>
             </body>
             
         </xpath>

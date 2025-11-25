@@ -4,7 +4,7 @@
         <xpath expr="//head" position="inside">
             <meta charset="utf-8"/>
             <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-            <title>Nhập hàng</title>
+            <title>Danh sách Chế biến</title>
             <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
             <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -57,144 +57,113 @@
                     <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
 
                     <!-- Main Content -->
-                    <main class="flex-1 overflow-y-auto p-6 lg:p-8">
-                        <div class="mx-auto max-w-7xl">
-                            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-                            <p class="text-[#0d1b12] dark:text-white text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em]">Danh sách Phiếu Chế biến</p>
-                            <div class="flex items-center gap-2">
-                                <div class="hidden sm:flex items-center gap-2">
-                                <button class="p-2 text-[#0d1b12] dark:text-gray-300 rounded-lg hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                                    <span class="material-symbols-outlined">search</span>
-                                </button>
-                                <button class="p-2 text-[#0d1b12] dark:text-gray-300 rounded-lg hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                                    <span class="material-symbols-outlined">filter_list</span>
-                                </button>
-                                <button class="p-2 text-[#0d1b12] dark:text-gray-300 rounded-lg hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                                    <span class="material-symbols-outlined">calendar_today</span>
-                                </button>
-                                </div>
-                                <a href="/trcf_fnb_inventory/processing_add" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-primary text-[#0d1b12] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-opacity-90 transition-opacity">
-                                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
-                                    <span class="truncate">Tạo Phiếu Mới</span>
+                    <main class="flex-1 p-8">
+                        <div class="w-full max-w-screen mx-auto">
+                            <header class="mb-6">
+                                <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em]">Danh Sách Chế Biến</p>
+                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm mt-2">Ngày <t t-esc="today"/></p>
+                            </header>
+                            
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-border-light dark:border-border-dark">
+                                <a href="/trcf_fnb_inventory/processing_add" class="inline-block">
+                                    <button class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-sm font-bold">
+                                        <span class="material-symbols-outlined text-base">add_circle</span>
+                                        <span>Tạo Phiếu Mới</span>
+                                    </button>
                                 </a>
                             </div>
-                            </div>
-                            <div class="space-y-4 mb-6">
-                            <div>
-                                <label class="flex flex-col min-w-40 h-12 w-full">
-                                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
-                                    <div class="text-[#4c9a66] dark:text-primary/80 flex border-none bg-white dark:bg-black/20 items-center justify-center pl-4 rounded-l-lg border-r-0">
-                                    <span class="material-symbols-outlined">search</span>
-                                    </div>
-                                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-[#0d1b12] dark:text-gray-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-white dark:bg-black/20 h-full placeholder:text-[#4c9a66] dark:placeholder:text-gray-500 px-4 text-base font-normal leading-normal" placeholder="Tìm kiếm theo Mã phiếu hoặc Tên món..." value="" />
+                            
+                            <div class="overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-slate-900">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                            <tr>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Mã Phiếu</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Sản Phẩm</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Số Lượng</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Trạng Thái</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Xuất Kho</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Nhập Kho</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Giờ Tạo</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Giờ Hoàn Thành</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-border-light dark:divide-border-dark">
+                                            <t t-if="manufacturing_orders">
+                                                <t t-foreach="manufacturing_orders" t-as="mo">
+                                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                        <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap">
+                                                            <t t-esc="mo['name']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-normal leading-normal">
+                                                            <t t-esc="mo['product_name']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">
+                                                            <t t-esc="mo['product_qty']"/> <t t-esc="mo['product_uom']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <t t-if="mo['state'] == 'done'">
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                                                    Hoàn thành
+                                                                </span>
+                                                            </t>
+                                                            <t t-elif="mo['state'] == 'progress'">
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                                                                    Đang sản xuất
+                                                                </span>
+                                                            </t>
+                                                            <t t-elif="mo['state'] == 'confirmed'">
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
+                                                                    Đã xác nhận
+                                                                </span>
+                                                            </t>
+                                                            <t t-elif="mo['state'] == 'cancel'">
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+                                                                    Đã hủy
+                                                                </span>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary">
+                                                                    <t t-esc="mo['state_display']"/>
+                                                                </span>
+                                                            </t>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal">
+                                                            <t t-esc="mo['source_location']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal">
+                                                            <t t-esc="mo['dest_location']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">
+                                                            <t t-esc="mo['create_date']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">
+                                                            <t t-if="mo['date_finished']">
+                                                                <t t-esc="mo['date_finished']"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="text-text-light-secondary dark:text-text-dark-secondary">-</span>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <tr>
+                                                    <td colspan="8" class="px-6 py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
+                                                        <div class="flex flex-col items-center justify-center gap-3">
+                                                            <span class="material-symbols-outlined text-5xl opacity-30">inventory_2</span>
+                                                            <p class="text-sm font-medium">Chưa có phiếu chế biến nào trong ngày hôm nay</p>
+                                                            <a href="/trcf_fnb_inventory/processing_add" class="text-primary hover:text-primary-dark text-sm font-medium">
+                                                                Tạo phiếu mới →
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                </label>
-                            </div>
-                            <div class="flex gap-2 sm:gap-3 p-1 overflow-x-auto">
-                                <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/20 dark:bg-primary/30 pl-3 pr-3 text-[#0d1b12] dark:text-gray-100 ring-2 ring-primary/50">
-                                <span class="material-symbols-outlined text-base">checklist</span>
-                                <p class="text-sm font-medium leading-normal">Tất cả</p>
-                                </button>
-                                <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-black/20 pl-3 pr-3 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                                <span class="material-symbols-outlined text-base text-yellow-500">autorenew</span>
-                                <p class="text-[#0d1b12] dark:text-gray-200 text-sm font-medium leading-normal">Đang chế biến</p>
-                                </button>
-                                <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-black/20 pl-3 pr-3 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                                <span class="material-symbols-outlined text-base text-green-500">check_circle</span>
-                                <p class="text-[#0d1b12] dark:text-gray-200 text-sm font-medium leading-normal">Đã hoàn thành</p>
-                                </button>
-                                <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-black/20 pl-3 pr-3 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                                <span class="material-symbols-outlined text-base text-red-500">cancel</span>
-                                <p class="text-[#0d1b12] dark:text-gray-200 text-sm font-medium leading-normal">Đã hủy</p>
-                                </button>
-                            </div>
-                            </div>
-                            <div class="rounded-xl bg-white dark:bg-black/20 overflow-hidden shadow-sm">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                <thead class="text-xs text-[#0d1b12] dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700/30">
-                                    <tr>
-                                    <th class="px-6 py-3 font-bold" scope="col">Mã Phiếu</th>
-                                    <th class="px-6 py-3 font-bold" scope="col">Món Chế Biến</th>
-                                    <th class="px-6 py-3 font-bold" scope="col">Trạng thái</th>
-                                    <th class="px-6 py-3 font-bold text-right" scope="col">Tổng Tiền</th>
-                                    <th class="px-6 py-3 font-bold" scope="col">Thời Gian Chế Biến</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="bg-white dark:bg-transparent border-b dark:border-gray-700 hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors cursor-pointer">
-                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">CB-20240521-001</td>
-                                    <td class="px-6 py-4">Bò bít tết sốt tiêu xanh</td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                                        <span class="size-2 rounded-full bg-green-500"></span> Đã hoàn thành </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">250.000 VNĐ</td>
-                                    <td class="px-6 py-4">21/05/2024 14:30</td>
-                                    </tr>
-                                    <tr class="bg-white dark:bg-transparent border-b dark:border-gray-700 hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors cursor-pointer">
-                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">CB-20240521-002</td>
-                                    <td class="px-6 py-4">Salad cá ngừ đại dương</td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
-                                        <span class="size-2 rounded-full bg-yellow-500"></span> Đang chế biến </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">120.000 VNĐ</td>
-                                    <td class="px-6 py-4">21/05/2024 15:02</td>
-                                    </tr>
-                                    <tr class="bg-white dark:bg-transparent border-b dark:border-gray-700 hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors cursor-pointer">
-                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">CB-20240520-015</td>
-                                    <td class="px-6 py-4">Mỳ Ý sốt kem nấm</td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
-                                        <span class="size-2 rounded-full bg-red-500"></span> Đã hủy </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">180.000 VNĐ</td>
-                                    <td class="px-6 py-4">20/05/2024 19:45</td>
-                                    </tr>
-                                    <tr class="bg-white dark:bg-transparent border-b dark:border-gray-700 hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors cursor-pointer">
-                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">CB-20240520-014</td>
-                                    <td class="px-6 py-4">Súp bí đỏ kem tươi</td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                                        <span class="size-2 rounded-full bg-green-500"></span> Đã hoàn thành </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">85.000 VNĐ</td>
-                                    <td class="px-6 py-4">20/05/2024 18:30</td>
-                                    </tr>
-                                </tbody>
-                                </table>
-                            </div>
-                            <nav aria-label="Table navigation" class="flex items-center justify-between p-4">
-                                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span class="font-semibold text-gray-900 dark:text-white">1-4</span> of <span class="font-semibold text-gray-900 dark:text-white">100</span>
-                                </span>
-                                <ul class="inline-flex items-center -space-x-px">
-                                <li>
-                                    <a class="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white dark:bg-black/20 border border-gray-300 dark:border-gray-700 rounded-l-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-white" href="#">
-                                    <span class="sr-only">Previous</span>
-                                    <span class="material-symbols-outlined text-lg">chevron_left</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="px-3 py-2 leading-tight text-gray-500 bg-white dark:bg-black/20 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-white" href="#">1</a>
-                                </li>
-                                <li>
-                                    <a class="px-3 py-2 leading-tight text-gray-500 bg-white dark:bg-black/20 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-white" href="#">2</a>
-                                </li>
-                                <li>
-                                    <a aria-current="page" class="z-10 px-3 py-2 leading-tight text-primary-600 bg-primary/20 border border-primary/50 hover:bg-primary/30 dark:border-gray-700 dark:bg-gray-700 dark:text-white" href="#">3</a>
-                                </li>
-                                <li>
-                                    <a class="px-3 py-2 leading-tight text-gray-500 bg-white dark:bg-black/20 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-white" href="#">...</a>
-                                </li>
-                                <li>
-                                    <a class="block px-3 py-2 leading-tight text-gray-500 bg-white dark:bg-black/20 border border-gray-300 dark:border-gray-700 rounded-r-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-white" href="#">
-                                    <span class="sr-only">Next</span>
-                                    <span class="material-symbols-outlined text-lg">chevron_right</span>
-                                    </a>
-                                </li>
-                                </ul>
-                            </nav>
                             </div>
                         </div>
                     </main>

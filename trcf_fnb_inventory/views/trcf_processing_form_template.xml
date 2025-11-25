@@ -4,7 +4,8 @@
         <xpath expr="//head" position="inside">
             <meta charset="utf-8"/>
             <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-            <title>Nhập hàng</title>
+            <meta name="csrf-token" t-att-content="request.csrf_token()"/>
+            <title>Chế biến</title>
             <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
             <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -57,113 +58,238 @@
                     <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8 overflow-auto">
-                        <div class="max-w-4xl mx-auto">
-                            <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
-                            <h1 class="text-text-dark-green dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Chế Biến</h1>
-                            <div class="flex items-center gap-3">
-                                <button class="px-5 py-2.5 rounded-lg bg-primary text-background-dark text-sm font-bold leading-normal hover:opacity-90 transition-opacity">Xác nhận chế biến</button>
-                            </div>
-                            </header>
-                            <div class="flex flex-col gap-8">
-                            <div class="bg-light-green-bg dark:bg-background-dark border border-border-green/50 dark:border-gray-800 rounded-xl p-6">
-                                <div class="flex flex-col w-full">
-                                <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Tìm món</p>
-                                <div class="flex items-center gap-2">
-                                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 placeholder:text-primary-green/70 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" placeholder="Nhập tên món cần tìm" type="text" />
-                                    <button class="flex-shrink-0 p-3.5 rounded-lg bg-primary text-background-dark h-14 w-14 flex items-center justify-center hover:opacity-90 transition-opacity">
-                                    <span class="material-symbols-outlined text-3xl">add</span>
+                    <main class="flex-1 p-8">
+                        <div class="w-full max-w-screen mx-auto">
+                            
+                            <!-- Error Message -->
+                            <t t-if="error">
+                                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                                    <p class="text-red-800 dark:text-red-200 text-sm font-medium">
+                                        <span class="material-symbols-outlined inline-block align-middle mr-2">error</span>
+                                        <t t-esc="error"/>
+                                    </p>
+                                </div>
+                            </t>
+                            
+                            <form id="processingForm" method="POST" action="/trcf_fnb_inventory/processing_add">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="bom_id" id="bom_id" value=""/>
+                                <input type="hidden" name="product_qty" id="product_qty_hidden" value=""/>
+                                <input type="hidden" name="components_data" id="components_data" value="[]"/>
+                                
+                                <header class="mb-6">
+                                    <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em] mb-4">Tạo Phiếu Chế Biến</p>
+                                    <button type="button" onclick="submitForm()" class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-sm font-bold">
+                                        <span class="material-symbols-outlined text-base">save</span>
+                                        <span>Xác nhận chế biến</span>
                                     </button>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="bg-light-green-bg dark:bg-background-dark border border-border-green/50 dark:border-gray-800 rounded-xl p-6">
-                                <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-text-dark-green dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Thông tin Món</h2>
-                                <button class="p-2.5 rounded-lg border border-border-green dark:border-gray-700 text-text-dark-green dark:text-white hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors">
-                                    <span class="material-symbols-outlined">delete</span>
-                                </button>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                <div class="flex flex-col w-full md:col-span-2">
-                                    <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Tên món chế biến</p>
-                                    <div class="flex items-center w-full min-w-0 flex-1 rounded-lg border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 h-14 p-[15px]">
-                                    <p class="text-text-dark-green dark:text-white text-base font-normal leading-normal">Milkfoam Matcha</p>
+                                </header>
+                                
+                                <div class="flex flex-col gap-8">
+                                    <!-- BOM Search Section -->
+                                    <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Tìm kiếm công thức</h2>
+                                        <div class="grid grid-cols-1 gap-5">
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                    Chọn món cần chế biến <span class="text-red-500">*</span>
+                                                </p>
+                                                <select id="bom_select" onchange="loadBomComponents()" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                    <option value="">-- Chọn món --</option>
+                                                    <t t-foreach="boms" t-as="bom">
+                                                        <option t-att-value="bom['id']" 
+                                                                t-att-data-product-id="bom['product_id']"
+                                                                t-att-data-product-name="bom['product_name']"
+                                                                t-att-data-product-qty="bom['product_qty']"
+                                                                t-att-data-product-uom="bom['product_uom']"
+                                                                t-att-data-product-uom-id="bom['product_uom_id']">
+                                                            <t t-esc="bom['product_name']"/>
+                                                            <t t-if="bom['code']"> (<t t-esc="bom['code']"/>)</t>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- BOM Details Section (Hidden initially) -->
+                                    <div id="bomDetailsSection" class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6" style="display: none;">
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Thông tin sản phẩm</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <div class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Tên sản phẩm</p>
+                                                <div class="flex items-center w-full min-w-0 flex-1 rounded-lg border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px]">
+                                                    <p class="text-text-light-primary dark:text-white text-sm font-normal leading-normal" id="product_name_display">-</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Số lượng sản xuất</p>
+                                                <div class="flex items-center gap-2">
+                                                    <input id="product_qty_input" onchange="updateComponentQuantities()" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary p-[15px] text-sm font-normal leading-normal" placeholder="1" type="number" min="0.01" step="0.01" value="1"/>
+                                                    <div class="flex items-center justify-center w-20 h-12 rounded-lg border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800">
+                                                        <p class="text-text-light-primary dark:text-white text-sm font-normal" id="product_uom_display">-</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <hr class="my-6 border-border-light dark:border-border-dark"/>
+                                        
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Danh sách nguyên liệu</h2>
+                                        <div class="overflow-hidden rounded-xl border border-border-light dark:border-border-dark">
+                                            <div class="overflow-x-auto">
+                                                <table class="w-full text-left">
+                                                    <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                                        <tr>
+                                                            <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal w-[55%]">Tên nguyên liệu</th>
+                                                            <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal w-[25%]">Số lượng</th>
+                                                            <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal w-[20%]">Đơn vị</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="divide-y divide-border-light dark:divide-border-dark text-text-light-primary dark:text-white" id="componentsTableBody">
+                                                        <!-- Components will be loaded here -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="flex flex-col w-full">
-                                    <p class="text-text-dark-green dark:text-gray-300 text-base font-medium leading-normal pb-2">Số lượng thành phẩm</p>
-                                    <div class="flex items-center gap-2">
-                                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 placeholder:text-primary-green/70 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" placeholder="Ví dụ: 450" type="number" value="450" />
-                                    <select class="form-select w-28 rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-14 text-base font-normal leading-normal">
-                                        <option selected="">gr</option>
-                                        <option>kg</option>
-                                        <option>mẻ</option>
-                                    </select>
-                                    </div>
-                                </div>
-                                </div>
-                                <hr class="my-6 border-border-green dark:border-gray-700" />
-                                <h2 class="text-text-dark-green dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-6">Danh sách nguyên liệu</h2>
-                                <div class="flow-root">
-                                <div class="-mx-6 -my-2 overflow-x-auto">
-                                    <div class="inline-block min-w-full py-2 align-middle sm:px-6">
-                                    <div class="overflow-hidden">
-                                        <table class="min-w-full">
-                                        <thead class="border-b border-border-green dark:border-gray-700">
-                                            <tr>
-                                            <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 sm:pl-0 w-[55%]" scope="col">Tên nguyên liệu</th>
-                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 w-[25%]" scope="col">Số lượng</th>
-                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 w-[20%]" scope="col">Đơn vị tính</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-text-dark-green dark:text-white">
-                                            <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0"> Bột Matcha </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                                <input class="form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" value="10" />
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">gr</td>
-                                            </tr>
-                                            <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0"> Whipping Cream </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                                <input class="form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" value="150" />
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">ml</td>
-                                            </tr>
-                                            <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0"> Topping Base </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                                <input class="form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" value="100" />
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">ml</td>
-                                            </tr>
-                                            <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0"> Sữa tươi không đường </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                                <input class="form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" value="80" />
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">ml</td>
-                                            </tr>
-                                            <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0"> Đường </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                                <input class="form-input w-full rounded-lg text-text-dark-green dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary text-base" type="number" value="20" />
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">gr</td>
-                                            </tr>
-                                        </tbody>
-                                        </table>
-                                    </div>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
+                            </form>
                         </div>
                     </main>
                 </div>
+                
+                <!-- JavaScript -->
+                <script>
+                <![CDATA[
+                    let currentBom = null;
+                    let baseComponents = [];
+                    
+                    function loadBomComponents() {
+                        const select = document.getElementById('bom_select');
+                        const bomId = select.value;
+                        
+                        if (!bomId) {
+                            document.getElementById('bomDetailsSection').style.display = 'none';
+                            currentBom = null;
+                            baseComponents = [];
+                            return;
+                        }
+                        
+                        // Get BOM data from select option
+                        const selectedOption = select.options[select.selectedIndex];
+                        const productName = selectedOption.getAttribute('data-product-name');
+                        const productQty = parseFloat(selectedOption.getAttribute('data-product-qty'));
+                        const productUom = selectedOption.getAttribute('data-product-uom');
+                        
+                        // Update product info
+                        document.getElementById('product_name_display').textContent = productName;
+                        document.getElementById('product_uom_display').textContent = productUom;
+                        document.getElementById('product_qty_input').value = productQty;
+                        document.getElementById('bom_id').value = bomId;
+                        
+                        // Fetch BOM components via AJAX
+                        fetch('/trcf_fnb_inventory/get_bom_components', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {
+                                    bom_id: bomId
+                                }
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.result && data.result.success) {
+                                currentBom = data.result.bom;
+                                baseComponents = data.result.components;
+                                renderComponents();
+                                document.getElementById('bomDetailsSection').style.display = 'block';
+                            } else {
+                                alert('Lỗi: ' + (data.result.error || 'Không thể tải thông tin BOM'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Lỗi khi tải thông tin BOM');
+                        });
+                    }
+                    
+                    function renderComponents() {
+                        const tbody = document.getElementById('componentsTableBody');
+                        tbody.innerHTML = '';
+                        
+                        const multiplier = parseFloat(document.getElementById('product_qty_input').value) / currentBom.product_qty;
+                        
+                        baseComponents.forEach(function(comp, index) {
+                            const adjustedQty = (comp.product_qty * multiplier).toFixed(2);
+                            
+                            const tr = document.createElement('tr');
+                            tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors';
+                            tr.innerHTML = 
+                                '<td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap">' + comp.product_name + '</td>' +
+                                '<td class="px-6 py-4 whitespace-nowrap">' +
+                                    '<input onchange="updateComponentData()" class="component-qty form-input w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm px-3 py-2" type="number" min="0" step="0.01" value="' + adjustedQty + '" data-product-id="' + comp.product_id + '"/>' +
+                                '</td>' +
+                                '<td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">' + comp.product_uom + '</td>';
+                            
+                            tbody.appendChild(tr);
+                        });
+                    }
+                    
+                    function updateComponentQuantities() {
+                        if (currentBom && baseComponents.length > 0) {
+                            renderComponents();
+                        }
+                    }
+                    
+                    function updateComponentData() {
+                        // This is called when user manually changes component quantity
+                        // We don't need to do anything here, just let the user edit
+                    }
+                    
+                    function submitForm() {
+                        // Validate
+                        const bomId = document.getElementById('bom_id').value;
+                        if (!bomId) {
+                            alert('Vui lòng chọn món cần chế biến');
+                            return;
+                        }
+                        
+                        const productQty = parseFloat(document.getElementById('product_qty_input').value);
+                        if (!productQty || productQty <= 0) {
+                            alert('Vui lòng nhập số lượng sản xuất hợp lệ');
+                            return;
+                        }
+                        
+                        // Collect component data
+                        const componentInputs = document.querySelectorAll('.component-qty');
+                        const componentsData = [];
+                        
+                        componentInputs.forEach(function(input) {
+                            const productId = input.getAttribute('data-product-id');
+                            const qty = parseFloat(input.value) || 0;
+                            
+                            componentsData.push({
+                                product_id: productId,
+                                qty: qty
+                            });
+                        });
+                        
+                        // Set hidden fields
+                        document.getElementById('product_qty_hidden').value = productQty;
+                        document.getElementById('components_data').value = JSON.stringify(componentsData);
+                        
+                        // Submit form
+                        document.getElementById('processingForm').submit();
+                    }
+                ]]>
+                </script>
             </body>
             
         </xpath>

@@ -4,7 +4,7 @@
         <xpath expr="//head" position="inside">
             <meta charset="utf-8"/>
             <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-            <title>Nhập hàng</title>
+            <title>Danh sách Hủy Hàng</title>
             <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
             <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -57,88 +57,89 @@
                     <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8 overflow-auto">
-                        <div class="max-w-7xl mx-auto">
-                            <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
-                            <h1 class="text-text-dark-green dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Hủy Sản Phẩm</h1>
-                            <a href="/trcf_fnb_inventory/scrap_add" class="px-5 py-2.5 rounded-lg bg-primary text-background-dark text-sm font-bold leading-normal hover:opacity-90 transition-opacity">Tạo phiếu hủy</a>
+                    <main class="flex-1 p-8">
+                        <div class="w-full max-w-screen mx-auto">
+                            <header class="mb-6">
+                                <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em]">Danh Sách Hủy Hàng</p>
+                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm mt-2">Ngày <t t-esc="today"/></p>
                             </header>
-                            <div class="bg-light-green-bg dark:bg-background-dark border border-border-green/50 dark:border-gray-800 rounded-xl p-6">
-                            <div class="flex flex-col md:flex-row gap-4 mb-6">
-                                <div class="relative flex-grow">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary-green dark:text-gray-400">search</span>
-                                <input class="form-input pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-dark-green dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-green dark:border-gray-700 bg-background-light dark:bg-gray-800 focus:border-primary-green dark:focus:border-primary h-12 placeholder:text-primary-green/70 dark:placeholder:text-gray-500 p-[15px] text-base font-normal leading-normal" placeholder="Tìm kiếm phiếu hủy theo mã, tên nhân viên" value="" />
-                                </div>
-                                <div class="flex gap-4">
-                                <button class="flex items-center justify-center gap-2 w-full md:w-auto px-4 py-2.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium leading-normal hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors">
-                                    <span class="material-symbols-outlined text-base">filter_list</span>
-                                    <span>Bộ lọc</span>
-                                </button>
-                                <button class="flex items-center justify-center gap-2 w-full md:w-auto px-4 py-2.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium leading-normal hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors">
-                                    <span class="material-symbols-outlined text-base">calendar_today</span>
-                                    <span>Thời gian</span>
-                                </button>
-                                </div>
+                            
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-border-light dark:border-border-dark">
+                                <a href="/trcf_fnb_inventory/scrap_add" class="inline-block">
+                                    <button class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-sm font-bold">
+                                        <span class="material-symbols-outlined text-base">add_circle</span>
+                                        <span>Tạo Phiếu Hủy</span>
+                                    </button>
+                                </a>
                             </div>
-                            <div class="flow-root">
-                                <div class="-mx-6 -my-2 overflow-x-auto">
-                                <div class="inline-block min-w-full py-2 align-middle sm:px-6">
-                                    <div class="overflow-hidden">
-                                    <table class="min-w-full">
-                                        <thead class="border-b border-border-green dark:border-gray-700">
-                                        <tr>
-                                            <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300 sm:pl-0" scope="col">Mã phiếu hủy</th>
-                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Ngày hủy</th>
-                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Người tạo</th>
-                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Lý do hủy</th>
-                                            <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-dark-green dark:text-gray-300" scope="col">Trạng thái</th>
-                                            
-                                        </tr>
+                            
+                            <div class="overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-slate-900">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                            <tr>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Mã Phiếu</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Sản Phẩm</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Số Lượng</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Kho Xuất</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Lý Do</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Trạng Thái</th>
+                                                <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Giờ Tạo</th>
+                                            </tr>
                                         </thead>
-                                        <tbody class="text-text-dark-green dark:text-white">
-                                        <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0 text-primary-green dark:text-primary">PH-00124</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">20/05/2024</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Nguyễn Văn An</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Hàng hỏng do vận chuyển</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"> Đã xác nhận </span>
-                                            </td>
-                                           
-                                        </tr>
-                                        <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0 text-primary-green dark:text-primary">PH-00123</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">19/05/2024</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Trần Thị Bích</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Sản phẩm hết hạn sử dụng</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"> Đã xác nhận </span>
-                                            </td>
-                                            
-                                        </tr>
-                                        <tr class="border-b border-border-green dark:border-gray-800">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0 text-primary-green dark:text-primary">PH-00122</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">18/05/2024</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Lê Văn Cường</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">Nhập sai thông tin</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"> Chờ xử lý </span>
-                                            </td>
-                                            
-                                        </tr>
+                                        <tbody class="divide-y divide-border-light dark:divide-border-dark">
+                                            <t t-if="scraps">
+                                                <t t-foreach="scraps" t-as="scrap">
+                                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                        <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap">
+                                                            <t t-esc="scrap['name']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-normal leading-normal">
+                                                            <t t-esc="scrap['product_name']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">
+                                                            <t t-esc="scrap['product_qty']"/> <t t-esc="scrap['product_uom']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal">
+                                                            <t t-esc="scrap['location']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal">
+                                                            <t t-esc="scrap['reason']"/>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <t t-if="scrap['state'] == 'done'">
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                                                    Hoàn thành
+                                                                </span>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary">
+                                                                    Nháp
+                                                                </span>
+                                                            </t>
+                                                        </td>
+                                                        <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">
+                                                            <t t-esc="scrap['create_date']"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <tr>
+                                                    <td colspan="7" class="px-6 py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
+                                                        <div class="flex flex-col items-center justify-center gap-3">
+                                                            <span class="material-symbols-outlined text-5xl opacity-30">delete_sweep</span>
+                                                            <p class="text-sm font-medium">Chưa có phiếu hủy hàng nào trong ngày hôm nay</p>
+                                                            <a href="/trcf_fnb_inventory/scrap_add" class="text-primary hover:text-primary-dark text-sm font-medium">
+                                                                Tạo phiếu hủy →
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </t>
                                         </tbody>
                                     </table>
-                                    </div>
                                 </div>
-                                </div>
-                            </div>
-                            <div class="mt-6 flex justify-between items-center">
-                                <p class="text-sm text-text-dark-green dark:text-gray-400">Hiển thị 1-3 của 15 kết quả</p>
-                                <div class="flex items-center gap-2">
-                                <button class="px-3 py-1.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors disabled:opacity-50" disabled="">Trước</button>
-                                <button class="px-3 py-1.5 rounded-lg border border-border-green dark:border-gray-600 text-text-dark-green dark:text-white text-sm font-medium hover:bg-light-green-accent dark:hover:bg-white/10 transition-colors">Sau</button>
-                                </div>
-                            </div>
                             </div>
                         </div>
                     </main>

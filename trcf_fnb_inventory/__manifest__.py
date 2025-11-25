@@ -4,7 +4,7 @@
     'version': '1.0',
     'category': 'Inventory',
     'summary': 'Quản lý tồn kho đơn giản và khoa học cho quán cà phê của bạn từ Tuấn Rang Cà Phê.',
-    'depends': ['base', 'web', 'trcf_pos_expenses', 'purchase', 'product', 'stock', 'point_of_sale'],
+    'depends': ['base', 'web', 'trcf_pos_expenses', 'purchase', 'product', 'stock', 'point_of_sale', 'mrp'],
     'data': [
         # 'security/ir.model.access.csv', # Uncomment if you add access rights
         'views/trcf_sidebar_template.xml',
