@@ -54,6 +54,9 @@ class TrcfScrapController(http.Controller):
             location_name = scrap.location_id.display_name if scrap.location_id else '-'
             scrap_location_name = scrap.scrap_location_id.display_name if scrap.scrap_location_id else '-'
             
+            # Get reason names from scrap_reason_tag_ids (Many2many)
+            reason_names = ', '.join(scrap.scrap_reason_tag_ids.mapped('name')) if scrap.scrap_reason_tag_ids else '-'
+            
             scrap_list.append({
                 'id': scrap.id,
                 'name': scrap.name,
@@ -64,7 +67,8 @@ class TrcfScrapController(http.Controller):
                 'state_display': 'Hoàn thành' if scrap.state == 'done' else 'Nháp',
                 'location': location_name,
                 'scrap_location': scrap_location_name,
-                'reason': scrap.origin or '-',  # Scrap reason stored in origin field
+                'reason': reason_names,
+                'description': scrap.trcf_scrap_description or '-',
                 'create_date': create_date_local.strftime('%H:%M:%S'),
             })
         
@@ -125,18 +129,19 @@ class TrcfScrapController(http.Controller):
                 'qty_available': product.qty_available,
             })
         
+        
         _logger.info(f"Loaded {len(product_list)} products for scrap form")
         
-        # Get scrap reason tags from Odoo
-        reason_tags = request.env['stock.scrap.reason.tag'].sudo().search([], order='sequence, name')
+        # Get scrap reason tags from Odoo's stock.scrap.reason.tag model
+        scrap_reasons = request.env['stock.scrap.reason.tag'].sudo().search([], order='sequence, name')
         reason_list = []
-        for tag in reason_tags:
+        for reason in scrap_reasons:
             reason_list.append({
-                'id': tag.id,
-                'name': tag.name,
+                'id': reason.id,
+                'name': reason.name,
             })
         
-        _logger.info(f"Loaded {len(reason_list)} scrap reason tags")
+        _logger.info(f"Loaded {len(reason_list)} scrap reason tags from database")
         
         
         
@@ -183,13 +188,8 @@ class TrcfScrapController(http.Controller):
             # Parse form data
             product_id = int(form_data.get('product_id'))
             scrap_qty = float(form_data.get('scrap_qty', 0))
-            reason = form_data.get('reason', '').strip()
-            
-            # If reason is "Khác", use the custom reason text
-            if reason == 'Khác':
-                other_reason = form_data.get('other_reason', '').strip()
-                reason = f"Khác: {other_reason}" if other_reason else 'Khác'
-            
+            reason_id = int(form_data.get('reason_id', 0)) if form_data.get('reason_id') else False
+            description = form_data.get('description', '').strip()
             
             # Validate data
             if scrap_qty <= 0:
@@ -229,7 +229,8 @@ class TrcfScrapController(http.Controller):
                 'product_uom_id': product.uom_id.id,
                 'location_id': source_location.id if source_location else False,
                 'scrap_location_id': scrap_location.id,
-                'origin': reason or 'TRCF Scrap',  # Store reason in origin field
+                'scrap_reason_tag_ids': [(6, 0, [reason_id])] if reason_id else False,  # Many2many field
+                'trcf_scrap_description': description,  # Save description
                 'company_id': request.env.company.id,
             }
             

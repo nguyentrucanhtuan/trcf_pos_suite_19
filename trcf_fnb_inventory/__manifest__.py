@@ -7,6 +7,8 @@
     'depends': ['base', 'web', 'trcf_pos_expenses', 'purchase', 'product', 'stock', 'point_of_sale', 'mrp'],
     'data': [
         # 'security/ir.model.access.csv', # Uncomment if you add access rights
+        'data/trcf_scrap_reasons_data.xml',
+        'views/trcf_stock_scrap_views.xml',
         'views/trcf_sidebar_template.xml',
         'views/trcf_fnb_inventory_menus.xml',
         'views/trcf_daily_report_views.xml',

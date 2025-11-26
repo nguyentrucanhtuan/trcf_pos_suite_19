@@ -128,36 +128,24 @@
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
                                                     Lý do hủy hàng <span class="text-red-500">*</span>
                                                 </p>
-                                                <select name="reason" id="reason_select" required="required" onchange="toggleOtherReason()" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                <select name="reason_id" id="reason_select" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
                                                     <option value="">-- Chọn lý do --</option>
-                                                    <t t-if="reasons">
-                                                        <t t-foreach="reasons" t-as="reason">
-                                                            <option t-att-value="reason['name']">
-                                                                <t t-esc="reason['name']"/>
-                                                            </option>
-                                                        </t>
+                                                    <t t-foreach="reasons" t-as="reason">
+                                                        <option t-att-value="reason['id']">
+                                                            <t t-esc="reason['name']"/>
+                                                        </option>
                                                     </t>
-                                                    <t t-else="">
-                                                        <!-- Fallback if no reasons defined in Odoo -->
-                                                        <option value="Hết hạn sử dụng">Hết hạn sử dụng</option>
-                                                        <option value="Sản phẩm hỏng/hư">Sản phẩm hỏng/hư</option>
-                                                        <option value="Bể vỡ">Bể vỡ</option>
-                                                        <option value="Chất lượng không đạt">Chất lượng không đạt</option>
-                                                        <option value="Mốc/ẩm">Mốc/ẩm</option>
-                                                        <option value="Đổ/rơi vãi">Đổ/rơi vãi</option>
-                                                    </t>
-                                                    <option value="Khác">Khác (nhập chi tiết)</option>
                                                 </select>
                                             </label>
                                         </div>
                                         
-                                        <!-- Other Reason Input (hidden by default) -->
-                                        <div id="other_reason_container" style="display: none;">
+                                        <!-- Description Field (always visible) -->
+                                        <div>
                                             <label class="flex flex-col w-full">
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
-                                                    Chi tiết lý do khác
+                                                    Mô tả chi tiết
                                                 </p>
-                                                <textarea name="other_reason" id="other_reason" rows="3" placeholder="Nhập chi tiết lý do..." class="form-textarea w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary px-3.5 py-3 text-sm font-normal leading-normal placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary"></textarea>
+                                                <textarea name="description" id="description" rows="3" placeholder="Nhập mô tả chi tiết về lý do hủy hàng..." class="form-textarea w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary px-3.5 py-3 text-sm font-normal leading-normal placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary"></textarea>
                                             </label>
                                         </div>
                                         

@@ -10,38 +10,38 @@
                         <p class="text-neutral-text dark:text-gray-400 text-sm font-normal leading-normal">Quản trị viên</p>
                     </div>
                 </div>
-                <nav class="flex flex-col gap-2">
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
+                <nav class="flex flex-col gap-2" id="sidebar-nav">
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#" data-path="">
                         <span class="material-symbols-outlined">dashboard</span>
                         <p class="text-sm font-medium leading-normal">TỔNG QUAN</p>
                     </a>
 
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="/trcf_fnb_inventory/expense_list">
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/expense_list" data-path="/trcf_fnb_inventory/expense_list">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
                         <p class="text-sm font-medium leading-normal">CHI PHÍ</p>
                     </a>
 
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/purchase_list">
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/purchase_list" data-path="/trcf_fnb_inventory/purchase_list">
                         <span class="material-symbols-outlined">archive</span>
                         <p class="text-sm font-medium leading-normal">NHẬP HÀNG</p>
                     </a>
                
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/processing_list">
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/processing_list" data-path="/trcf_fnb_inventory/processing_list">
                         <span class="material-symbols-outlined">restaurant_menu</span>
                         <p class="text-sm font-medium leading-normal">CHẾ BIẾN</p>
                     </a>
 
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/scrap_list">
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/scrap_list" data-path="/trcf_fnb_inventory/scrap_list">
                         <span class="material-symbols-outlined">cancel</span>
                         <p class="text-sm font-medium leading-normal">HUỶ HÀNG</p>
                     </a>
 
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/check_inventory_list">
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/check_inventory_list" data-path="/trcf_fnb_inventory/check_inventory_list">
                         <span class="material-symbols-outlined">inventory</span>
                         <p class="text-sm font-medium leading-normal">KIỂM KÊ</p>
                     </a>
                     
-                    <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 hover:bg-primary/10" href="/trcf_fnb_inventory/daily_report">
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/daily_report" data-path="/trcf_fnb_inventory/daily_report">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
                         <p class="text-sm font-medium leading-normal">BÁO CÁO</p>
                     </a>
@@ -58,6 +58,56 @@
                 </a>
             </div>
         </aside>
+        
+        <!-- JavaScript to highlight active link -->
+        <script>
+        <![CDATA[
+            document.addEventListener('DOMContentLoaded', function() {
+                const currentPath = window.location.pathname;
+                const sidebarLinks = document.querySelectorAll('.sidebar-link');
+                
+                console.log('Current path:', currentPath); // Debug
+                
+                // Find matching link
+                let matchedLink = null;
+                
+                sidebarLinks.forEach(link => {
+                    const linkPath = link.getAttribute('data-path');
+                    
+                    if (!linkPath) return;
+                    
+                    console.log('Checking link:', linkPath); // Debug
+                    
+                    // Extract base path from link (e.g., /trcf_fnb_inventory/scrap from /trcf_fnb_inventory/scrap_list)
+                    const basePath = linkPath.replace(/_list$/, '').replace(/_add$/, '');
+                    
+                    // Check if current path matches the base path
+                    // e.g., /trcf_fnb_inventory/scrap_add matches /trcf_fnb_inventory/scrap
+                    if (currentPath === linkPath || currentPath.startsWith(basePath)) {
+                        console.log('Matched!', linkPath); // Debug
+                        matchedLink = link;
+                    }
+                });
+                
+                // Apply active state to matched link
+                if (matchedLink) {
+                    console.log('Applying active state to:', matchedLink.getAttribute('data-path')); // Debug
+                    
+                    // Remove active class from all links
+                    sidebarLinks.forEach(l => {
+                        l.classList.remove('bg-primary/10', 'text-primary');
+                        l.classList.add('text-slate-700', 'dark:text-slate-300');
+                    });
+                    
+                    // Add active class to matched link
+                    matchedLink.classList.remove('text-slate-700', 'dark:text-slate-300');
+                    matchedLink.classList.add('bg-primary/10', 'text-primary');
+                } else {
+                    console.log('No match found'); // Debug
+                }
+            });
+        ]]>
+        </script>
 
     </template>
 </odoo>

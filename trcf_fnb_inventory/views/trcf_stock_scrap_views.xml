@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend Stock Scrap Form View to add custom description field -->
+    <record id="stock_scrap_form_view_inherit_trcf" model="ir.ui.view">
+        <field name="name">stock.scrap.form.inherit.trcf</field>
+        <field name="model">stock.scrap</field>
+        <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add description field after scrap_reason_tag_ids -->
+            <xpath expr="//field[@name='scrap_reason_tag_ids']" position="after">
+                <field name="trcf_scrap_description" placeholder="Nhập mô tả chi tiết về lý do hủy hàng..."/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
