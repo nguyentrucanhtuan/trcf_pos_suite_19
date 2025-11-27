@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- List View cho Mẫu Phiếu Kiểm Kho -->
+    <record id="view_trcf_inventory_check_template_list" model="ir.ui.view">
+        <field name="name">trcf.inventory.check.template.list</field>
+        <field name="model">trcf.inventory.check.template</field>
+        <field name="arch" type="xml">
+            <list string="Mẫu Phiếu Kiểm Kho">
+                <field name="name"/>
+                <field name="location_id"/>
+                <field name="product_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View cho Mẫu Phiếu Kiểm Kho -->
+    <record id="view_trcf_inventory_check_template_form" model="ir.ui.view">
+        <field name="name">trcf.inventory.check.template.form</field>
+        <field name="model">trcf.inventory.check.template</field>
+        <field name="arch" type="xml">
+            <form string="Mẫu Phiếu Kiểm Kho">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Ví dụ: Phiếu kiểm kho chính"/>
+                            <field name="location_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="product_count"/>
+                            <field name="note" placeholder="Ghi chú hoặc hướng dẫn..."/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Danh sách sản phẩm" name="products">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_uom_id" string="ĐV mặc định" readonly="1"/>
+                                    <field name="uom_id" options="{'no_create': True}"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action cho Mẫu Phiếu Kiểm Kho -->
+    <record id="action_trcf_inventory_check_template" model="ir.actions.act_window">
+        <field name="name">Mẫu Phiếu Kiểm Kho</field>
+        <field name="res_model">trcf.inventory.check.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo mẫu phiếu kiểm kho mới
+            </p>
+            <p>
+                Mẫu phiếu kiểm kho giúp bạn chuẩn bị sẵn danh sách sản phẩm và đơn vị tính
+                để nhân viên kiểm kho nhanh chóng và chính xác hơn.
+            </p>
+        </field>
+    </record>
+
+    <!-- Root Menu -->
+    <menuitem 
+        id="menu_trcf_inventory_template_root"
+        name="TRCF Inventory Template"
+        sequence="20"/>
+
+    <!-- Menu Item -->
+    <menuitem
+        id="menu_trcf_inventory_check_template"
+        name="Mẫu Phiếu Kiểm Kho"
+        parent="menu_trcf_inventory_template_root"
+        action="action_trcf_inventory_check_template"
+        sequence="10"/>
+
+</odoo>
