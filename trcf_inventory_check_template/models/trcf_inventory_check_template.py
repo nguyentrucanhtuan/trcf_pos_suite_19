@@ -19,12 +19,11 @@ class TrcfInventoryCheckTemplate(models.Model):
         help='Tên mẫu phiếu kiểm kho (ví dụ: Phiếu kiểm kho chính, Phiếu kiểm quầy)'
     )
     
-    location_id = fields.Many2one(
-        'stock.location',
-        string='Kho/Vị trí',
+    warehouse_id = fields.Many2one(
+        'stock.warehouse',
+        string='Kho',
         required=True,
-        domain=[('usage', '=', 'internal')],
-        help='Kho hoặc vị trí cần kiểm kho'
+        help='Kho cần kiểm kho'
     )
     
     line_ids = fields.One2many(
@@ -81,8 +80,8 @@ class TrcfInventoryCheckTemplateLine(models.Model):
         'product.product',
         string='Sản phẩm',
         required=True,
-        domain=[('type', 'in', ['product', 'consu'])],
-        help='Sản phẩm cần kiểm kho'
+        domain=[('type', 'in', ['product', 'consu']), ('is_storable', '=', True)],
+        help='Sản phẩm cần kiểm kho (chỉ hiển thị sản phẩm có đánh dấu "Theo dõi hàng tồn kho")'
     )
     
     # Related fields for convenience

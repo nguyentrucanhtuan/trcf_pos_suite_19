@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_trcf_inventory_check_user,trcf.inventory.check.user,model_trcf_inventory_check,stock.group_stock_user,1,1,1,0
+access_trcf_inventory_check_line_user,trcf.inventory.check.line.user,model_trcf_inventory_check_line,stock.group_stock_user,1,1,1,0

@@ -6,8 +6,9 @@
     'summary': 'Quản lý tồn kho đơn giản và khoa học cho quán cà phê của bạn từ Tuấn Rang Cà Phê.',
     'depends': ['base', 'web', 'trcf_pos_expenses', 'purchase', 'product', 'stock', 'point_of_sale', 'mrp', 'trcf_inventory_check_template'],
     'data': [
-        # 'security/ir.model.access.csv', # Removed - moved to trcf_inventory_check_template
+        'security/ir.model.access.csv',
         'data/trcf_scrap_reasons_data.xml',
+        'data/ir_sequence_data.xml',
         'views/trcf_stock_scrap_views.xml',
         'views/trcf_sidebar_template.xml',
         'views/trcf_fnb_inventory_menus.xml',

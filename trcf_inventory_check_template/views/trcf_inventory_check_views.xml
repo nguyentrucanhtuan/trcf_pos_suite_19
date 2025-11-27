@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tree View cho Lịch Sử Kiểm Kho -->
+    <record id="view_trcf_inventory_check_tree" model="ir.ui.view">
+        <field name="name">trcf.inventory.check.tree</field>
+        <field name="model">trcf.inventory.check</field>
+        <field name="arch" type="xml">
+            <tree string="Lịch Sử Kiểm Kho" default_order="check_date desc">
+                <field name="name"/>
+                <field name="check_date"/>
+                <field name="location_id"/>
+                <field name="user_id"/>
+                <field name="template_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View cho Chi Tiết Phiếu Kiểm -->
+    <record id="view_trcf_inventory_check_form" model="ir.ui.view">
+        <field name="name">trcf.inventory.check.form</field>
+        <field name="model">trcf.inventory.check</field>
+        <field name="arch" type="xml">
+            <form string="Chi Tiết Phiếu Kiểm Kho">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="check_date"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="location_id"/>
+                            <field name="template_id"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Chi tiết sản phẩm" name="products">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="uom_id"/>
+                                    <field name="system_qty"/>
+                                    <field name="actual_qty"/>
+                                    <field name="difference_qty" 
+                                           decoration-danger="difference_qty &lt; 0"
+                                           decoration-success="difference_qty &gt; 0"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Ghi chú" name="notes">
+                            <field name="note" placeholder="Ghi chú bổ sung..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action cho Lịch Sử Kiểm Kho -->
+    <record id="action_trcf_inventory_check" model="ir.actions.act_window">
+        <field name="name">Lịch Sử Kiểm Kho</field>
+        <field name="res_model">trcf.inventory.check</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có lịch sử kiểm kho
+            </p>
+            <p>
+                Lịch sử kiểm kho sẽ được tạo tự động khi bạn thực hiện kiểm kho.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem
+        id="menu_trcf_inventory_check_history"
+        name="Lịch Sử Kiểm Kho"
+        parent="menu_trcf_inventory_template_root"
+        action="action_trcf_inventory_check"
+        sequence="20"/>
+
+</odoo>

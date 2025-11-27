@@ -14,13 +14,16 @@
         - Chọn đơn vị tính riêng cho từng sản phẩm
         - Sắp xếp thứ tự sản phẩm theo vị trí vật lý
         - Tái sử dụng mẫu phiếu khi kiểm kho thực tế
+        - Lưu lịch sử kiểm kho với thông tin chi tiết
         
         Giúp nhân viên kiểm kho nhanh chóng và chính xác hơn.
     """,
     'depends': ['base', 'stock', 'product', 'uom'],
     'data': [
         'security/ir.model.access.csv',
+        'data/trcf_inventory_check_sequence.xml',
         'views/trcf_inventory_check_template_views.xml',
+        'views/trcf_inventory_check_views.xml',
     ],
     'installable': True,
     'application': True,
