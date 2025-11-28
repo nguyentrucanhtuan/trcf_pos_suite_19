@@ -131,12 +131,9 @@
                                             <t t-else="">
                                                 <tr>
                                                     <td colspan="8" class="px-6 py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
-                                                        <div class="flex flex-col items-center justify-center gap-3">
-                                                            <span class="material-symbols-outlined text-5xl opacity-30">delete_sweep</span>
-                                                            <p class="text-sm font-medium">Chưa có phiếu hủy hàng nào trong ngày hôm nay</p>
-                                                            <a href="/trcf_fnb_inventory/scrap_add" class="text-primary hover:text-primary-dark text-sm font-medium">
-                                                                Tạo phiếu hủy →
-                                                            </a>
+                                                        <div class="flex flex-col items-center gap-2">
+                                                            <span class="material-symbols-outlined text-4xl">delete_sweep</span>
+                                                            <p>Chưa có phiếu hủy hàng nào trong ngày hôm nay</p>
                                                         </div>
                                                     </td>
                                                 </tr>

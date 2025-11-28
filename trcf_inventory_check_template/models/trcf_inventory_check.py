@@ -21,13 +21,13 @@ class TrcfInventoryCheck(models.Model):
         readonly=True,
         help='Template được sử dụng để tạo phiếu kiểm này'
     )
-    location_id = fields.Many2one(
+    warehouse_id = fields.Many2one(
         'stock.location', 
         'Kho', 
         required=True,
-        readonly=True, 
+        readonly=True,
         domain=[('usage', '=', 'internal')],
-        help='Kho/vị trí thực hiện kiểm kho'
+        help='Kho thực hiện kiểm kho'
     )
     check_date = fields.Datetime(
         'Ngày kiểm', 
@@ -61,6 +61,68 @@ class TrcfInventoryCheck(models.Model):
     )
     note = fields.Text('Ghi chú', help='Ghi chú bổ sung cho phiếu kiểm')
     
+    # Monetary fields
+    total_system_value = fields.Float(
+        'Tổng giá trị HT', 
+        compute='_compute_totals',
+        store=True,
+        digits='Product Price',
+        help='Tổng giá trị tồn kho theo hệ thống'
+    )
+    total_actual_value = fields.Float(
+        'Tổng giá trị TT', 
+        compute='_compute_totals',
+        store=True,
+        digits='Product Price',
+        help='Tổng giá trị tồn kho thực tế'
+    )
+    total_difference_value = fields.Float(
+        'Tổng chênh lệch', 
+        compute='_compute_totals',
+        store=True,
+        digits='Product Price',
+        help='Tổng giá trị chênh lệch'
+    )
+    loss_percentage = fields.Float(
+        '% Hao hụt', 
+        compute='_compute_totals',
+        store=True,
+        digits=(16, 2),
+        help='Phần trăm hao hụt (chỉ tính chênh lệch âm)'
+    )
+    
+    @api.depends('line_ids.system_qty', 'line_ids.actual_qty', 'line_ids.product_cost')
+    def _compute_totals(self):
+        """Tính tổng giá trị và phần trăm hao hụt"""
+        for check in self:
+            total_system = 0.0
+            total_actual = 0.0
+            total_diff = 0.0
+            loss_value = 0.0
+            
+            for line in check.line_ids:
+                cost = line.product_cost or 0.0
+                line_system_val = line.system_qty * cost
+                line_actual_val = line.actual_qty * cost
+                line_diff_val = line.difference_qty * cost
+                
+                total_system += line_system_val
+                total_actual += line_actual_val
+                total_diff += line_diff_val
+                
+                # Chỉ tính hao hụt cho các dòng có chênh lệch âm
+                if line.difference_qty < 0:
+                    loss_value += abs(line_diff_val)
+            
+            check.total_system_value = total_system
+            check.total_actual_value = total_actual
+            check.total_difference_value = total_diff
+            
+            # Tính % hao hụt = (Tổng giá trị mất đi / Tổng giá trị hệ thống) * 100
+            if total_system > 0:
+                check.loss_percentage = (loss_value / total_system) * 100
+            else:
+                check.loss_percentage = 0.0    
     
     @api.model_create_multi
     def create(self, vals_list):
@@ -121,8 +183,23 @@ class TrcfInventoryCheckLine(models.Model):
         help='Chênh lệch giữa thực tế và hệ thống'
     )
     
-    @api.depends('system_qty', 'actual_qty')
+    product_cost = fields.Float(
+        'Giá vốn',
+        digits='Product Price',
+        help='Giá vốn sản phẩm tại thời điểm kiểm'
+    )
+    
+    difference_value = fields.Float(
+        'Giá trị chênh lệch',
+        compute='_compute_difference',
+        store=True,
+        digits='Product Price',
+        help='Giá trị chênh lệch = Số lượng chênh lệch * Giá vốn'
+    )
+    
+    @api.depends('system_qty', 'actual_qty', 'product_cost')
     def _compute_difference(self):
-        """Tính chênh lệch = thực tế - hệ thống"""
+        """Tính chênh lệch số lượng và giá trị"""
         for line in self:
             line.difference_qty = line.actual_qty - line.system_qty
+            line.difference_value = line.difference_qty * (line.product_cost or 0.0)

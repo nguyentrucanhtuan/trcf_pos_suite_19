@@ -10,8 +10,31 @@ class TrcfCheckInventoryController(http.Controller):
     @http.route('/trcf_fnb_inventory/check_inventory_list', 
                 type='http', auth='user', website=False)
     def check_inventory_list(self, **kw):
-        """Placeholder for history view - will implement in Phase 2"""
-        return request.render('trcf_fnb_inventory.check_inventory_list_template')
+        """Display inventory check history"""
+        # Load inventory check records
+        checks = request.env['trcf.inventory.check'].sudo().search(
+            [], 
+            order='check_date desc',
+            limit=50
+        )
+        
+        check_list = []
+        for check in checks:
+            check_list.append({
+                'id': check.id,
+                'name': check.name,
+                'user_name': check.user_id.name,
+                'check_date': check.check_date,
+                'warehouse_name': check.warehouse_id.name,
+                'template_name': check.template_id.name if check.template_id else '',
+                'state': check.state,
+                'total_difference_value': check.total_difference_value,
+                'loss_percentage': check.loss_percentage,
+            })
+        
+        return request.render('trcf_fnb_inventory.check_inventory_list_template', {
+            'checks': check_list,
+        })
 
     @http.route('/trcf_fnb_inventory/check_inventory_add', 
                 type='http', auth='user', website=False, methods=['GET', 'POST'])
@@ -102,7 +125,7 @@ class TrcfCheckInventoryController(http.Controller):
             # 1. Create trcf.inventory.check record
             check = request.env['trcf.inventory.check'].sudo().create({
                 'template_id': template_id,
-                'location_id': template.warehouse_id.lot_stock_id.id,
+                'warehouse_id': template.warehouse_id.lot_stock_id.id,
                 'note': form_data.get('note', ''),
             })
             
@@ -118,6 +141,9 @@ class TrcfCheckInventoryController(http.Controller):
                     system_qty = float(form_data.get(f'system_qty_{product_id}', 0))
                     uom_id = int(form_data.get(f'uom_id_{product_id}'))
                     
+                    # Get product to get cost
+                    product = request.env['product.product'].sudo().browse(product_id)
+
                     # Create line
                     request.env['trcf.inventory.check.line'].sudo().create({
                         'check_id': check.id,
@@ -125,6 +151,7 @@ class TrcfCheckInventoryController(http.Controller):
                         'uom_id': uom_id,
                         'system_qty': system_qty,
                         'actual_qty': actual_qty,
+                        'product_cost': product.standard_price,
                     })
                     
                     # Only adjust if there's a difference

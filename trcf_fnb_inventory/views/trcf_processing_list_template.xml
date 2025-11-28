@@ -151,12 +151,9 @@
                                             <t t-else="">
                                                 <tr>
                                                     <td colspan="8" class="px-6 py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
-                                                        <div class="flex flex-col items-center justify-center gap-3">
-                                                            <span class="material-symbols-outlined text-5xl opacity-30">inventory_2</span>
-                                                            <p class="text-sm font-medium">Chưa có phiếu chế biến nào trong ngày hôm nay</p>
-                                                            <a href="/trcf_fnb_inventory/processing_add" class="text-primary hover:text-primary-dark text-sm font-medium">
-                                                                Tạo phiếu mới →
-                                                            </a>
+                                                        <div class="flex flex-col items-center gap-2">
+                                                            <span class="material-symbols-outlined text-4xl">inventory_2</span>
+                                                            <p>Chưa có phiếu chế biến nào trong ngày hôm nay</p>
                                                         </div>
                                                     </td>
                                                 </tr>

@@ -8,7 +8,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/trcf_scrap_reasons_data.xml',
-        'data/ir_sequence_data.xml',
+        'views/trcf_dashboard_template.xml',
         'views/trcf_stock_scrap_views.xml',
         'views/trcf_sidebar_template.xml',
         'views/trcf_fnb_inventory_menus.xml',

@@ -6,14 +6,16 @@
         <field name="name">trcf.inventory.check.tree</field>
         <field name="model">trcf.inventory.check</field>
         <field name="arch" type="xml">
-            <tree string="Lịch Sử Kiểm Kho" default_order="check_date desc">
+            <list string="Lịch Sử Kiểm Kho" default_order="check_date desc">
                 <field name="name"/>
                 <field name="check_date"/>
-                <field name="location_id"/>
+                <field name="warehouse_id"/>
                 <field name="user_id"/>
                 <field name="template_id"/>
+                <field name="total_difference_value" sum="Total Difference"/>
+                <field name="loss_percentage" widget="percentage"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -38,7 +40,7 @@
                             <field name="user_id"/>
                         </group>
                         <group>
-                            <field name="location_id"/>
+                            <field name="warehouse_id"/>
                             <field name="template_id"/>
                         </group>
                     </group>
@@ -46,7 +48,7 @@
                     <notebook>
                         <page string="Chi tiết sản phẩm" name="products">
                             <field name="line_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="product_id"/>
                                     <field name="uom_id"/>
@@ -55,11 +57,30 @@
                                     <field name="difference_qty" 
                                            decoration-danger="difference_qty &lt; 0"
                                            decoration-success="difference_qty &gt; 0"/>
-                                </tree>
+                                    <field name="product_cost" optional="hide"/>
+                                    <field name="difference_value" sum="Total Value"
+                                           decoration-danger="difference_value &lt; 0"
+                                           decoration-success="difference_value &gt; 0"/>
+                                </list>
                             </field>
                         </page>
                         <page string="Ghi chú" name="notes">
                             <field name="note" placeholder="Ghi chú bổ sung..."/>
+                        </page>
+                        <page string="Thống kê" name="statistics">
+                            <group>
+                                <group string="Giá trị tồn kho">
+                                    <field name="total_system_value" widget="monetary"/>
+                                    <field name="total_actual_value" widget="monetary"/>
+                                    <field name="total_difference_value" widget="monetary" 
+                                           decoration-danger="total_difference_value &lt; 0"
+                                           decoration-success="total_difference_value &gt; 0"/>
+                                </group>
+                                <group string="Hao hụt">
+                                    <field name="loss_percentage" widget="percentage" class="oe_inline" style="font-size: 1.5em; font-weight: bold; color: #ef4444;" invisible="loss_percentage == 0"/>
+                                    <field name="loss_percentage" widget="percentage" class="oe_inline" style="font-size: 1.5em; font-weight: bold; color: #10b981;" invisible="loss_percentage != 0"/>
+                                </group>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -71,7 +92,7 @@
     <record id="action_trcf_inventory_check" model="ir.actions.act_window">
         <field name="name">Lịch Sử Kiểm Kho</field>
         <field name="res_model">trcf.inventory.check</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Chưa có lịch sử kiểm kho
