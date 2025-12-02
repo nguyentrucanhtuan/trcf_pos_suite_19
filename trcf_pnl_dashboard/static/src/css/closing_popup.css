@@ -1,0 +1,42 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-pointer:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.trcf-payment-summary .table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+/* Expandable row styles */
+.trcf-expandable-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.trcf-expandable-row:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.trcf-expandable-row i {
+    transition: transform 0.2s ease;
+    color: #6c757d;
+}
+
+/* Expense detail rows */
+.trcf-expense-detail {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.trcf-expense-detail td {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
+/* Input field styling for counted amounts */
+.trcf-payment-summary .form-control-sm {
+    max-width: 150px;
+    margin-left: auto;
+}

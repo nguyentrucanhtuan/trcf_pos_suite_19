@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit POS Session Form View to add withdrawal fields -->
+    <record id="view_pos_session_form_inherit_trcf_pnl" model="ir.ui.view">
+        <field name="name">pos.session.form.inherit.trcf.pnl</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add fields inside the main group -->
+            <xpath expr="//group[field[@name='cash_register_balance_start']]" position="inside">
+                <field name="trcf_owner_withdrawal" 
+                       invisible="state != 'closing_control'" 
+                       readonly="state != 'closing_control'"/>
+                <field name="trcf_next_session_opening" 
+                       invisible="state != 'closing_control'" 
+                       readonly="state != 'closing_control'"/>
+            </xpath>
+            
+        </field>
+    </record>
+    
+</odoo>
+

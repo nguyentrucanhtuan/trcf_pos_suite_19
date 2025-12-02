@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Extend POS Closing Popup to add owner withdrawal fields -->
+    <t t-name="trcf_pnl_dashboard.ClosePosPopup" t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension">
+        
+        <!-- Add payment summary after payment-methods-overview -->
+        <xpath expr="//div[@class='payment-methods-overview']" position="after">
+            <div class="trcf-payment-summary mt-3 mb-3 p-3 border rounded bg-light">
+                <h5 class="mb-3">Tổng Kết Thanh Toán</h5>
+                
+                <!-- Loop through all payment methods -->
+                <t t-foreach="getAllPaymentMethods()" t-as="pm" t-key="pm.id">
+                    <table class="table table-sm table-borderless mb-3">
+                        <thead>
+                            <tr class="border-bottom">
+                                <th class="fw-bold">
+                                    <t t-esc="pm.name"/>
+                                </th>
+                                <th class="fw-bold text-end">
+                                    <t t-esc="env.utils.formatCurrency(pm.opening + pm.income - pm.expenses)"/>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Opening balance (only show if > 0) -->
+                            <tr t-if="pm.opening > 0">
+                                <td class="ps-3">Mở ca</td>
+                                <td class="text-end">
+                                    <t t-esc="env.utils.formatCurrency(pm.opening)"/>
+                                </td>
+                            </tr>
+
+                            <!-- Income -->
+                            <tr>
+                                <td class="ps-3">Thanh toán</td>
+                                <td class="text-end fw-bold text-success">
+                                    <t t-esc="env.utils.formatCurrency(pm.income)"/>
+                                </td>
+                            </tr>
+
+                            <!-- Expenses with expand/collapse -->
+                            <tr class="trcf-expandable-row" t-on-click="() => this.togglePMExpenses(pm.id)">
+                                <td class="ps-3">
+                                    <i t-attf-class="fa fa-chevron-{{isPMExpensesExpanded(pm.id) ? 'down' : 'right'}} me-2"/>
+                                    Chi
+                                </td>
+                                <td class="text-end fw-bold text-danger">
+                                    <t t-esc="env.utils.formatCurrency(pm.expenses)"/>
+                                </td>
+                            </tr>
+
+                            <!-- Expense details (expandable) -->
+                            <t t-if="isPMExpensesExpanded(pm.id)">
+                                <tr t-foreach="pm.expenseDetails" t-as="expense" t-key="expense.id" class="trcf-expense-detail">
+                                    <td class="ps-5 text-muted">
+                                        <small t-esc="expense.name"/>
+                                    </td>
+                                    <td class="text-end text-muted">
+                                        <small t-esc="env.utils.formatCurrency(expense.trcf_amount)"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="pm.expenseDetails.length === 0" class="trcf-expense-detail">
+                                    <td colspan="2" class="ps-5 text-muted">
+                                        <small><em>Không có chi phí</em></small>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <!-- Counted amount -->
+                            <tr>
+                                <td class="ps-3">Đếm</td>
+                                <td class="text-end">
+                                    <t t-if="pm.isCash">
+                                        <!-- For cash, use existing Odoo input -->
+                                        <t t-esc="env.utils.formatCurrency(pm.counted)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <!-- For non-cash, add input field -->
+                                        <Input 
+                                            tModel="[state.trcf_counted_amounts, pm.id]"
+                                            callback.bind="(value) => this.onCountedAmountChange(pm.id, value)"
+                                            isValid.bind="env.utils.isValidFloat" 
+                                            class="'form-control form-control-sm text-end'"
+                                            placeholder="'0'"/>
+                                    </t>
+                                </td>
+                            </tr>
+
+                            <!-- Difference -->
+                            <tr>
+                                <td class="ps-3">Chênh lệch</td>
+                                <td t-attf-class="text-end fw-bold {{pm.difference >= 0 ? 'text-success' : 'text-danger'}}">
+                                    <t t-esc="env.utils.formatCurrency(pm.difference)"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+        </xpath>
+        
+        <!-- Add fields before footer buttons -->
+        <xpath expr="//div[@class='w-100 d-flex flex-wrap justify-content-between gap-2']" position="before">
+            <div class="trcf-cash-management mb-3">
+                <h5 class="mb-3">Quản lý tiền mặt</h5>
+                
+                <div class="row g-3">
+                    <!-- Số tiền lấy về -->
+                    <div class="col-6">
+                        <label class="form-label fw-bold">Số tiền lấy về</label>
+                        <Input 
+                            tModel="[state, 'trcf_owner_withdrawal']"
+                            callback.bind="(value) => this.onOwnerWithdrawalChange(value)"
+                            isValid.bind="env.utils.isValidFloat" 
+                            class="'form-control'"
+                            placeholder="'0'"/>
+                        <small class="text-muted d-block mt-1">Số tiền owner rút khỏi két</small>
+                    </div>
+                    
+                    <!-- Tiền mặt để lại (tự động tính) -->
+                    <div class="col-6">
+                        <label class="form-label fw-bold">Tiền mặt để lại</label>
+                        <Input 
+                            tModel="[state, 'trcf_next_session_opening']"
+                            isValid.bind="env.utils.isValidFloat" 
+                            class="'form-control bg-light'"
+                            placeholder="'0'"
+                            readonly="true"/>
+                        <small class="text-muted d-block mt-1">Tiền đếm - Tiền lấy về</small>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        
+    </t>
+
+</templates>

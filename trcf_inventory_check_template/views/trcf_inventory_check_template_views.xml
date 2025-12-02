@@ -68,7 +68,7 @@
     <!-- Root Menu -->
     <menuitem 
         id="menu_trcf_inventory_template_root"
-        name="TRCF Inventory Template"
+        name="TRCF Phiếu kiểm hàng"
         sequence="20"/>
 
     <!-- Menu Item -->

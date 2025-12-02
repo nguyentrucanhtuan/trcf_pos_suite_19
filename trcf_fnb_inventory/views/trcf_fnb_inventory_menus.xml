@@ -68,7 +68,7 @@
 
         <!-- Root Menu: Xóa thuộc tính 'action' -->
         <menuitem id="trcf_fnb_inventory_root_menu"
-            name="TRCF FNB Inventory"
+            name="TRCF Tồn kho"
             sequence="10" /> 
         
         <!-- Menu con: Thêm thuộc tính 'parent' và 'action' -->

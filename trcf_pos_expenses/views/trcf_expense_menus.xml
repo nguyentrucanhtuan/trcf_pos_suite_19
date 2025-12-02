@@ -2,7 +2,7 @@
 <odoo>
     <!-- Main Menu -->
     <menuitem id="menu_trcf_expenses_root"
-              name="TRCF POS Expenses"
+              name="TRCF Chi phí"
               sequence="10"
               web_icon="trcf_pos_expenses,static/description/icon.png"/>
 

@@ -137,7 +137,8 @@ class TrcfExpenseController(http.Controller):
                     'trcf_amount': expense_amount,
                     'employee_id': employee.id,
                     'company_id': request.env.company.id,
-                    'state': 'draft',
+                    'state': 'paid',
+                    'trcf_payment_date': datetime.now(),
                 }
                 
                 if payment_method_id:

@@ -56,132 +56,107 @@
                                     <h1 class="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Báo cáo tổng quan</h1>
                                     <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Xem nhanh hiệu suất kinh doanh của bạn.</p>
                                 </div>
-                                <!-- <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2">
-                                    <span class="material-symbols-outlined text-base">download</span>
-                                    <span class="truncate">Xuất báo cáo</span>
-                                </button> -->
                             </div>
-                            <!-- <div class="flex gap-3 mb-6 overflow-x-auto pb-2">
-
-                                <a href="/trcf_fnb_inventory/daily_report?filter_type=today"
-                                    t-attf-class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 text-sm font-medium leading-normal 
-                                    #{filter_type == 'today' and 'bg-primary text-white' or 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'}">
-                                        <span class="material-symbols-outlined text-xl">today</span>
-                                        <p>Hôm nay</p>
-                                </a>
-
-                                <a href="/trcf_fnb_inventory/daily_report?filter_type=week"
-                                    t-attf-class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 text-sm font-medium leading-normal 
-                                    #{filter_type == 'week' and 'bg-primary text-white' or 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'}">
-                                        <span class="material-symbols-outlined text-xl">date_range</span>
-                                        <p>Tuần này</p>
-                                </a>
-
-                                <a href="/trcf_fnb_inventory/daily_report?filter_type=month"
-                                    t-attf-class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 text-sm font-medium leading-normal 
-                                    #{filter_type == 'month' and 'bg-primary text-white' or 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'}">
-                                        <span class="material-symbols-outlined text-xl">calendar_month</span>
-                                        <p>Tháng này</p>
-                                </a>
-
-                                <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700">
-                                    <span class="material-symbols-outlined text-xl">edit_calendar</span>
-                                    <p class="text-sm font-medium leading-normal">Tùy chỉnh</p>
-                                </button>
-                            </div> -->
+                            
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tổng doanh thu</p>
-                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="total_pos_revenue"/></p>
-                                <p t-attf-class="text-sm font-medium leading-normal #{revenue_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or revenue_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
-                                    <t t-esc="revenue_comparison['formatted']"/> <t t-esc="comparison_text"/>
-                                </p>
+                                <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                    <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tổng doanh thu</p>
+                                    <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="total_pos_revenue"/></p>
+                                    <p t-attf-class="text-sm font-medium leading-normal #{revenue_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or revenue_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
+                                        <t t-esc="revenue_comparison['formatted']"/> <t t-esc="comparison_text"/>
+                                    </p>
+                                </div>
+                                <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                    <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Số đơn đã xử lý</p>
+                                    <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="total_orders"/></p>
+                                    <p t-attf-class="text-sm font-medium leading-normal #{orders_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or orders_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
+                                        <t t-esc="orders_comparison['formatted']"/> <t t-esc="comparison_text"/>
+                                    </p>
+                                </div>
+                                <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                    <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Sản phẩm đã bán</p>
+                                    <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="total_qty"/></p>
+                                    <p t-attf-class="text-sm font-medium leading-normal #{qty_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or qty_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
+                                        <t t-esc="qty_comparison['formatted']"/> <t t-esc="comparison_text"/>
+                                    </p>
+                                </div>
+                                <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
+                                    <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tiền mặt</p>
+                                    <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="cash_balance"/></p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">
+                                        <t t-esc="cash_balance_detail['pos_cash_formatted']"/> - <t t-esc="cash_balance_detail['expense_cash_formatted']"/> - <t t-esc="cash_balance_detail['purchase_cash_formatted']"/>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Số đơn đã xử lý</p>
-                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="total_orders"/></p>
-                                <p t-attf-class="text-sm font-medium leading-normal #{orders_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or orders_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
-                                    <t t-esc="orders_comparison['formatted']"/> <t t-esc="comparison_text"/>
-                                </p>
-                            </div>
-                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Sản phẩm đã bán</p>
-                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="total_qty"/></p>
-                                <p t-attf-class="text-sm font-medium leading-normal #{qty_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or qty_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
-                                    <t t-esc="qty_comparison['formatted']"/> <t t-esc="comparison_text"/>
-                                </p>
-                            </div>
-                            <div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                <p class="text-gray-600 dark:text-gray-400 text-base font-medium leading-normal">Tiền mặt</p>
-                                <p class="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight"><t t-esc="cash_balance"/></p>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">
-                                    <t t-esc="cash_balance_detail['pos_cash_formatted']"/> - <t t-esc="cash_balance_detail['expense_cash_formatted']"/> - <t t-esc="cash_balance_detail['purchase_cash_formatted']"/>
-                                </p>
-                            </div>
-                            </div>
+
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Cơ cấu doanh thu</h3>
-                                <div class="flex flex-col md:flex-row items-center gap-6">
-                                <div class="relative w-48 h-48">
-                                    <svg class="size-full" viewBox="0 0 36 36">
-                                    <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
-                                    <path class="stroke-cyan-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="50, 100" stroke-linecap="round" stroke-width="3"></path>
-                                    <path class="stroke-violet-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="30, 100" stroke-dashoffset="-50" stroke-linecap="round" stroke-width="3"></path>
-                                    <path class="stroke-amber-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="20, 100" stroke-dashoffset="-80" stroke-linecap="round" stroke-width="3"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex flex-col gap-3">
-                                    <t t-if="not payment_methods">
-                                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-                                            Không có dữ liệu thanh toán
+
+                                <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Phân loại đơn hàng</h3>
+                                    <div class="flex flex-col md:flex-row items-center gap-6">
+                                    <div class="relative w-48 h-48">
+                                        <svg class="size-full" viewBox="0 0 36 36">
+                                        <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+                                        <path class="stroke-green-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="60, 100" stroke-linecap="round" stroke-width="3"></path>
+                                        <path class="stroke-blue-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="25, 100" stroke-dashoffset="-60" stroke-linecap="round" stroke-width="3"></path>
+                                        <path class="stroke-orange-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="15, 100" stroke-dashoffset="-85" stroke-linecap="round" stroke-width="3"></path>
+                                        </svg>
                                     </div>
-                                    </t>
-                                    <t t-foreach="payment_methods" t-as="method">
-                                    <div class="flex items-center gap-3">
-                                            <t t-set="color_class" t-value="'bg-' + method['color']"/>
-                                            <div t-attf-class="w-3 h-3 rounded-full #{color_class}"></div>
-                                    <div class="flex justify-between w-full gap-4">
-                                                <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="method['name']"/>
-                                                <span class="text-sm font-semibold text-gray-800 dark:text-white" t-esc="method['formatted_amount']"/>
-                                    </div>
-                                    </div>
-                                    </t>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Phân loại đơn hàng</h3>
-                                <div class="flex flex-col md:flex-row items-center gap-6">
-                                <div class="relative w-48 h-48">
-                                    <svg class="size-full" viewBox="0 0 36 36">
-                                    <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
-                                    <path class="stroke-green-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="60, 100" stroke-linecap="round" stroke-width="3"></path>
-                                    <path class="stroke-blue-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="25, 100" stroke-dashoffset="-60" stroke-linecap="round" stroke-width="3"></path>
-                                    <path class="stroke-orange-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="15, 100" stroke-dashoffset="-85" stroke-linecap="round" stroke-width="3"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex flex-col gap-3">
-                                    <t t-if="not revenue_by_presets">
-                                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-                                            Không có dữ liệu đơn hàng
-                                        </div>
-                                    </t>
-                                    <t t-foreach="revenue_by_presets" t-as="preset">
-                                        <div class="flex items-center gap-3">
-                                            <t t-set="color_class" t-value="'bg-' + preset['color']"/>
-                                            <div t-attf-class="w-3 h-3 rounded-full #{color_class}"></div>
-                                            <div class="flex justify-between w-full gap-4">
-                                                <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="preset['name']"/>
-                                                <span class="text-sm font-semibold text-gray-800 dark:text-white">
-                                                    <t t-esc="preset['formatted_revenue']"/> (<t t-esc="preset['count']"/> đơn)
-                                                </span>
+                                    <div class="flex flex-col gap-3">
+                                        <t t-if="not revenue_by_presets">
+                                            <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                                                Không có dữ liệu đơn hàng
                                             </div>
-                                        </div>
-                                    </t>
+                                        </t>
+                                        <t t-foreach="revenue_by_presets" t-as="preset">
+                                            <div class="flex items-center gap-3">
+                                                <t t-set="color_class" t-value="'bg-' + preset['color']"/>
+                                                <div t-attf-class="w-3 h-3 rounded-full #{color_class}"></div>
+                                                <div class="flex justify-between w-full gap-4">
+                                                    <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="preset['name']"/>
+                                                    <span class="text-sm font-semibold text-gray-800 dark:text-white">
+                                                        <t t-esc="preset['formatted_revenue']"/> (<t t-esc="preset['count']"/> đơn)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                    </div>
                                 </div>
+
+                                <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6">
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Cơ cấu doanh thu</h3>
+                                    <div class="flex flex-col md:flex-row items-center gap-6">
+                                    <div class="relative w-48 h-48">
+                                        <svg class="size-full" viewBox="0 0 36 36">
+                                        <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+                                        <path class="stroke-cyan-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="50, 100" stroke-linecap="round" stroke-width="3"></path>
+                                        <path class="stroke-violet-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="30, 100" stroke-dashoffset="-50" stroke-linecap="round" stroke-width="3"></path>
+                                        <path class="stroke-amber-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="20, 100" stroke-dashoffset="-80" stroke-linecap="round" stroke-width="3"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex flex-col gap-3">
+                                        <t t-if="not payment_methods">
+                                            <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                                                Không có dữ liệu thanh toán
+                                            </div>
+                                        </t>
+                                        <t t-foreach="payment_methods" t-as="method">
+                                            <div class="flex items-center gap-3">
+                                                <t t-set="color_class" t-value="'bg-' + method['color']"/>
+                                                <div t-attf-class="w-3 h-3 rounded-full #{color_class}"></div>
+                                                <div class="flex justify-between w-full gap-4">
+                                                    <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="method['name']"/>
+                                                    <span class="text-sm font-semibold text-gray-800 dark:text-white">
+                                                        <t t-esc="method['formatted_amount']"/> (<t t-esc="method['count']"/> đơn)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                    </div>
                                 </div>
-                            </div>
+                                
                             </div>
                             <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 mb-8">
                                 <div class="flex flex-wrap justify-between items-center gap-4 mb-4">

@@ -261,7 +261,16 @@ class TrcfReportController(http.Controller):
             aggregates=['amount:sum']
         )
         
-        # 6. Format kết quả
+        # 6. Đếm số đơn hàng cho mỗi payment method
+        payment_method_order_count = {}
+        for order in request.env['pos.order'].browse(order_ids):
+            for payment in order.payment_ids:
+                pm_id = payment.payment_method_id.id
+                if pm_id not in payment_method_order_count:
+                    payment_method_order_count[pm_id] = set()
+                payment_method_order_count[pm_id].add(order.id)
+        
+        # 7. Format kết quả
         currency = request.env.company.currency_id
         payment_methods = []
         
@@ -270,10 +279,12 @@ class TrcfReportController(http.Controller):
         
         for idx, (payment_method, amount_sum) in enumerate(result):
             if payment_method:  # Bỏ qua nếu payment_method là False/None
+                order_count = len(payment_method_order_count.get(payment_method.id, set()))
                 payment_methods.append({
                     'name': payment_method.name,
                     'amount': amount_sum or 0,
                     'formatted_amount': currency.format(amount_sum or 0),
+                    'count': order_count,
                     'color': colors[idx % len(colors)]  # Lấy màu theo vòng lặp
                 })
         
