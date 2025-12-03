@@ -5,19 +5,19 @@
         <field name="name">trcf.pos.session.payment.count.list</field>
         <field name="model">trcf.pos.session.payment.count</field>
         <field name="arch" type="xml">
-            <list string="Payment Count Records" expand="1">
-                <field name="session_id"/>
-                <field name="payment_method_name"/>
-                <field name="opening_amount" sum="Total Opening"/>
-                <field name="income_amount" sum="Total Income"/>
-                <field name="expense_amount" sum="Total Expenses"/>
-                <field name="expected_amount" sum="Total Expected"/>
-                <field name="counted_amount" sum="Total Counted"/>
-                <field name="difference" sum="Total Difference"
+            <list string="Payment Count Records" expand="0">
+                <field name="session_id" width="150px"/>
+                <field name="payment_method_name" width="120px"/>
+                <field name="opening_amount" sum="Total Opening" width="140px"/>
+                <field name="income_amount" sum="Total Income" width="140px"/>
+                <field name="expense_amount" sum="Total Expenses" width="140px"/>
+                <field name="expected_amount" sum="Total Expected" width="140px"/>
+                <field name="counted_amount" sum="Total Counted" width="140px"/>
+                <field name="difference" sum="Total Difference" width="140px"
                        decoration-success="difference &gt;= 0"
                        decoration-danger="difference &lt; 0"/>
-                <field name="trcf_owner_withdrawal" sum="Total Withdrawal" optional="show"/>
-                <field name="trcf_next_session_opening" sum="Total Next Opening" optional="show"/>
+                <field name="trcf_owner_withdrawal" sum="Total Withdrawal" width="140px" optional="show"/>
+                <field name="trcf_next_session_opening" sum="Total Next Opening" width="140px" optional="show"/>
                 <field name="currency_id" column_invisible="1"/>
                 <field name="is_cash_pm" column_invisible="1"/>
             </list>
@@ -102,26 +102,26 @@
 
     <!-- Action -->
     <record id="action_trcf_pos_session_payment_count" model="ir.actions.act_window">
-        <field name="name">Payment Count by Session</field>
+        <field name="name">Kiểm Kê Thanh Toán Theo Ca</field>
         <field name="res_model">trcf.pos.session.payment.count</field>
         <field name="view_mode">list,form,pivot,graph</field>
         <field name="context">{'group_by': ['session_id']}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No payment count records yet
+                Chưa có bản ghi kiểm kê thanh toán
             </p>
             <p>
-                Payment count records are created automatically when closing POS sessions.
-                Click on a session to view detailed payment methods breakdown.
+                Các bản ghi kiểm kê thanh toán được tạo tự động khi đóng ca POS.
+                Nhấp vào một ca để xem chi tiết phân tích theo phương thức thanh toán.
             </p>
         </field>
     </record>
 
     <!-- Menu Item -->
     <menuitem id="menu_trcf_pos_session_payment_count"
-              name="Payment Count by Session"
+              name="Kiểm Kê Thanh Toán Theo Ca"
               parent="point_of_sale.menu_point_of_sale"
               action="action_trcf_pos_session_payment_count"
-              sequence="20"/>
+              sequence="1"/>
 
 </odoo>
