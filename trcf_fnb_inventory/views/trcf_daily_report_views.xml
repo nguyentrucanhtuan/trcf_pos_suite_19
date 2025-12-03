@@ -158,90 +158,182 @@
                                 </div>
                                 
                             </div>
-                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 mb-8">
-                                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">BÁO CÁO CHI PHÍ</h3>
-                                    <div class="text-lg font-bold text-gray-900 dark:text-white">
-                                        Tổng: <t t-esc="expense_total"/>
+                            
+                            <!-- Day Summary Section -->
+                            <t t-if="day_summary">
+                                <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 mb-8">
+                                    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">TỔNG KẾT TRONG NGÀY</h3>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                                            Từ <t t-esc="day_summary['start_time']"/> đến <t t-esc="day_summary['end_time']"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Summary Card -->
+                                    <div class="border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                                        <!-- Summary Header -->
+                                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-slate-700 p-4 border-b border-gray-200 dark:border-slate-600">
+                                            <div class="flex flex-wrap items-center gap-4 justify-between">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0">
+                                                        <span class="material-symbols-outlined text-white">summarize</span>
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="text-base font-bold text-gray-900 dark:text-white">Tổng kết trong ngày</h4>
+                                                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                                                            Thời gian: <t t-esc="day_summary['start_time']"/> - <t t-esc="day_summary['end_time']"/>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-wrap gap-4">
+                                                    <div class="text-center">
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400">Doanh thu</p>
+                                                        <p class="text-lg font-bold text-gray-900 dark:text-white" t-esc="day_summary['total_revenue_formatted']"/>
+                                                    </div>
+                                                    <div class="text-center">
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400">Số đơn</p>
+                                                        <p class="text-lg font-bold text-blue-600 dark:text-blue-400" t-esc="day_summary['order_count']"/>
+                                                    </div>
+                                                    <div class="text-center">
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400">Số món</p>
+                                                        <p class="text-lg font-bold text-green-600 dark:text-green-400" t-esc="day_summary['total_qty']"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Payment Methods Table -->
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-left">
+                                                <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                                                    <tr>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400">Phương thức</th>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ngày</th>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Thu bán hàng</th>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Mua hàng</th>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Hiện tại</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="day_summary['payment_methods']" t-as="pm">
+                                                        <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                                                            <td class="p-3">
+                                                                <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="pm['name']"/>
+                                                            </td>
+                                                            <td class="p-3 text-right">
+                                                                <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="pm['opening_balance_formatted']"/>
+                                                            </td>
+                                                            <td class="p-3 text-right">
+                                                                <span class="text-sm font-semibold text-green-600 dark:text-green-400" t-esc="pm['sales_income_formatted']"/>
+                                                            </td>
+                                                            <td class="p-3 text-right">
+                                                                <span class="text-sm text-red-600 dark:text-red-400" t-esc="pm['expenses_formatted']"/>
+                                                            </td>
+                                                            <td class="p-3 text-right">
+                                                                <span class="text-sm text-orange-600 dark:text-orange-400" t-esc="pm['purchases_formatted']"/>
+                                                            </td>
+                                                            <td class="p-3 text-right">
+                                                                <span class="text-sm font-bold text-gray-900 dark:text-white" t-esc="pm['closing_balance_formatted']"/>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="overflow-x-auto">
-                                    <t t-if="not expense_by_payment_method">
-                                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
-                                            Không có chi phí trong kỳ này
+                            </t>
+                            
+                            <!-- Open Sessions Section -->
+                            <t t-if="open_sessions">
+                                <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 mb-8">
+                                    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">PHIÊN ĐANG MỞ</h3>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                                            Tổng: <t t-esc="len(open_sessions)"/> phiên
                                         </div>
-                                    </t>
-                                    <t t-else="">
-                                        <table class="w-full text-left">
-                                            <thead class="border-b border-gray-200 dark:border-slate-700">
-                                                <tr>
-                                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Phương thức thanh toán</th>
-                                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400 text-right">Số tiền</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="expense_by_payment_method" t-as="expense_pm">
-                                                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
-                                                        <td class="p-3">
-                                                            <div class="flex items-center gap-3">
-                                                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                                                                    <span class="material-symbols-outlined text-white text-sm">payments</span>
-                                                                </div>
-                                                                <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="expense_pm['name']"/>
+                                    </div>
+                                    
+                                    <div class="space-y-6">
+                                        <t t-foreach="open_sessions" t-as="session">
+                                            <!-- Open Session Card -->
+                                            <div class="border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                                                <!-- Session Info Header -->
+                                                <div class="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-slate-800 dark:to-slate-700 p-4 border-b border-gray-200 dark:border-slate-600">
+                                                    <div class="flex flex-wrap items-center gap-4 justify-between">
+                                                        <div class="flex items-center gap-3">
+                                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center flex-shrink-0">
+                                                                <span class="material-symbols-outlined text-white">schedule</span>
                                                             </div>
-                                                        </td>
-                                                        <td class="p-3 text-right">
-                                                            <span class="text-sm font-bold text-gray-900 dark:text-white" t-esc="expense_pm['formatted_amount']"/>
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
-                                    </t>
-                                </div>
-                            </div>
-                            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 mb-8">
-                                <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">BÁO CÁO NHẬP HÀNG</h3>
-                                    <div class="text-lg font-bold text-gray-900 dark:text-white">
-                                        Tổng: <t t-esc="purchase_total"/>
+                                                            <div>
+                                                                <h4 class="text-base font-bold text-gray-900 dark:text-white" t-esc="session['name']"/>
+                                                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                                                    <t t-esc="session['user_name']"/> • <t t-esc="session['start_at']"/> - <t t-esc="session['current_time']"/> (Đang mở)
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex flex-wrap gap-4">
+                                                            <div class="text-center">
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Doanh thu</p>
+                                                                <p class="text-lg font-bold text-gray-900 dark:text-white" t-esc="session['total_revenue_formatted']"/>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Số đơn</p>
+                                                                <p class="text-lg font-bold text-blue-600 dark:text-blue-400" t-esc="session['order_count']"/>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Số món</p>
+                                                                <p class="text-lg font-bold text-green-600 dark:text-green-400" t-esc="session['total_qty']"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Payment Methods Table -->
+                                                <div class="overflow-x-auto">
+                                                    <table class="w-full text-left">
+                                                        <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                                                            <tr>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400">Phương thức</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ca</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Thu bán hàng</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Mua hàng</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Hiện tại</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <t t-foreach="session['payment_methods']" t-as="pm">
+                                                                <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                                                                    <td class="p-3">
+                                                                        <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="pm['name']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="pm['opening_balance_formatted']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm font-semibold text-green-600 dark:text-green-400" t-esc="pm['sales_income_formatted']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm text-red-600 dark:text-red-400" t-esc="pm['expenses_formatted']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm text-orange-600 dark:text-orange-400" t-esc="pm['purchases_formatted']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm font-bold text-gray-900 dark:text-white" t-esc="pm['current_balance_formatted']"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </t>
                                     </div>
                                 </div>
-                                <div class="overflow-x-auto">
-                                    <t t-if="not purchase_by_payment_method">
-                                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
-                                            Không có đơn nhập hàng trong kỳ này
-                                        </div>
-                                    </t>
-                                    <t t-else="">
-                                        <table class="w-full text-left">
-                                            <thead class="border-b border-gray-200 dark:border-slate-700">
-                                                <tr>
-                                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Phương thức thanh toán</th>
-                                                    <th class="p-3 text-sm font-semibold text-gray-500 dark:text-gray-400 text-right">Số tiền</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="purchase_by_payment_method" t-as="purchase_pm">
-                                                    <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800">
-                                                        <td class="p-3">
-                                                            <div class="flex items-center gap-3">
-                                                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center flex-shrink-0">
-                                                                    <span class="material-symbols-outlined text-white text-sm">shopping_cart</span>
-                                                                </div>
-                                                                <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="purchase_pm['name']"/>
-                                                            </div>
-                                                        </td>
-                                                        <td class="p-3 text-right">
-                                                            <span class="text-sm font-bold text-gray-900 dark:text-white" t-esc="purchase_pm['formatted_amount']"/>
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
-                                    </t>
-                                </div>
-                            </div>
+                            </t>
                             
                             <!-- Session Details Section -->
                             <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-6 mb-8">

@@ -73,6 +73,12 @@ class TrcfReportController(http.Controller):
         # Lấy chi tiết các phiên bán hàng
         sessions = self.get_session_details(current_start, current_end)
         
+        # Lấy tổng kết từ đầu ngày đến hiện tại
+        day_summary = self.get_day_summary(current_start, current_end)
+        
+        # Lấy báo cáo phiên đang mở
+        open_sessions = self.get_open_session_summary(current_start, current_end)
+        
         vals = {
             'filter_type': filter_type,
             'date_from': date_from,
@@ -86,13 +92,11 @@ class TrcfReportController(http.Controller):
             'orders_comparison': orders_comparison,
             'qty_comparison': qty_comparison,
             'comparison_text': comparison_text,
-            'expense_total': expense_stats['total_formatted'],
-            'expense_by_payment_method': expense_stats['by_payment_method'],
-            'purchase_total': purchase_stats['total_formatted'],
-            'purchase_by_payment_method': purchase_stats['by_payment_method'],
             'cash_balance': cash_balance['formatted'],
             'cash_balance_detail': cash_balance['detail'],
             'sessions': sessions,
+            'day_summary': day_summary,
+            'open_sessions': open_sessions,
         }
 
         return request.render('trcf_fnb_inventory.daily_report_template', vals)
@@ -477,6 +481,225 @@ class TrcfReportController(http.Controller):
             }
         }
 
+    def get_day_summary(self, start_date, end_date):
+        """Lấy tổng kết từ đầu ngày đến hiện tại, lấy theo đơn hàng pos.order"""
+        # 1. Setup Timezone
+        user_tz = pytz.timezone(request.env.user.tz or 'UTC')
+        
+        # Lấy thời gian hiện tại
+        now_user_tz = datetime.now(user_tz)
+        
+        # Nếu end_date là hôm nay, thì lấy từ đầu ngày đến hiện tại
+        # Nếu không, lấy cả ngày
+        dt_start = datetime.combine(start_date, time.min)
+        if end_date == now_user_tz.date():
+            # dt_end đã có timezone từ now_user_tz
+            dt_end = now_user_tz  # Lưu để format thời gian sau
+            dt_end_utc = now_user_tz.astimezone(pytz.utc).replace(tzinfo=None)
+        else:
+            # dt_end chưa có timezone, cần localize
+            dt_end = datetime.combine(end_date, time.max)
+            dt_end_utc = user_tz.localize(dt_end).astimezone(pytz.utc).replace(tzinfo=None)
+        
+        # 2. Convert dt_start to UTC
+        dt_start_utc = user_tz.localize(dt_start).astimezone(pytz.utc).replace(tzinfo=None)
+
+        # 3. Lấy tất cả các đơn hàng trong khoảng thời gian
+        domain_orders = [
+            ('date_order', '>=', dt_start_utc),
+            ('date_order', '<=', dt_end_utc),
+            ('state', 'in', ['paid', 'done', 'invoiced']),
+        ]
+        
+        orders = request.env['pos.order'].sudo().search(domain_orders)
+        
+        if not orders:
+            return None
+        
+        # 4. Tính tổng doanh thu, số đơn và số món
+        total_revenue = sum(orders.mapped('amount_total'))
+        total_qty = sum(orders.mapped('lines').mapped('qty'))
+        total_orders = len(orders)
+        
+        # 5. Lấy số dư đầu ngày từ phiên đầu tiên trong ngày (nếu có)
+        first_session = request.env['pos.session'].sudo().search([
+            ('start_at', '>=', dt_start_utc),
+            ('start_at', '<=', dt_end_utc),
+        ], order='start_at asc', limit=1)
+        
+        # 6. Tính toán theo từng payment method
+        currency = request.env.company.currency_id
+        all_payment_methods = request.env['pos.payment.method'].sudo().search([])
+        payment_method_data = []
+        
+        for pm in all_payment_methods:
+            # 1. Số dư đầu ngày (chỉ cash có opening balance)
+            opening_balance = 0
+            if pm.is_cash_count and first_session and pm in first_session.payment_method_ids:
+                opening_balance = first_session.cash_register_balance_start
+            
+            # 2. Thu từ bán hàng (lấy từ pos.payment của các đơn hàng)
+            sales_income = sum(
+                payment.amount
+                for order in orders
+                for payment in order.payment_ids
+                if payment.payment_method_id == pm
+            )
+            
+            # 3. Chi phí trong khoảng thời gian với payment method này
+            expenses = request.env['trcf.expense'].sudo().search([
+                ('trcf_payment_date', '>=', dt_start_utc),
+                ('trcf_payment_date', '<=', dt_end_utc),
+                ('state', '=', 'paid'),
+                ('trcf_payment_method_id', '=', pm.id),
+            ])
+            total_expenses = sum(expenses.mapped('trcf_amount'))
+            
+            # 4. Mua hàng trong khoảng thời gian với payment method này
+            purchases = request.env['purchase.order'].sudo().search([
+                ('date_order', '>=', dt_start_utc),
+                ('date_order', '<=', dt_end_utc),
+                ('trcf_payment_status', '=', 'paid'),
+                ('trcf_payment_method_id', '=', pm.id),
+            ])
+            total_purchases = sum(purchases.mapped('amount_total'))
+            
+            # 5. Số dư hiện tại
+            closing_balance = opening_balance + sales_income - total_expenses - total_purchases
+            
+            # Chỉ thêm vào nếu có giao dịch
+            if sales_income > 0 or total_expenses > 0 or total_purchases > 0 or opening_balance > 0:
+                payment_method_data.append({
+                    'name': pm.name,
+                    'opening_balance': opening_balance,
+                    'opening_balance_formatted': currency.format(opening_balance),
+                    'sales_income': sales_income,
+                    'sales_income_formatted': currency.format(sales_income),
+                    'expenses': total_expenses,
+                    'expenses_formatted': currency.format(total_expenses),
+                    'purchases': total_purchases,
+                    'purchases_formatted': currency.format(total_purchases),
+                    'closing_balance': closing_balance,
+                    'closing_balance_formatted': currency.format(closing_balance),
+                })
+        
+        # Format thời gian
+        start_time = dt_start.strftime('%H:%M')
+        end_time = dt_end.strftime('%H:%M')
+        
+        return {
+            'start_time': start_time,
+            'end_time': end_time,
+            'total_revenue': total_revenue,
+            'total_revenue_formatted': currency.format(total_revenue),
+            'order_count': total_orders,
+            'total_qty': int(total_qty),
+            'payment_methods': payment_method_data,
+        }
+
+    def get_open_session_summary(self, start_date, end_date):
+        """Lấy báo cáo cho các phiên đang mở (opened sessions)"""
+        # 1. Setup Timezone
+        user_tz = pytz.timezone(request.env.user.tz or 'UTC')
+        
+        # Lấy thời gian hiện tại
+        now_user_tz = datetime.now(user_tz)
+        now_utc = now_user_tz.astimezone(pytz.utc).replace(tzinfo=None)
+        
+        dt_start = datetime.combine(start_date, time.min)
+        dt_start_utc = user_tz.localize(dt_start).astimezone(pytz.utc).replace(tzinfo=None)
+        
+        # 2. Lấy tất cả các phiên đang mở trong khoảng thời gian
+        domain = [
+            ('start_at', '>=', dt_start_utc),
+            ('state', '=', 'opened'),  # Chỉ lấy phiên đang mở
+        ]
+        
+        sessions = request.env['pos.session'].sudo().search(domain, order='start_at desc')
+        
+        if not sessions:
+            return []
+        
+        # 3. Format kết quả cho từng phiên
+        currency = request.env.company.currency_id
+        session_list = []
+        
+        for session in sessions:
+            # Lấy các đơn hàng của phiên này
+            orders = session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced'])
+            
+            # Tính tổng doanh thu và số món
+            total_revenue = sum(orders.mapped('amount_total'))
+            total_qty = sum(orders.mapped('lines').mapped('qty'))
+            total_orders = len(orders)
+            
+            # Lấy tất cả payment methods của phiên
+            payment_method_data = []
+            
+            for pm in session.payment_method_ids:
+                # 1. Số dư đầu ca (chỉ cash có)
+                opening_balance = session.cash_register_balance_start if pm.is_cash_count else 0
+                
+                # 2. Thu từ bán hàng trong phiên
+                sales_income = sum(
+                    payment.amount
+                    for order in orders
+                    for payment in order.payment_ids
+                    if payment.payment_method_id == pm
+                )
+                
+                # 3. Chi phí từ lúc mở phiên đến hiện tại
+                expenses = request.env['trcf.expense'].sudo().search([
+                    ('trcf_payment_date', '>=', session.start_at),
+                    ('trcf_payment_date', '<=', now_utc),
+                    ('state', '=', 'paid'),
+                    ('trcf_payment_method_id', '=', pm.id),
+                ])
+                total_expenses = sum(expenses.mapped('trcf_amount'))
+                
+                # 4. Mua hàng từ lúc mở phiên đến hiện tại
+                purchases = request.env['purchase.order'].sudo().search([
+                    ('date_order', '>=', session.start_at),
+                    ('date_order', '<=', now_utc),
+                    ('trcf_payment_status', '=', 'paid'),
+                    ('trcf_payment_method_id', '=', pm.id),
+                ])
+                total_purchases = sum(purchases.mapped('amount_total'))
+                
+                # 5. Số dư hiện tại
+                current_balance = opening_balance + sales_income - total_expenses - total_purchases
+                
+                payment_method_data.append({
+                    'name': pm.name,
+                    'opening_balance': opening_balance,
+                    'opening_balance_formatted': currency.format(opening_balance),
+                    'sales_income': sales_income,
+                    'sales_income_formatted': currency.format(sales_income),
+                    'expenses': total_expenses,
+                    'expenses_formatted': currency.format(total_expenses),
+                    'purchases': total_purchases,
+                    'purchases_formatted': currency.format(total_purchases),
+                    'current_balance': current_balance,
+                    'current_balance_formatted': currency.format(current_balance),
+                })
+            
+            # Format thời gian
+            start_at_local = pytz.utc.localize(session.start_at).astimezone(user_tz) if session.start_at else None
+            current_time_local = now_user_tz.strftime('%H:%M')
+            
+            session_list.append({
+                'name': session.name,
+                'user_name': session.user_id.name,
+                'start_at': start_at_local.strftime('%H:%M') if start_at_local else 'N/A',
+                'current_time': current_time_local,
+                'total_revenue': total_revenue,
+                'total_revenue_formatted': currency.format(total_revenue),
+                'order_count': total_orders,
+                'total_qty': int(total_qty),
+                'payment_methods': payment_method_data,
+            })
+        
+        return session_list
     def get_session_details(self, start_date, end_date):
         """Lấy chi tiết các phiên bán hàng với breakdown tất cả payment methods"""
         # 1. Setup Timezone
