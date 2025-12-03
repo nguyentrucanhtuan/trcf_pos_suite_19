@@ -2,7 +2,6 @@
 
 import { patch } from "@web/core/utils/patch";
 import { ClosePosPopup } from "@point_of_sale/app/components/popups/closing_popup/closing_popup";
-import { useState } from "@odoo/owl";
 
 patch(ClosePosPopup.prototype, {
     setup() {
@@ -29,10 +28,6 @@ patch(ClosePosPopup.prototype, {
     async loadTrcfCashMoves() {
         const session = this.pos.session;
 
-        console.log('🔍 TRCF: Loading cash moves for session:', session.name);
-        console.log('🔍 TRCF: Session start:', session.start_at);
-        console.log('🔍 TRCF: Session stop:', session.stop_at);
-
         // Convert datetime to UTC format without timezone (YYYY-MM-DD HH:MM:SS)
         const formatDateTimeUTC = (dateStr) => {
             if (!dateStr) return new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -43,9 +38,6 @@ patch(ClosePosPopup.prototype, {
         // Use session start time and current time (or stop time if closed)
         const startAt = formatDateTimeUTC(session.start_at);
         const stopAt = session.stop_at ? formatDateTimeUTC(session.stop_at) : formatDateTimeUTC(new Date());
-
-        console.log('🔍 TRCF: Filter start:', startAt);
-        console.log('🔍 TRCF: Filter stop:', stopAt);
 
         // Fetch expenses created after session started (using create_date)
         const expenses = await this.pos.data.searchRead(
@@ -58,29 +50,20 @@ patch(ClosePosPopup.prototype, {
             ['name', 'trcf_amount', 'trcf_payment_method_id', 'trcf_payment_date', 'create_date', 'state']
         );
 
-        console.log('✅ TRCF: Loaded expenses:', expenses);
-        console.log('✅ TRCF: Total expenses found:', expenses.length);
-
         // Store in reactive state to trigger re-render
         this.state.trcf_expenses = expenses || [];
         this.state.trcf_purchases = []; // Temporarily empty, will add later
         this.state.trcf_loading = false;
-
-        console.log('✅ TRCF: Data stored in state, component should re-render');
     },
 
     // Override cashMoveData to use trcf expenses and purchases
     get cashMoveData() {
-        console.log('💰 TRCF: Getting cashMoveData');
-        console.log('💰 TRCF: Expenses:', this.state.trcf_expenses);
-
         const moves = [];
         let total = 0;
 
         // Add expenses (negative amounts)
         (this.state.trcf_expenses || []).forEach((expense, i) => {
             const amount = -Math.abs(expense.trcf_amount || 0);
-            console.log(`💰 TRCF: Adding expense: ${expense.name} = ${amount}`);
             moves.push({
                 id: `expense_${i}`,
                 name: `Chi phí: ${expense.name || 'N/A'}`,
@@ -89,18 +72,6 @@ patch(ClosePosPopup.prototype, {
             total += amount;
         });
 
-        // Add purchases (negative amounts) - temporarily disabled
-        // (this.state.trcf_purchases || []).forEach((purchase, i) => {
-        //     const amount = -Math.abs(purchase.amount_total || 0);
-        //     moves.push({
-        //         id: `purchase_${i}`,
-        //         name: `Mua hàng: ${purchase.name || 'N/A'}`,
-        //         amount: amount,
-        //     });
-        //     total += amount;
-        // });
-
-        console.log('💰 TRCF: Total moves:', moves.length, 'Total amount:', total);
         return { total, moves };
     },
 
@@ -134,19 +105,23 @@ patch(ClosePosPopup.prototype, {
         return this.totalPayments - this.totalCashExpenses;
     },
 
-    // Calculate total of all payment methods
+    // Calculate total of all payment methods (only income from orders, excluding opening)
     get totalAllPayments() {
         let total = 0;
 
-        // Add cash payment if exists
+        // Add cash payment if exists (amount - opening = income only)
         if (this.pos.config.cash_control && this.props.default_cash_details) {
-            total += this.props.default_cash_details.amount || 0;
+            const cashOpening = this.props.default_cash_details.opening || 0;
+            const cashAmount = this.props.default_cash_details.amount || 0;
+            total += cashAmount - cashOpening;
         }
 
-        // Add all non-cash payments
+        // Add all non-cash payments (amount - opening = income only)
         if (this.props.non_cash_payment_methods) {
             this.props.non_cash_payment_methods.forEach(pm => {
-                total += pm.amount || 0;
+                const pmOpening = pm.opening || 0;
+                const pmAmount = pm.amount || 0;
+                total += pmAmount - pmOpening;
             });
         }
 
@@ -219,26 +194,17 @@ patch(ClosePosPopup.prototype, {
 
     // Get expenses by payment method ID (returns total or array)
     getExpensesByPaymentMethodId(paymentMethodId, returnArray = false) {
-        console.log(`🔍 TRCF: Getting expenses for payment method ID: ${paymentMethodId}`);
-        console.log('🔍 TRCF: All expenses:', this.state.trcf_expenses);
-
         const expenses = (this.state.trcf_expenses || []).filter(expense => {
-            console.log(`  - Expense: ${expense.name}, payment_method_id:`, expense.trcf_payment_method_id);
             if (expense.trcf_payment_method_id) {
                 // Handle both integer ID and [id, name] array format
                 const pmId = Array.isArray(expense.trcf_payment_method_id)
                     ? expense.trcf_payment_method_id[0]
                     : expense.trcf_payment_method_id;
 
-                const matches = pmId === paymentMethodId;
-                console.log(`    Payment method ID: ${pmId}, Matches ${paymentMethodId}? ${matches}`);
-                return matches;
+                return pmId === paymentMethodId;
             }
-            console.log('    No payment method ID');
             return false;
         });
-
-        console.log(`✅ TRCF: Found ${expenses.length} expenses for payment method ${paymentMethodId}`);
 
         if (returnArray) {
             return expenses;
@@ -275,31 +241,65 @@ patch(ClosePosPopup.prototype, {
         return this.state.trcf_expanded_pm_expenses && this.state.trcf_expanded_pm_expenses[paymentMethodId];
     },
 
+    // Calculate income from actual payment lines (excluding opening balance)
+    getPaymentIncomeByMethod(paymentMethodId) {
+        if (!this.pos || !this.pos.models || !this.pos.models["pos.order"]) {
+            return 0;
+        }
+
+        // Get all orders (filter will include paid, invoiced, done states)
+        const allOrders = Array.from(this.pos.models["pos.order"].getAll());
+
+        // Filter to paid/invoiced/done orders
+        const orders = allOrders.filter(
+            order => order.state === 'paid' || order.state === 'invoiced' || order.state === 'done'
+        );
+
+        // Sum up payment amounts for this payment method
+        let total = 0;
+        for (const order of orders) {
+            if (order.payment_ids && order.payment_ids.length > 0) {
+                for (const payment of order.payment_ids) {
+                    // Check if payment is done and not a change payment
+                    if (payment.isDone && payment.isDone() && !payment.is_change) {
+                        // Check if payment method matches
+                        const pmId = payment.payment_method_id?.id;
+                        if (pmId === paymentMethodId) {
+                            total += payment.amount || 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        return total;
+    },
+
     // Get all payment methods with their data for template
     getAllPaymentMethods() {
-        console.log('🔍 TRCF: getAllPaymentMethods called');
-        console.log('🔍 TRCF: this.props:', this.props);
-
         const paymentMethods = [];
 
         // Add cash payment method if cash control is enabled
         if (this.props.default_cash_details) {
-            console.log('💰 TRCF: Cash control enabled, default_cash_details:', this.props.default_cash_details);
-
             const opening = this.props.default_cash_details.opening || 0;
-            const income = this.props.default_cash_details.amount || 0;
+            const cashPMId = this.props.default_cash_details.id || 'cash';
+
+            // Calculate income from actual payment lines (most accurate method)
+            const income = this.getPaymentIncomeByMethod(cashPMId);
+
             const expenseTotal = this.getCashExpenses();
             const expenseDetails = this.getExpensesByPaymentMethod('cash');
 
-            // Get cash payment method ID from props
-            const cashPMId = this.props.default_cash_details.id || 'cash';
+            // Expected total = opening + income - expenses
+            const expectedTotal = opening + income - expenseTotal;
 
-            // Get counted from existing Odoo input
-            const counted = this.state.payments && this.state.payments[cashPMId]
-                ? parseFloat(this.state.payments[cashPMId].counted || this.state.payments[cashPMId].amount || 0)
-                : income;
+            // Get counted from state, default to 0 if not entered
+            const counted = this.state.trcf_counted_amounts[cashPMId] !== undefined
+                ? parseFloat(this.state.trcf_counted_amounts[cashPMId] || 0)
+                : 0;
 
-            const difference = opening + income - expenseTotal - counted;
+            // Difference = counted - expected (positive = surplus/dư, negative = deficit/thiếu)
+            const difference = counted - expectedTotal;
 
             const cashData = {
                 id: cashPMId,
@@ -313,28 +313,30 @@ patch(ClosePosPopup.prototype, {
                 isCash: true,
             };
 
-            console.log('💰 TRCF: Adding cash payment method:', cashData);
             paymentMethods.push(cashData);
-        } else {
-            console.log('ℹ️ TRCF: No default_cash_details in props');
         }
 
         // Add non-cash payment methods from props
         if (this.props.non_cash_payment_methods && this.props.non_cash_payment_methods.length > 0) {
-            console.log('💳 TRCF: Non-cash payment methods from props:', this.props.non_cash_payment_methods);
-
             this.props.non_cash_payment_methods.forEach(pm => {
                 const opening = pm.opening || 0;
-                const income = pm.amount || 0;
+
+                // Calculate income from actual payment lines (most accurate method)
+                const income = this.getPaymentIncomeByMethod(pm.id);
+
                 const expenseTotal = this.getExpensesByPaymentMethodId(pm.id, false);
                 const expenseDetails = this.getExpensesByPaymentMethodId(pm.id, true);
 
-                // Get counted from state or default to income
+                // Expected total = opening + income - expenses
+                const expectedTotal = opening + income - expenseTotal;
+
+                // Get counted from state, default to 0 if not entered
                 const counted = this.state.trcf_counted_amounts[pm.id] !== undefined
                     ? parseFloat(this.state.trcf_counted_amounts[pm.id] || 0)
-                    : income;
+                    : 0;
 
-                const difference = opening + income - expenseTotal - counted;
+                // Difference = counted - expected (positive = surplus/dư, negative = deficit/thiếu)
+                const difference = counted - expectedTotal;
 
                 const pmData = {
                     id: pm.id,
@@ -348,15 +350,10 @@ patch(ClosePosPopup.prototype, {
                     isCash: false,
                 };
 
-                console.log(`💳 TRCF: Adding ${pm.name}:`, pmData);
                 paymentMethods.push(pmData);
             });
-        } else {
-            console.log('ℹ️ TRCF: No non_cash_payment_methods in props');
         }
 
-        console.log('✅ TRCF: Total payment methods to display:', paymentMethods.length);
-        console.log('✅ TRCF: Payment methods array:', paymentMethods);
         return paymentMethods;
     },
 
@@ -378,11 +375,15 @@ patch(ClosePosPopup.prototype, {
         return this.props.non_cash_payment_methods;
     },
 
-    // Get income for a payment method
+    // Get income for a payment method (excluding opening balance)
     getPaymentMethodIncome(paymentMethodId) {
         if (this.props.non_cash_payment_methods) {
             const pm = this.props.non_cash_payment_methods.find(p => p.id === paymentMethodId);
-            return pm ? (pm.amount || 0) : 0;
+            if (pm) {
+                const opening = pm.opening || 0;
+                const amount = pm.amount || 0;
+                return amount - opening;
+            }
         }
         return 0;
     },
@@ -394,7 +395,8 @@ patch(ClosePosPopup.prototype, {
         // Add cash balance (opening + income - expenses)
         if (this.pos.config.cash_control && this.props.default_cash_details) {
             const cashOpening = this.props.default_cash_details.opening || 0;
-            const cashIncome = this.props.default_cash_details.amount || 0;
+            const cashAmount = this.props.default_cash_details.amount || 0;
+            const cashIncome = cashAmount - cashOpening; // Exclude opening from income
             const cashExpenses = this.getCashExpenses();
             total += cashOpening + cashIncome - cashExpenses;
         }
@@ -403,7 +405,8 @@ patch(ClosePosPopup.prototype, {
         if (this.props.non_cash_payment_methods) {
             this.props.non_cash_payment_methods.forEach(pm => {
                 const opening = (pm.type === 'bank' && pm.number !== 0) ? this.getPaymentMethodOpening(pm.id) : 0;
-                const income = pm.amount || 0;
+                const pmAmount = pm.amount || 0;
+                const income = pmAmount - opening; // Exclude opening from income
                 const expenses = this.getExpensesByPaymentMethodId(pm.id);
                 total += opening + income - expenses;
             });
@@ -414,19 +417,45 @@ patch(ClosePosPopup.prototype, {
 
     // Calculate next session opening balance
     get nextSessionOpening() {
-        const cashCounted = this.countedCash;
+        // Get cash payment method ID
+        const cashPMId = this.props.default_cash_details?.id || 'cash';
+
+        // Get actual counted cash from input field
+        const cashCounted = this.state.trcf_counted_amounts[cashPMId] !== undefined
+            ? parseFloat(this.state.trcf_counted_amounts[cashPMId] || 0)
+            : 0;
+
         const ownerWithdrawal = parseFloat(this.state.trcf_owner_withdrawal || "0");
+
+        // Debug log
+        console.log('🔍 nextSessionOpening - cashPMId:', cashPMId);
+        console.log('🔍 nextSessionOpening - trcf_counted_amounts:', this.state.trcf_counted_amounts);
+        console.log('🔍 nextSessionOpening - cashCounted:', cashCounted);
+        console.log('🔍 nextSessionOpening - ownerWithdrawal:', ownerWithdrawal);
+        console.log('🔍 nextSessionOpening - result:', cashCounted - ownerWithdrawal);
 
         if (!this.env.utils.isValidFloat(String(ownerWithdrawal))) {
             return 0;
         }
 
+        // Next session opening = cash counted - owner withdrawal
         return cashCounted - ownerWithdrawal;
     },
 
     // Update counted amount for a payment method
     onCountedAmountChange(paymentMethodId, value) {
+        // Explicitly save the value first (in case tModel hasn't updated yet)
         this.state.trcf_counted_amounts[paymentMethodId] = value;
+
+        // If this is cash payment method, recalculate next session opening
+        const cashPMId = this.props.default_cash_details?.id;
+
+        if (paymentMethodId === cashPMId) {
+            // Use nextTick to ensure state is updated before calculating
+            Promise.resolve().then(() => {
+                this.state.trcf_next_session_opening = String(this.nextSessionOpening);
+            });
+        }
     },
 
     // Update next session opening when owner withdrawal changes
@@ -438,16 +467,69 @@ patch(ClosePosPopup.prototype, {
 
     // Override closeSession to save the new fields
     async closeSession() {
-        // Save owner withdrawal and next session opening
+        // Save owner withdrawal and next session opening to pos.session
         if (this.env.utils.isValidFloat(this.state.trcf_owner_withdrawal)) {
+            // Use the value from state instead of recalculating
+            const nextSessionOpeningValue = parseFloat(this.state.trcf_next_session_opening || 0);
+
             await this.pos.data.call(
                 "pos.session",
                 "write",
                 [[this.pos.session.id], {
                     trcf_owner_withdrawal: parseFloat(this.state.trcf_owner_withdrawal),
-                    trcf_next_session_opening: this.nextSessionOpening,
+                    trcf_next_session_opening: nextSessionOpeningValue,
                 }]
             );
+        }
+
+        // Save payment count data for each payment method
+        const paymentMethods = this.getAllPaymentMethods();
+        const paymentCountData = [];
+
+        for (const pm of paymentMethods) {
+            const countedAmount = this.state.trcf_counted_amounts[pm.id] !== undefined
+                ? parseFloat(this.state.trcf_counted_amounts[pm.id] || 0)
+                : 0;
+
+            paymentCountData.push({
+                session_id: this.pos.session.id,
+                payment_method_id: pm.id,
+                opening_amount: pm.opening || 0,
+                income_amount: pm.income || 0,
+                expense_amount: pm.expenses || 0,
+                counted_amount: countedAmount,
+            });
+        }
+
+        // Create or update payment count records
+        if (paymentCountData.length > 0) {
+            for (const data of paymentCountData) {
+                // Check if record exists
+                const existing = await this.pos.data.searchRead(
+                    'trcf.pos.session.payment.count',
+                    [
+                        ['session_id', '=', data.session_id],
+                        ['payment_method_id', '=', data.payment_method_id]
+                    ],
+                    ['id']
+                );
+
+                if (existing.length > 0) {
+                    // Update existing record
+                    await this.pos.data.call(
+                        'trcf.pos.session.payment.count',
+                        'write',
+                        [[existing[0].id], data]
+                    );
+                } else {
+                    // Create new record
+                    await this.pos.data.call(
+                        'trcf.pos.session.payment.count',
+                        'create',
+                        [data]
+                    );
+                }
+            }
         }
 
         // Call original closeSession

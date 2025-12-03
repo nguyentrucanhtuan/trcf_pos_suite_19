@@ -4,8 +4,20 @@
     <!-- Extend POS Closing Popup to add owner withdrawal fields -->
     <t t-name="trcf_pnl_dashboard.ClosePosPopup" t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension">
         
-        <!-- Add payment summary after payment-methods-overview -->
-        <xpath expr="//div[@class='payment-methods-overview']" position="after">
+        <!-- Hide default cash count input (replaced with custom one in our summary) -->
+        <xpath expr="//div[@t-if='pos.config.cash_control'][label[text()='Cash Count']]" position="replace">
+            <!-- Hidden: using custom cash count input in payment summary table -->
+        </xpath>
+
+        <!-- Hide default non-cash payment count inputs (replaced with custom ones) -->
+        <xpath expr="//div[@t-foreach='props.non_cash_payment_methods'][@t-as='pm'][@class='w-100 mb-3']" position="replace">
+            <!-- Hidden: using custom payment count inputs in payment summary table -->
+        </xpath>
+
+        <!-- Replace payment-methods-overview with custom summary -->
+        <xpath expr="//div[@class='payment-methods-overview']" position="replace">
+            <!-- Keep the div to maintain compatibility with other templates -->
+            <div class="payment-methods-overview" style="display: none;"></div>
             <div class="trcf-payment-summary mt-3 mb-3 p-3 border rounded bg-light">
                 <h5 class="mb-3">Tổng Kết Thanh Toán</h5>
                 
@@ -67,23 +79,11 @@
                                 </tr>
                             </t>
 
-                            <!-- Counted amount -->
+                            <!-- Counted amount (display only) -->
                             <tr>
                                 <td class="ps-3">Đếm</td>
                                 <td class="text-end">
-                                    <t t-if="pm.isCash">
-                                        <!-- For cash, use existing Odoo input -->
-                                        <t t-esc="env.utils.formatCurrency(pm.counted)"/>
-                                    </t>
-                                    <t t-else="">
-                                        <!-- For non-cash, add input field -->
-                                        <Input 
-                                            tModel="[state.trcf_counted_amounts, pm.id]"
-                                            callback.bind="(value) => this.onCountedAmountChange(pm.id, value)"
-                                            isValid.bind="env.utils.isValidFloat" 
-                                            class="'form-control form-control-sm text-end'"
-                                            placeholder="'0'"/>
-                                    </t>
+                                    <t t-esc="env.utils.formatCurrency(pm.counted)"/>
                                 </td>
                             </tr>
 
@@ -96,6 +96,16 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Actual counted amount input (outside table) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Số tiền đếm thực tế</label>
+                        <Input 
+                            tModel="[state.trcf_counted_amounts, pm.id]"
+                            callback.bind="(value) => this.onCountedAmountChange(pm.id, value)"
+                            isValid.bind="env.utils.isValidFloat" 
+                            placeholder="'0'"/>
+                    </div>
                 </t>
             </div>
         </xpath>
@@ -113,7 +123,6 @@
                             tModel="[state, 'trcf_owner_withdrawal']"
                             callback.bind="(value) => this.onOwnerWithdrawalChange(value)"
                             isValid.bind="env.utils.isValidFloat" 
-                            class="'form-control'"
                             placeholder="'0'"/>
                         <small class="text-muted d-block mt-1">Số tiền owner rút khỏi két</small>
                     </div>
@@ -124,7 +133,6 @@
                         <Input 
                             tModel="[state, 'trcf_next_session_opening']"
                             isValid.bind="env.utils.isValidFloat" 
-                            class="'form-control bg-light'"
                             placeholder="'0'"
                             readonly="true"/>
                         <small class="text-muted d-block mt-1">Tiền đếm - Tiền lấy về</small>

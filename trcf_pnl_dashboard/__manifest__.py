@@ -17,6 +17,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/pos_session_views.xml',
+        'views/pos_session_payment_count_views.xml',
     ],
     'assets': {
         'point_of_sale._assets_pos': [

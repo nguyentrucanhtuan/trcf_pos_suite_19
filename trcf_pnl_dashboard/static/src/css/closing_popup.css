@@ -40,3 +40,14 @@
     max-width: 150px;
     margin-left: auto;
 }
+
+/* Hide default Odoo cash count input - we use custom one */
+.modal-body > .mb-3:has(label.form-label:contains("Cash Count")),
+.modal-body > .mb-3:has(> .d-flex > .cash-input) {
+    display: none !important;
+}
+
+/* Hide default Odoo payment method count inputs */
+.modal-body > .w-100.mb-3:has(> span:contains("Count")) {
+    display: none !important;
+}
