@@ -19,11 +19,12 @@ class TrcfInventoryCheckTemplate(models.Model):
         help='Tên mẫu phiếu kiểm kho (ví dụ: Phiếu kiểm kho chính, Phiếu kiểm quầy)'
     )
     
-    warehouse_id = fields.Many2one(
-        'stock.warehouse',
-        string='Kho',
+    location_id = fields.Many2one(
+        'stock.location',
+        string='Vị trí kho',
         required=True,
-        help='Kho cần kiểm kho'
+        domain=[('usage', '=', 'internal')],
+        help='Vị trí kho cần kiểm kho'
     )
     
     line_ids = fields.One2many(

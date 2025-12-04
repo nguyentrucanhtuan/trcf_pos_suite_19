@@ -149,14 +149,6 @@ class TrcfPurchaseController(http.Controller):
         user_tz = pytz.timezone(request.env.user.tz or 'UTC')
         today = datetime.now(user_tz).strftime('%d/%m/%Y %H:%M:%S')
         
-        # Load purchase taxes (thuế mua hàng)
-        purchase_taxes = request.env['account.tax'].sudo().search([
-            ('type_tax_use', '=', 'purchase'),
-            ('company_id', '=', company_id)
-        ], order='amount')
-        
-        taxes_data = [{'id': tax.id, 'name': tax.name, 'amount': tax.amount} for tax in purchase_taxes]
-        
         # Load payment methods từ POS (chỉ của công ty hiện tại)
         payment_methods = []
         try:
@@ -178,7 +170,6 @@ class TrcfPurchaseController(http.Controller):
             'reference': reference,
             'today': today,
             'payment_methods': payment_methods,
-            'taxes': taxes_data,
         }
         
         return request.render('trcf_fnb_inventory.purchase_form_template', vals)
@@ -261,9 +252,9 @@ class TrcfPurchaseController(http.Controller):
                 uom_id = int(product_data.get('uom_id', 0))
                 qty = float(product_data.get('qty', 0))
                 price_unit = float(product_data.get('price_unit', 0))
-                vat_percent = float(product_data.get('vat_percent', 0))
+                tax_id = int(product_data.get('tax_id', 0))
                 
-                _logger.info(f"Processing product: id={product_id}, qty={qty}, price={price_unit}")
+                _logger.info(f"Processing product: id={product_id}, qty={qty}, price={price_unit}, tax_id={tax_id}")
                 
                 if product_id and qty > 0:
                     # Lấy thông tin sản phẩm
@@ -280,23 +271,16 @@ class TrcfPurchaseController(http.Controller):
                         'date_planned': date_order_dt,
                     }
                     
+                    # Add tax if selected (tax_id > 0 means a tax was selected)
+                    if tax_id > 0:
+                        line_vals['tax_ids'] = [(6, 0, [tax_id])]
+                    
                     _logger.info(f"Creating line with vals: {line_vals}")
                     
                     # Tạo line
                     po_line = request.env['purchase.order.line'].sudo().create(line_vals)
                     lines_created += 1
                     _logger.info(f"Created line: {po_line.id}")
-                    
-                    # Xử lý VAT nếu có
-                    if vat_percent > 0:
-                        # Tìm tax theo tỷ lệ
-                        tax = request.env['account.tax'].sudo().search([
-                            ('amount', '=', vat_percent),
-                            ('type_tax_use', '=', 'purchase')
-                        ], limit=1)
-                        
-                        if tax:
-                            po_line.sudo().write({'taxes_id': [(6, 0, [tax.id])]})
                 else:
                     _logger.warning(f"Skipping product: id={product_id}, qty={qty} (invalid)")
             

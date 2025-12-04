@@ -1,7 +1,7 @@
 <odoo>
     <template id="sidebar_layout_template">
 
-        <aside class="flex w-64 flex-col bg-white p-4 dark:bg-background-dark dark:border-r dark:border-gray-700/50">
+        <aside class="flex w-64 flex-shrink-0 flex-col bg-white p-4 dark:bg-background-dark dark:border-r dark:border-gray-700/50">
             <div class="flex flex-col gap-4">
                 <div class="flex items-center gap-3">
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeOsAlV_kN5CiucZser69FgmTC5AAnDme1lxSTY3AbhvESPQf4U4WqKxU4eJtzWd0BsCvuf2RDHkAl4EsCHIF1KfhzkY3kqtGH8Bo8cpF00UHeM-Q2HGYLE6e-10npr1MkzJMiXOS7Y0gY2Q9Fc9JlkJjV2dvk1e-8Us1XLt6k3N6Fx2wPWWtCSG2gt2GuXP0FSXLteHZiS_8GrTgSDLCmDmVKkWAgKq4Ws14ejlPDsR6FEsBIyFmFZgZvF1qSoeJRbtehkWfY10Ly");'></div>

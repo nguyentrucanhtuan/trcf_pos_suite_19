@@ -4,7 +4,7 @@ Module quản lý mẫu phiếu kiểm kho cho hệ thống Odoo.
 
 ## Tính năng
 
-- **Tạo mẫu phiếu kiểm kho**: Định nghĩa sẵn danh sách sản phẩm cần kiểm cho từng kho/vị trí
+- **Tạo mẫu phiếu kiểm kho**: Định nghĩa sẵn danh sách sản phẩm cần kiểm cho từng vị trí kho
 - **Chọn đơn vị tính tùy chỉnh**: Mỗi sản phẩm có thể có đơn vị tính khác với đơn vị mặc định
 - **Sắp xếp thứ tự**: Sắp xếp sản phẩm theo vị trí vật lý để kiểm kho thuận tiện
 - **Tái sử dụng**: Sử dụng lại mẫu phiếu cho các lần kiểm kho sau
@@ -23,7 +23,7 @@ Module quản lý mẫu phiếu kiểm kho cho hệ thống Odoo.
 2. Nhấn **Tạo mới**
 3. Nhập thông tin:
    - **Tên phiếu kiểm**: Ví dụ "Phiếu kiểm kho chính", "Phiếu kiểm quầy"
-   - **Kho/Vị trí**: Chọn kho cần kiểm
+   - **Vị trí kho**: Chọn vị trí kho cần kiểm
 4. Thêm sản phẩm vào danh sách:
    - Chọn sản phẩm
    - Chọn đơn vị tính (có thể khác đơn vị mặc định)
@@ -41,9 +41,8 @@ Module này được thiết kế để tích hợp với các module kiểm kho
 
 ### Model: `trcf.inventory.check.template`
 - `name`: Tên phiếu kiểm
-- `location_id`: Kho/vị trí
+- `location_id`: Vị trí kho (stock.location)
 - `line_ids`: Danh sách sản phẩm
-- `active`: Trạng thái hoạt động
 - `note`: Ghi chú
 
 ### Model: `trcf.inventory.check.template.line`

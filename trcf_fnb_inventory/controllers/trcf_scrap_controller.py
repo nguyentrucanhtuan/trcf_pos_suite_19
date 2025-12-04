@@ -121,12 +121,54 @@ class TrcfScrapController(http.Controller):
         # Prepare product data for template
         product_list = []
         for product in products:
+            # Check if product is a Kit (has phantom BoM)
+            is_kit = product.is_kits
+
+            # Get all phantom BoMs for this product if it's a Kit
+            boms = []
+            if is_kit:
+                phantom_boms = request.env['mrp.bom'].sudo().search([
+                    ('product_id', '=', product.id),
+                    ('type', '=', 'phantom'),
+                    '|',
+                    ('company_id', '=', current_company.id),
+                    ('company_id', '=', False)
+                ])
+                # If no specific product BoM, try template BoM
+                if not phantom_boms:
+                    phantom_boms = request.env['mrp.bom'].sudo().search([
+                        ('product_tmpl_id', '=', product.product_tmpl_id.id),
+                        ('product_id', '=', False),
+                        ('type', '=', 'phantom'),
+                        '|',
+                        ('company_id', '=', current_company.id),
+                        ('company_id', '=', False)
+                    ])
+
+                for bom in phantom_boms:
+                    # Get components info
+                    components = []
+                    for line in bom.bom_line_ids:
+                        components.append({
+                            'name': line.product_id.name,
+                            'qty': line.product_qty,
+                            'uom': line.product_uom_id.name,
+                        })
+
+                    boms.append({
+                        'id': bom.id,
+                        'name': bom.code or f"BoM - {product.name}",
+                        'components': components,
+                    })
+
             product_list.append({
                 'id': product.id,
                 'name': product.name,
                 'uom_id': product.uom_id.id,
                 'uom_name': product.uom_id.name,
                 'qty_available': product.qty_available,
+                'is_kit': is_kit,
+                'boms': boms,
             })
         
         
@@ -190,15 +232,20 @@ class TrcfScrapController(http.Controller):
             scrap_qty = float(form_data.get('scrap_qty', 0))
             reason_id = int(form_data.get('reason_id', 0)) if form_data.get('reason_id') else False
             description = form_data.get('description', '').strip()
-            
+            bom_id = int(form_data.get('bom_id', 0)) if form_data.get('bom_id') else False
+
             # Validate data
             if scrap_qty <= 0:
                 return self._render_scrap_form(error='Số lượng hủy phải lớn hơn 0')
-            
+
             # Get product
             product = request.env['product.product'].sudo().browse(product_id)
             if not product.exists():
                 return self._render_scrap_form(error='Sản phẩm không tồn tại')
+
+            # Validate BoM for Kit products
+            if product.is_kits and not bom_id:
+                return self._render_scrap_form(error='Sản phẩm này là Kit, vui lòng chọn BoM (công thức sản xuất)')
             
             # Get default source location (stock)
             warehouse = request.env['stock.warehouse'].sudo().search([
@@ -233,15 +280,62 @@ class TrcfScrapController(http.Controller):
                 'trcf_scrap_description': description,  # Save description
                 'company_id': request.env.company.id,
             }
+
+            # Add BoM if product is Kit
+            if product.is_kits and bom_id:
+                scrap_vals['bom_id'] = bom_id
             
-            
-            scrap = request.env['stock.scrap'].sudo().create(scrap_vals)
-            _logger.info(f"Created scrap {scrap.name} for product {product.name}, qty: {scrap_qty}")
-            
-            # Process scrap immediately (this will adjust stock)
-            scrap.action_validate()
-            _logger.info(f"Scrap {scrap.name} validated and stock adjusted")
-            
+
+            # For Kit products, we need to scrap components individually
+            if product.is_kits and bom_id:
+                bom = request.env['mrp.bom'].sudo().browse(bom_id)
+                if not bom.exists():
+                    return self._render_scrap_form(error='BoM không tồn tại')
+
+                _logger.info(f"Creating scrap for Kit product {product.name} with BoM {bom.display_name}")
+
+                # Explode the BoM to get components
+                factor = scrap_qty / bom.product_qty
+                boms, bom_lines = bom.explode(product, factor)
+
+                # Create scrap for each component
+                created_scraps = []
+                for bom_line, line_data in bom_lines:
+                    component = bom_line.product_id
+                    component_qty = line_data['qty']
+
+                    # Skip if quantity is zero or product is service
+                    if component_qty <= 0 or component.type == 'service':
+                        continue
+
+                    component_scrap_vals = {
+                        'product_id': component.id,
+                        'scrap_qty': component_qty,
+                        'product_uom_id': bom_line.product_uom_id.id,
+                        'location_id': source_location.id if source_location else False,
+                        'scrap_location_id': scrap_location.id,
+                        'scrap_reason_tag_ids': [(6, 0, [reason_id])] if reason_id else False,
+                        'trcf_scrap_description': f"[Kit: {product.name}] {description}",
+                        'company_id': request.env.company.id,
+                        'origin': f"Kit {product.name}",
+                    }
+
+                    component_scrap = request.env['stock.scrap'].sudo().create(component_scrap_vals)
+                    component_scrap.action_validate()
+                    created_scraps.append(component_scrap)
+                    _logger.info(f"Created and validated scrap for component {component.name}, qty: {component_qty}")
+
+                _logger.info(f"Successfully scrapped Kit {product.name}: {len(created_scraps)} components processed")
+
+            else:
+                # Normal product - create single scrap
+                scrap = request.env['stock.scrap'].sudo().create(scrap_vals)
+                _logger.info(f"Created scrap {scrap.name} for product {product.name}, qty: {scrap_qty}")
+
+                # Process scrap immediately (this will adjust stock)
+                scrap.action_validate()
+                _logger.info(f"Scrap {scrap.name} validated and stock adjusted")
+
             # Redirect to scrap list
             return request.redirect('/trcf_fnb_inventory/scrap_list')
             

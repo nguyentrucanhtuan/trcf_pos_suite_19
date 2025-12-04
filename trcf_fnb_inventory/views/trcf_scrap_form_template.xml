@@ -48,6 +48,78 @@
                 .material-symbols-outlined {
                     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
                 }
+
+                /* Custom Select Styles */
+                .custom-select-container {
+                    position: relative;
+                }
+
+                .custom-select-search {
+                    transition: all 0.2s ease;
+                }
+
+                .custom-select-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    margin-top: 4px;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                    z-index: 50;
+                    opacity: 0;
+                    transform: translateY(-10px);
+                    transition: all 0.15s ease-out;
+                    pointer-events: none;
+                }
+
+                .custom-select-dropdown.active {
+                    opacity: 1;
+                    transform: translateY(0);
+                    pointer-events: auto;
+                }
+
+                .custom-select-option {
+                    padding: 0.75rem 1rem;
+                    cursor: pointer;
+                    transition: all 0.1s ease;
+                }
+
+                .custom-select-option:hover,
+                .custom-select-option.highlighted {
+                    background-color: rgb(239 246 255);
+                }
+
+                .dark .custom-select-option:hover,
+                .dark .custom-select-option.highlighted {
+                    background-color: rgb(30 41 59);
+                }
+
+                .custom-select-option.selected {
+                    background-color: rgb(219 234 254);
+                }
+
+                .dark .custom-select-option.selected {
+                    background-color: rgb(30 58 138);
+                }
+
+                .custom-select-no-results {
+                    padding: 1rem;
+                    text-align: center;
+                    color: rgb(148 163 184);
+                }
+
+                /* Smooth transitions for all interactive elements */
+                input, select, button {
+                    transition: all 0.15s ease;
+                }
+
+                /* Hide original select */
+                .custom-select-container select {
+                    display: none;
+                }
             </style>
         </xpath>
 
@@ -83,23 +155,66 @@
                                 <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
                                     <div class="flex flex-col gap-6">
                                         
-                                        <!-- Product Selection -->
+                                        <!-- Product Selection with Search -->
                                         <div>
                                             <label class="flex flex-col w-full">
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
                                                     Chọn sản phẩm <span class="text-red-500">*</span>
                                                 </p>
-                                                <select id="product_select" name="product_id" required="required" onchange="updateUOM()" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
-                                                    <option value="">-- Chọn sản phẩm --</option>
-                                                    <t t-foreach="products" t-as="product">
-                                                        <option t-att-value="product['id']" 
-                                                                t-att-data-uom="product['uom_name']"
-                                                                t-att-data-qty="product['qty_available']">
-                                                            <t t-esc="product['name']"/> (<t t-esc="product['qty_available']"/> <t t-esc="product['uom_name']"/> có sẵn)
-                                                        </option>
-                                                    </t>
+                                                <div class="custom-select-container">
+                                                    <!-- Search Input -->
+                                                    <div class="relative">
+                                                        <input
+                                                            type="text"
+                                                            id="product_search"
+                                                            placeholder="Tìm kiếm sản phẩm..."
+                                                            autocomplete="off"
+                                                            class="custom-select-search form-input flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 pl-10 pr-10 text-sm font-normal leading-normal placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary"
+                                                        />
+                                                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary">search</span>
+                                                        <span id="clear_search" class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary cursor-pointer hover:text-text-light-primary dark:hover:text-text-dark-primary" style="display: none;">close</span>
+                                                    </div>
+
+                                                    <!-- Dropdown -->
+                                                    <div id="product_dropdown" class="custom-select-dropdown bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark">
+                                                        <!-- Options will be populated here -->
+                                                    </div>
+
+                                                    <!-- Hidden Select (for form submission) -->
+                                                    <select id="product_select" name="product_id" required="required" class="form-select">
+                                                        <option value="">-- Chọn sản phẩm --</option>
+                                                        <t t-foreach="products" t-as="product">
+                                                            <option t-att-value="product['id']"
+                                                                    t-att-data-uom="product['uom_name']"
+                                                                    t-att-data-qty="product['qty_available']"
+                                                                    t-att-data-is-kit="product['is_kit']"
+                                                                    t-att-data-boms="json.dumps(product['boms'])"
+                                                                    t-att-data-name="product['name']">
+                                                                <t t-esc="product['name']"/>
+                                                                <t t-if="product['is_kit']">[Kit]</t>
+                                                                (<t t-esc="product['qty_available']"/> <t t-esc="product['uom_name']"/> có sẵn)
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <!-- BoM Selection (only for Kit products) -->
+                                        <div id="bom_container" style="display: none;">
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                    Chọn công thức (BoM) <span class="text-red-500">*</span>
+                                                </p>
+                                                <select id="bom_select" name="bom_id" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                    <option value="">-- Chọn BoM --</option>
                                                 </select>
                                             </label>
+                                            <div id="bom_components" class="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg" style="display: none;">
+                                                <p class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Linh kiện trong Kit:</p>
+                                                <ul id="bom_components_list" class="text-sm text-blue-700 dark:text-blue-300 list-disc list-inside space-y-1">
+                                                </ul>
+                                            </div>
                                         </div>
                                         
                                         <!-- Quantity and UOM -->
@@ -166,68 +281,375 @@
                 <!-- JavaScript -->
                 <script>
                 <![CDATA[
-                    function updateUOM() {
+                    // State management
+                    let currentProductBoms = [];
+                    let allProducts = [];
+                    let filteredProducts = [];
+                    let selectedIndex = -1;
+                    let isDropdownOpen = false;
+
+                    // Debounce function for search optimization
+                    function debounce(func, wait) {
+                        let timeout;
+                        return function executedFunction(...args) {
+                            const later = () => {
+                                clearTimeout(timeout);
+                                func(...args);
+                            };
+                            clearTimeout(timeout);
+                            timeout = setTimeout(later, wait);
+                        };
+                    }
+
+                    // Remove Vietnamese accents for better search
+                    function removeVietnameseAccents(str) {
+                        return str.normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+                            .toLowerCase();
+                    }
+
+                    // Initialize products from select options
+                    function initializeProducts() {
+                        const select = document.getElementById('product_select');
+                        allProducts = Array.from(select.options)
+                            .filter(opt => opt.value !== '')
+                            .map(opt => ({
+                                id: opt.value,
+                                name: opt.getAttribute('data-name') || opt.textContent.trim(),
+                                displayText: opt.textContent.trim(),
+                                uom: opt.getAttribute('data-uom'),
+                                qty: opt.getAttribute('data-qty'),
+                                isKit: opt.getAttribute('data-is-kit') === 'True',
+                                boms: opt.getAttribute('data-boms'),
+                                searchText: removeVietnameseAccents(opt.textContent.trim())
+                            }));
+                    }
+
+                    // Render dropdown options
+                    function renderDropdown(products) {
+                        const dropdown = document.getElementById('product_dropdown');
+
+                        if (products.length === 0) {
+                            dropdown.innerHTML = '<div class="custom-select-no-results">Không tìm thấy sản phẩm</div>';
+                            return;
+                        }
+
+                        dropdown.innerHTML = products.map((product, index) => {
+                            const isSelected = index === selectedIndex;
+                            return `
+                                <div class="custom-select-option ${isSelected ? 'highlighted' : ''}"
+                                     data-index="${index}"
+                                     data-value="${product.id}">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <div class="font-medium text-text-light-primary dark:text-text-dark-primary">
+                                                ${product.name}
+                                                ${product.isKit ? '<span class="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Kit</span>' : ''}
+                                            </div>
+                                            <div class="text-xs text-text-light-secondary dark:text-text-dark-secondary mt-1">
+                                                ${product.qty} ${product.uom} có sẵn
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+
+                        // Add click listeners
+                        dropdown.querySelectorAll('.custom-select-option').forEach(option => {
+                            option.addEventListener('click', function() {
+                                const index = parseInt(this.getAttribute('data-index'));
+                                selectProduct(index);
+                            });
+                        });
+                    }
+
+                    // Filter products based on search
+                    function filterProducts(searchTerm) {
+                        if (!searchTerm) {
+                            filteredProducts = [...allProducts];
+                        } else {
+                            const searchText = removeVietnameseAccents(searchTerm);
+                            filteredProducts = allProducts.filter(product =>
+                                product.searchText.includes(searchText)
+                            );
+                        }
+                        selectedIndex = filteredProducts.length > 0 ? 0 : -1;
+                        renderDropdown(filteredProducts);
+                    }
+
+                    // Open dropdown
+                    function openDropdown() {
+                        if (!isDropdownOpen) {
+                            isDropdownOpen = true;
+                            const dropdown = document.getElementById('product_dropdown');
+                            dropdown.classList.add('active');
+                            filterProducts(document.getElementById('product_search').value);
+                        }
+                    }
+
+                    // Close dropdown
+                    function closeDropdown() {
+                        if (isDropdownOpen) {
+                            isDropdownOpen = false;
+                            const dropdown = document.getElementById('product_dropdown');
+                            dropdown.classList.remove('active');
+                        }
+                    }
+
+                    // Select product
+                    function selectProduct(index) {
+                        if (index < 0 || index >= filteredProducts.length) return;
+
+                        const product = filteredProducts[index];
+                        const select = document.getElementById('product_select');
+                        const searchInput = document.getElementById('product_search');
+
+                        // Update hidden select
+                        select.value = product.id;
+
+                        // Update search input
+                        searchInput.value = product.name;
+
+                        // Close dropdown
+                        closeDropdown();
+
+                        // Trigger product change
+                        onProductChange();
+
+                        // Update clear button
+                        document.getElementById('clear_search').style.display = 'block';
+                    }
+
+                    // Clear search
+                    function clearSearch() {
+                        const searchInput = document.getElementById('product_search');
+                        const select = document.getElementById('product_select');
+
+                        searchInput.value = '';
+                        select.value = '';
+                        document.getElementById('clear_search').style.display = 'none';
+
+                        closeDropdown();
+                        onProductChange();
+                    }
+
+                    // Handle keyboard navigation
+                    function handleKeyDown(e) {
+                        if (!isDropdownOpen) {
+                            if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                                openDropdown();
+                                e.preventDefault();
+                            }
+                            return;
+                        }
+
+                        switch(e.key) {
+                            case 'ArrowDown':
+                                e.preventDefault();
+                                selectedIndex = Math.min(selectedIndex + 1, filteredProducts.length - 1);
+                                renderDropdown(filteredProducts);
+                                scrollToSelected();
+                                break;
+                            case 'ArrowUp':
+                                e.preventDefault();
+                                selectedIndex = Math.max(selectedIndex - 1, 0);
+                                renderDropdown(filteredProducts);
+                                scrollToSelected();
+                                break;
+                            case 'Enter':
+                                e.preventDefault();
+                                if (selectedIndex >= 0) {
+                                    selectProduct(selectedIndex);
+                                }
+                                break;
+                            case 'Escape':
+                                e.preventDefault();
+                                closeDropdown();
+                                break;
+                        }
+                    }
+
+                    // Scroll to selected option
+                    function scrollToSelected() {
+                        const dropdown = document.getElementById('product_dropdown');
+                        const highlighted = dropdown.querySelector('.highlighted');
+                        if (highlighted) {
+                            highlighted.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                        }
+                    }
+
+                    // Original onProductChange function (enhanced)
+                    function onProductChange() {
                         const select = document.getElementById('product_select');
                         const selectedOption = select.options[select.selectedIndex];
                         const uomDisplay = document.getElementById('uom_display');
-                        
+                        const bomContainer = document.getElementById('bom_container');
+                        const bomSelect = document.getElementById('bom_select');
+                        const bomComponents = document.getElementById('bom_components');
+
+                        // Update UOM with animation
                         if (selectedOption.value) {
                             const uom = selectedOption.getAttribute('data-uom');
                             uomDisplay.value = uom;
+
+                            // Check if product is a Kit
+                            const isKit = selectedOption.getAttribute('data-is-kit') === 'True';
+
+                            if (isKit) {
+                                // Get BoMs data
+                                const bomsData = selectedOption.getAttribute('data-boms');
+                                try {
+                                    currentProductBoms = JSON.parse(bomsData);
+                                } catch (e) {
+                                    currentProductBoms = [];
+                                }
+
+                                // Clear and populate BoM select
+                                bomSelect.innerHTML = '<option value="">-- Chọn BoM --</option>';
+                                currentProductBoms.forEach(bom => {
+                                    const option = document.createElement('option');
+                                    option.value = bom.id;
+                                    option.textContent = bom.name;
+                                    option.setAttribute('data-components', JSON.stringify(bom.components));
+                                    bomSelect.appendChild(option);
+                                });
+
+                                // Auto-select if only one BoM
+                                if (currentProductBoms.length === 1) {
+                                    bomSelect.value = currentProductBoms[0].id;
+                                    onBomChange();
+                                }
+
+                                // Show BoM container with animation
+                                bomContainer.style.display = 'block';
+                                bomSelect.required = true;
+                            } else {
+                                // Hide BoM container for non-Kit products
+                                bomContainer.style.display = 'none';
+                                bomSelect.required = false;
+                                bomComponents.style.display = 'none';
+                            }
                         } else {
                             uomDisplay.value = '';
+                            bomContainer.style.display = 'none';
+                            bomSelect.required = false;
+                            bomComponents.style.display = 'none';
                         }
                     }
-                    
-                    function toggleOtherReason() {
-                        const reasonSelect = document.getElementById('reason_select');
-                        const otherContainer = document.getElementById('other_reason_container');
-                        const otherTextarea = document.getElementById('other_reason');
-                        
-                        if (reasonSelect.value === 'Khác') {
-                            otherContainer.style.display = 'block';
-                            otherTextarea.required = true;
+
+                    function onBomChange() {
+                        const bomSelect = document.getElementById('bom_select');
+                        const selectedOption = bomSelect.options[bomSelect.selectedIndex];
+                        const bomComponents = document.getElementById('bom_components');
+                        const bomComponentsList = document.getElementById('bom_components_list');
+
+                        if (selectedOption.value) {
+                            const componentsData = selectedOption.getAttribute('data-components');
+                            try {
+                                const components = JSON.parse(componentsData);
+
+                                // Clear and populate components list
+                                bomComponentsList.innerHTML = '';
+                                components.forEach(comp => {
+                                    const li = document.createElement('li');
+                                    li.textContent = `${comp.name}: ${comp.qty} ${comp.uom}`;
+                                    bomComponentsList.appendChild(li);
+                                });
+
+                                bomComponents.style.display = 'block';
+                            } catch (e) {
+                                bomComponents.style.display = 'none';
+                            }
                         } else {
-                            otherContainer.style.display = 'none';
-                            otherTextarea.required = false;
-                            otherTextarea.value = '';
+                            bomComponents.style.display = 'none';
                         }
                     }
-                    
-                    // Form validation
-                    document.getElementById('scrapForm').addEventListener('submit', function(e) {
-                        const productId = document.getElementById('product_select').value;
-                        const qty = parseFloat(document.getElementById('scrap_qty').value);
-                        const reason = document.getElementById('reason_select').value;
-                        
-                        if (!productId) {
-                            e.preventDefault();
-                            alert('Vui lòng chọn sản phẩm');
-                            return false;
+
+                    // Initialize on DOM ready
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Initialize products
+                        initializeProducts();
+
+                        // Search input events
+                        const searchInput = document.getElementById('product_search');
+                        const debouncedFilter = debounce(function(e) {
+                            filterProducts(e.target.value);
+                        }, 300);
+
+                        searchInput.addEventListener('input', function(e) {
+                            debouncedFilter(e);
+                            openDropdown();
+
+                            // Show/hide clear button
+                            document.getElementById('clear_search').style.display =
+                                e.target.value ? 'block' : 'none';
+                        });
+
+                        searchInput.addEventListener('focus', function() {
+                            openDropdown();
+                        });
+
+                        searchInput.addEventListener('keydown', handleKeyDown);
+
+                        // Clear search button
+                        document.getElementById('clear_search').addEventListener('click', clearSearch);
+
+                        // Close dropdown when clicking outside
+                        document.addEventListener('click', function(e) {
+                            const container = document.querySelector('.custom-select-container');
+                            if (!container.contains(e.target)) {
+                                closeDropdown();
+                            }
+                        });
+
+                        // BoM select listener
+                        const bomSelect = document.getElementById('bom_select');
+                        if (bomSelect) {
+                            bomSelect.addEventListener('change', onBomChange);
                         }
-                        
-                        if (!qty || qty <= 0) {
-                            e.preventDefault();
-                            alert('Số lượng hủy phải lớn hơn 0');
-                            return false;
-                        }
-                        
-                        if (!reason) {
-                            e.preventDefault();
-                            alert('Vui lòng chọn lý do hủy hàng');
-                            return false;
-                        }
-                        
-                        if (reason === 'Khác') {
-                            const otherReason = document.getElementById('other_reason').value.trim();
-                            if (!otherReason) {
+
+                        // Form validation
+                        document.getElementById('scrapForm').addEventListener('submit', function(e) {
+                            const productId = document.getElementById('product_select').value;
+                            const qty = parseFloat(document.getElementById('scrap_qty').value);
+                            const reason = document.getElementById('reason_select').value;
+
+                            if (!productId) {
                                 e.preventDefault();
-                                alert('Vui lòng nhập chi tiết lý do khác');
+                                alert('Vui lòng chọn sản phẩm');
                                 return false;
                             }
-                        }
-                        
-                        return true;
+
+                            // Check if product is Kit and validate BoM selection
+                            const productSelect = document.getElementById('product_select');
+                            const selectedOption = productSelect.options[productSelect.selectedIndex];
+                            const isKit = selectedOption.getAttribute('data-is-kit') === 'True';
+
+                            if (isKit) {
+                                const bomId = document.getElementById('bom_select').value;
+                                if (!bomId) {
+                                    e.preventDefault();
+                                    alert('Sản phẩm này là Kit, vui lòng chọn BoM (công thức sản xuất)');
+                                    return false;
+                                }
+                            }
+
+                            if (!qty || qty <= 0) {
+                                e.preventDefault();
+                                alert('Số lượng hủy phải lớn hơn 0');
+                                return false;
+                            }
+
+                            if (!reason) {
+                                e.preventDefault();
+                                alert('Vui lòng chọn lý do hủy hàng');
+                                return false;
+                            }
+
+                            return true;
+                        });
                     });
                 ]]>
                 </script>

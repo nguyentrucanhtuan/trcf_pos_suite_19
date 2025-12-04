@@ -253,12 +253,10 @@
                 <![CDATA[
                     // Data from backend - these will be populated by Odoo template engine before CDATA
                     let productsData = [];
-                    let taxesData = [];
                     
                     // This function will be called after data is loaded
-                    function initializeData(products, taxes) {
+                    function initializeData(products) {
                         productsData = products;
-                        taxesData = taxes;
                     }
                     
                     let lineCounter = 0;
@@ -351,12 +349,6 @@
                             productOptions += '<option value="' + p.id + '">' + p.name + '</option>';
                         });
                         
-                        // Build tax options
-                        let taxOptions = '<option value="0" data-amount="0">Không thuế (0%)</option>';
-                        taxesData.forEach(function(tax) {
-                            taxOptions += '<option value="' + tax.id + '" data-amount="' + tax.amount + '">' + tax.name + ' (' + tax.amount + '%)</option>';
-                        });
-                        
                         tr.innerHTML = 
                             '<td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0">' +
                                 '<select onchange="updateProductUOM(' + lineId + ')" class="product-select form-select w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm">' +
@@ -376,7 +368,7 @@
                             '</td>' +
                             '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
                                 '<select onchange="calculateTotals()" class="vat-select form-select w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm">' +
-                                    taxOptions +
+                                    '<option value="0" data-amount="0">-- Chọn sản phẩm trước --</option>' +
                                 '</select>' +
                             '</td>' +
                             '<td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">' +
@@ -394,7 +386,7 @@
                         const productSelect = line.querySelector('.product-select');
                         const uomSelect = line.querySelector('.uom-select');
                         const priceInput = line.querySelector('.price-input');
-                        const vatInput = line.querySelector('.vat-input');
+                        const vatSelect = line.querySelector('.vat-select');
                         
                         const productId = parseInt(productSelect.value);
                         
@@ -402,7 +394,7 @@
                             // Clear UOM select if no product selected
                             uomSelect.innerHTML = '<option value="">-- Chọn đơn vị --</option>';
                             priceInput.value = 0;
-                            vatInput.value = 0;
+                            vatSelect.value = '0';
                             return;
                         }
                         
@@ -436,18 +428,24 @@
                         // Set price from standard_price (base price in primary UOM)
                         priceInput.value = Math.round(product.standard_price);
                         
-                        // Set VAT from supplier_taxes (purchase tax)
+                        // Build VAT dropdown from product's supplier_taxes
+                        let vatOptions = '<option value="0" data-amount="0">Không thuế (0%)</option>';
+                        
                         if (product.supplier_taxes && product.supplier_taxes.length > 0) {
-                            // Try to find and select matching tax in dropdown
-                            const taxId = product.supplier_taxes[0].id;
-                            vatSelect.value = taxId;
+                            // Add taxes from product's supplier_taxes_id
+                            product.supplier_taxes.forEach(function(tax) {
+                                vatOptions += '<option value="' + tax.id + '" data-amount="' + tax.amount + '">' + tax.name + ' (' + tax.amount + '%)</option>';
+                            });
                             
-                            // If tax not found in dropdown, select "no tax"
-                            if (!vatSelect.value) {
-                                vatSelect.value = '0';
-                            }
+                            // Update dropdown with product's taxes
+                            vatSelect.innerHTML = vatOptions;
+                            
+                            // Auto-select first tax
+                            vatSelect.value = product.supplier_taxes[0].id;
                         } else {
-                            vatSelect.value = '0'; // No tax
+                            // No taxes configured for this product
+                            vatSelect.innerHTML = vatOptions;
+                            vatSelect.value = '0';
                         }
                         
                         // Store product data on the line for later use
@@ -568,9 +566,12 @@
                             const uomId = line.querySelector('.uom-select').value;
                             const qty = parseFloat(line.querySelector('.qty-input').value) || 0;
                             const price = parseFloat(line.querySelector('.price-input').value) || 0;
-                            const vat = parseFloat(line.querySelector('.vat-input').value) || 0;
                             
-                            console.log('Processing line:', {productId, uomId, qty, price, vat});
+                            // Get tax ID from select dropdown
+                            const vatSelect = line.querySelector('.vat-select');
+                            const taxId = parseInt(vatSelect.value) || 0;
+                            
+                            console.log('Processing line:', {productId, uomId, qty, price, taxId});
                             
                             if (productId && qty > 0) {
                                 hasValidProduct = true;
@@ -579,7 +580,7 @@
                                     uom_id: uomId,
                                     qty: qty,
                                     price_unit: price,
-                                    vat_percent: vat
+                                    tax_id: taxId
                                 });
                             }
                         });
@@ -613,8 +614,7 @@
                             'supplier_taxes': [{'id': t.id, 'name': t.name, 'amount': t.amount} for t in p.supplier_taxes_id],
                             'uom_id': {'id': p.uom_id.id, 'name': p.uom_id.name, 'factor': 1.0},
                             'uom_ids': [{'id': u.id, 'name': u.name, 'factor': u.factor / p.uom_id.factor if p.uom_id.factor != 0 else 1.0} for u in p.uom_ids]
-                        } for p in products])"/>,
-                        <t t-esc="json.dumps(taxes)"/>
+                        } for p in products])"/>
                     );
                 </script>
             </body>

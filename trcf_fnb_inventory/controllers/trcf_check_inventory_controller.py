@@ -25,7 +25,7 @@ class TrcfCheckInventoryController(http.Controller):
                 'name': check.name,
                 'user_name': check.user_id.name,
                 'check_date': check.check_date,
-                'warehouse_name': check.warehouse_id.name,
+                'warehouse_name': check.location_id.display_name,
                 'template_name': check.template_id.name if check.template_id else '',
                 'state': check.state,
                 'total_difference_value': check.total_difference_value,
@@ -53,8 +53,8 @@ class TrcfCheckInventoryController(http.Controller):
             template_list.append({
                 'id': t.id,
                 'name': t.name,
-                'warehouse_id': t.warehouse_id.id,
-                'warehouse_name': t.warehouse_id.name,
+                'warehouse_id': t.location_id.id,
+                'warehouse_name': t.location_id.display_name,
             })
         
         # Check for success message
@@ -86,7 +86,7 @@ class TrcfCheckInventoryController(http.Controller):
                 # Get system quantity from stock.quant
                 quants = request.env['stock.quant'].sudo().search([
                     ('product_id', '=', line.product_id.id),
-                    ('location_id', '=', template.warehouse_id.lot_stock_id.id),
+                    ('location_id', '=', template.location_id.id),
                 ])
                 system_qty = sum(quants.mapped('quantity'))
                 
@@ -101,8 +101,8 @@ class TrcfCheckInventoryController(http.Controller):
             
             return {
                 'success': True,
-                'warehouse_id': template.warehouse_id.id,
-                'warehouse_name': template.warehouse_id.name,
+                'warehouse_id': template.location_id.id,
+                'warehouse_name': template.location_id.display_name,
                 'products': products,
             }
             
@@ -125,7 +125,7 @@ class TrcfCheckInventoryController(http.Controller):
             # 1. Create trcf.inventory.check record
             check = request.env['trcf.inventory.check'].sudo().create({
                 'template_id': template_id,
-                'warehouse_id': template.warehouse_id.lot_stock_id.id,
+                'location_id': template.location_id.id,
                 'note': form_data.get('note', ''),
             })
             
@@ -159,13 +159,13 @@ class TrcfCheckInventoryController(http.Controller):
                         # Find or create quant
                         quant = request.env['stock.quant'].sudo().search([
                             ('product_id', '=', product_id),
-                            ('location_id', '=', template.warehouse_id.lot_stock_id.id),
+                            ('location_id', '=', template.location_id.id),
                         ], limit=1)
-                        
+
                         if not quant:
                             quant = request.env['stock.quant'].sudo().create({
                                 'product_id': product_id,
-                                'location_id': template.warehouse_id.lot_stock_id.id,
+                                'location_id': template.location_id.id,
                             })
                         
                         # Set inventory quantity with context
@@ -187,7 +187,7 @@ class TrcfCheckInventoryController(http.Controller):
             check.sudo().write({'state': 'done'})
             
             # 5. Redirect to success page
-            return request.redirect('/trcf_fnb_inventory/check_inventory_add?success=1')
+            return request.redirect('/trcf_fnb_inventory/check_inventory_list?success=1')
             
         except Exception as e:
             _logger.error(f"Error processing inventory check: {str(e)}", exc_info=True)
@@ -197,8 +197,8 @@ class TrcfCheckInventoryController(http.Controller):
             template_list = [{
                 'id': t.id,
                 'name': t.name,
-                'warehouse_id': t.warehouse_id.id,
-                'warehouse_name': t.warehouse_id.name,
+                'warehouse_id': t.location_id.id,
+                'warehouse_name': t.location_id.display_name,
             } for t in templates]
             
             return request.render('trcf_fnb_inventory.check_inventory_form_template', {

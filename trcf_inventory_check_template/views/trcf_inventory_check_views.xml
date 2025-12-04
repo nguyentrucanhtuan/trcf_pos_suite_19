@@ -9,7 +9,7 @@
             <list string="Lịch Sử Kiểm Kho" default_order="check_date desc">
                 <field name="name"/>
                 <field name="check_date"/>
-                <field name="warehouse_id"/>
+                <field name="location_id"/>
                 <field name="user_id"/>
                 <field name="template_id"/>
                 <field name="total_difference_value" sum="Total Difference"/>
@@ -40,7 +40,7 @@
                             <field name="user_id"/>
                         </group>
                         <group>
-                            <field name="warehouse_id"/>
+                            <field name="location_id"/>
                             <field name="template_id"/>
                         </group>
                     </group>

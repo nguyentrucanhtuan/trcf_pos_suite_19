@@ -21,13 +21,13 @@ class TrcfInventoryCheck(models.Model):
         readonly=True,
         help='Template được sử dụng để tạo phiếu kiểm này'
     )
-    warehouse_id = fields.Many2one(
-        'stock.location', 
-        'Kho', 
+    location_id = fields.Many2one(
+        'stock.location',
+        'Vị trí kho',
         required=True,
         readonly=True,
         domain=[('usage', '=', 'internal')],
-        help='Kho thực hiện kiểm kho'
+        help='Vị trí kho thực hiện kiểm kho'
     )
     check_date = fields.Datetime(
         'Ngày kiểm', 

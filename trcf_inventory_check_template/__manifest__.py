@@ -2,7 +2,7 @@
 {
     'name': 'TRCF Inventory Check Template',
     'author': 'Tuấn Rang Cà Phê',
-    'version': '1.0',
+    'version': '1.1.0',
     'category': 'Inventory',
     'summary': 'Quản lý mẫu phiếu kiểm kho - Template management for inventory checks',
     'description': """
