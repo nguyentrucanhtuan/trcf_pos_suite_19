@@ -79,16 +79,18 @@
                                     <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Mã phiếu</th>
                                     <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Nhà cung cấp</th>
                                     <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Ngày nhập</th>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Trạng thái</th>
+                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">TT Thanh toán</th>
+                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">TT Nhập kho</th>
                                     <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Phương thức TT</th>
                                     <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Tổng VAT</th>
                                     <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Tổng tiền</th>
+                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-border-light dark:divide-border-dark">
                                     <t t-if="not purchase_orders">
                                         <tr>
-                                            <td colspan="7" class="px-6 py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
+                                            <td colspan="9" class="px-6 py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
                                                 <div class="flex flex-col items-center gap-2">
                                                     <span class="material-symbols-outlined text-4xl">inbox</span>
                                                     <p>Không có đơn mua hàng nào</p>
@@ -110,10 +112,35 @@
                                                 <span t-else="" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400" t-esc="po['payment_status']"/>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
+                                                <span t-if="po['receipt_color'] == 'green'" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                                    <span class="material-symbols-outlined text-sm mr-1">check_circle</span>
+                                                    <span t-esc="po['receipt_status_display']"/>
+                                                </span>
+                                                <span t-elif="po['receipt_color'] == 'yellow'" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
+                                                    <span class="material-symbols-outlined text-sm mr-1">schedule</span>
+                                                    <span t-esc="po['receipt_status_display']"/>
+                                                </span>
+                                                <span t-else="" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400" t-esc="po['receipt_status_display']"/>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary" t-esc="po['payment_method']"/>
                                             </td>
                                             <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap" t-esc="'{:,.0f}đ'.format(po['total_vat'])"/>
                                             <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap" t-esc="'{:,.0f}đ'.format(po['amount_total'])"/>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <t t-if="po['can_receive']">
+                                                    <form method="POST" t-attf-action="/trcf_fnb_inventory/purchase_receive/#{po['id']}" style="display: inline;">
+                                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                        <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-dark text-white text-xs font-medium transition-colors">
+                                                            <span class="material-symbols-outlined text-sm">inventory_2</span>
+                                                            <span>Xác nhận nhập kho</span>
+                                                        </button>
+                                                    </form>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="text-text-light-secondary dark:text-text-dark-secondary text-xs">--</span>
+                                                </t>
+                                            </td>
                                             
                                         </tr>
                                     </t>

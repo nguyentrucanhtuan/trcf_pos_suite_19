@@ -253,12 +253,12 @@
                 <![CDATA[
                     // Data from backend - these will be populated by Odoo template engine before CDATA
                     let productsData = [];
-                    let uomsData = [];
+                    let taxesData = [];
                     
                     // This function will be called after data is loaded
-                    function initializeData(products, uoms) {
+                    function initializeData(products, taxes) {
                         productsData = products;
-                        uomsData = uoms;
+                        taxesData = taxes;
                     }
                     
                     let lineCounter = 0;
@@ -348,13 +348,13 @@
                         // Build product options
                         let productOptions = '<option value="">-- Chọn sản phẩm --</option>';
                         productsData.forEach(function(p) {
-                            productOptions += '<option value="' + p.id + '" data-uom="' + p.uom_id + '">' + p.name + '</option>';
+                            productOptions += '<option value="' + p.id + '">' + p.name + '</option>';
                         });
                         
-                        // Build UOM options
-                        let uomOptions = '';
-                        uomsData.forEach(function(u) {
-                            uomOptions += '<option value="' + u.id + '">' + u.name + '</option>';
+                        // Build tax options
+                        let taxOptions = '<option value="0" data-amount="0">Không thuế (0%)</option>';
+                        taxesData.forEach(function(tax) {
+                            taxOptions += '<option value="' + tax.id + '" data-amount="' + tax.amount + '">' + tax.name + ' (' + tax.amount + '%)</option>';
                         });
                         
                         tr.innerHTML = 
@@ -364,8 +364,8 @@
                                 '</select>' +
                             '</td>' +
                             '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
-                                '<select class="uom-select form-select w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm">' +
-                                    uomOptions +
+                                '<select onchange="updatePriceOnUOMChange(' + lineId + ')" class="uom-select form-select w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm">' +
+                                    '<option value="">-- Chọn đơn vị --</option>' +
                                 '</select>' +
                             '</td>' +
                             '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
@@ -375,7 +375,9 @@
                                 '<input onchange="calculateTotals()" class="price-input form-input w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm" type="number" min="0" step="1000" value="0"/>' +
                             '</td>' +
                             '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
-                                '<input onchange="calculateTotals()" class="vat-input form-input w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm" type="number" min="0" max="100" step="1" value="0"/>' +
+                                '<select onchange="calculateTotals()" class="vat-select form-select w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm">' +
+                                    taxOptions +
+                                '</select>' +
                             '</td>' +
                             '<td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">' +
                                 '<button type="button" onclick="removeProductLine(' + lineId + ')" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors">' +
@@ -391,13 +393,87 @@
                         const line = document.getElementById('line_' + lineId);
                         const productSelect = line.querySelector('.product-select');
                         const uomSelect = line.querySelector('.uom-select');
+                        const priceInput = line.querySelector('.price-input');
+                        const vatInput = line.querySelector('.vat-input');
                         
-                        const selectedOption = productSelect.options[productSelect.selectedIndex];
-                        const defaultUomId = selectedOption.getAttribute('data-uom');
+                        const productId = parseInt(productSelect.value);
                         
-                        if (defaultUomId) {
-                            uomSelect.value = defaultUomId;
+                        if (!productId) {
+                            // Clear UOM select if no product selected
+                            uomSelect.innerHTML = '<option value="">-- Chọn đơn vị --</option>';
+                            priceInput.value = 0;
+                            vatInput.value = 0;
+                            return;
                         }
+                        
+                        // Find product data
+                        const product = productsData.find(p => p.id === productId);
+                        
+                        if (!product) {
+                            return;
+                        }
+                        
+                        // Build UOM options: primary UOM + secondary UOMs
+                        let uomOptions = '';
+                        
+                        // Add primary UOM first (as default)
+                        if (product.uom_id) {
+                            uomOptions += '<option value="' + product.uom_id.id + '" data-factor="' + product.uom_id.factor + '" selected>' + product.uom_id.name + '</option>';
+                        }
+                        
+                        // Add secondary UOMs
+                        if (product.uom_ids && product.uom_ids.length > 0) {
+                            product.uom_ids.forEach(function(uom) {
+                                // Don't duplicate the primary UOM
+                                if (!product.uom_id || uom.id !== product.uom_id.id) {
+                                    uomOptions += '<option value="' + uom.id + '" data-factor="' + uom.factor + '">' + uom.name + '</option>';
+                                }
+                            });
+                        }
+                        
+                        uomSelect.innerHTML = uomOptions;
+                        
+                        // Set price from standard_price (base price in primary UOM)
+                        priceInput.value = Math.round(product.standard_price);
+                        
+                        // Set VAT from supplier_taxes (purchase tax)
+                        if (product.supplier_taxes && product.supplier_taxes.length > 0) {
+                            // Try to find and select matching tax in dropdown
+                            const taxId = product.supplier_taxes[0].id;
+                            vatSelect.value = taxId;
+                            
+                            // If tax not found in dropdown, select "no tax"
+                            if (!vatSelect.value) {
+                                vatSelect.value = '0';
+                            }
+                        } else {
+                            vatSelect.value = '0'; // No tax
+                        }
+                        
+                        // Store product data on the line for later use
+                        line.setAttribute('data-product-id', productId);
+                        line.setAttribute('data-base-price', product.standard_price);
+                        
+                        // Recalculate totals
+                        calculateTotals();
+                    }
+                    
+                    function updatePriceOnUOMChange(lineId) {
+                        const line = document.getElementById('line_' + lineId);
+                        const uomSelect = line.querySelector('.uom-select');
+                        const priceInput = line.querySelector('.price-input');
+                        
+                        const basePrice = parseFloat(line.getAttribute('data-base-price')) || 0;
+                        const selectedOption = uomSelect.options[uomSelect.selectedIndex];
+                        const factor = parseFloat(selectedOption.getAttribute('data-factor')) || 1.0;
+                        
+                        // Convert price based on UOM factor
+                        // If factor > 1, it means this UOM is bigger (e.g., 1 thùng = 12 chai)
+                        // So price should be multiplied by factor
+                        const convertedPrice = basePrice * factor;
+                        priceInput.value = Math.round(convertedPrice);
+                        
+                        calculateTotals();
                     }
                     
                     function removeProductLine(lineId) {
@@ -416,7 +492,11 @@
                         lines.forEach(function(line) {
                             const qty = parseFloat(line.querySelector('.qty-input').value) || 0;
                             const price = parseFloat(line.querySelector('.price-input').value) || 0;
-                            const vatPercent = parseFloat(line.querySelector('.vat-input').value) || 0;
+                            
+                            // Get VAT from select dropdown
+                            const vatSelect = line.querySelector('.vat-select');
+                            const selectedOption = vatSelect.options[vatSelect.selectedIndex];
+                            const vatPercent = parseFloat(selectedOption.getAttribute('data-amount')) || 0;
                             
                             const lineSubtotal = qty * price;
                             const lineVat = lineSubtotal * (vatPercent / 100);
@@ -526,8 +606,15 @@
                 <script>
                     // Initialize data from backend (outside CDATA to allow Odoo template processing)
                     initializeData(
-                        <t t-esc="json.dumps([{'id': p.id, 'name': p.name, 'uom_id': p.uom_id.id} for p in products])"/>,
-                        <t t-esc="json.dumps([{'id': u.id, 'name': u.name} for u in uoms])"/>
+                        <t t-esc="json.dumps([{
+                            'id': p.id, 
+                            'name': p.name, 
+                            'standard_price': p.standard_price,
+                            'supplier_taxes': [{'id': t.id, 'name': t.name, 'amount': t.amount} for t in p.supplier_taxes_id],
+                            'uom_id': {'id': p.uom_id.id, 'name': p.uom_id.name, 'factor': 1.0},
+                            'uom_ids': [{'id': u.id, 'name': u.name, 'factor': u.factor / p.uom_id.factor if p.uom_id.factor != 0 else 1.0} for u in p.uom_ids]
+                        } for p in products])"/>,
+                        <t t-esc="json.dumps(taxes)"/>
                     );
                 </script>
             </body>

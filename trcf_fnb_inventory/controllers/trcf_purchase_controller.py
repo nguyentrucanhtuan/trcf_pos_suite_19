@@ -57,6 +57,30 @@ class TrcfPurchaseController(http.Controller):
             if po.trcf_payment_date:
                 payment_date_formatted = po.trcf_payment_date.strftime('%d/%m/%Y')
             
+            # Kiểm tra trạng thái nhập kho (receipt status)
+            receipt_status = 'waiting'  # Default: chờ nhập kho
+            receipt_status_display = 'Chờ nhập kho'
+            receipt_color = 'yellow'
+            can_receive = False
+            
+            # Kiểm tra picking liên quan
+            if po.picking_ids:
+                # Lấy picking đầu tiên (thường chỉ có 1 picking cho mỗi PO)
+                picking = po.picking_ids[0]
+                
+                if picking.state == 'done':
+                    # Đã nhập kho
+                    receipt_status = 'done'
+                    receipt_status_display = 'Đã nhập kho'
+                    receipt_color = 'green'
+                    can_receive = False
+                elif picking.state in ('assigned', 'confirmed', 'waiting'):
+                    # Chờ nhập kho
+                    receipt_status = 'waiting'
+                    receipt_status_display = 'Chờ nhập kho'
+                    receipt_color = 'yellow'
+                    can_receive = True
+            
             orders_data.append({
                 'id': po.id,
                 'name': po.name,
@@ -69,6 +93,11 @@ class TrcfPurchaseController(http.Controller):
                 'amount_total': po.amount_total,
                 'date_order': date_formatted,
                 'payment_date': payment_date_formatted,
+                # Receipt status fields
+                'receipt_status': receipt_status,
+                'receipt_status_display': receipt_status_display,
+                'receipt_color': receipt_color,
+                'can_receive': can_receive,
             })
         
         vals = {
@@ -96,16 +125,14 @@ class TrcfPurchaseController(http.Controller):
             ('supplier_rank', '>', 0)
         ], order='name')
         
-        # Load sản phẩm có thể mua - chỉ lấy sản phẩm của công ty hiện tại hoặc không thuộc công ty nào
+        # Load sản phẩm có thể mua - chỉ lấy sản phẩm lưu kho của công ty hiện tại hoặc không thuộc công ty nào
         products = request.env['product.product'].sudo().search([
             ('purchase_ok', '=', True),
+            ('type', '=', 'consu'),  # Chỉ lấy sản phẩm lưu kho (consumable/goods)
             '|',  # OR operator
             ('company_id', '=', company_id),  # Sản phẩm của công ty hiện tại
             ('company_id', '=', False)  # Hoặc sản phẩm shared (không thuộc công ty nào)
         ], order='name')
-        
-        # Load đơn vị tính
-        uoms = request.env['uom.uom'].sudo().search([], order='name')
         
         # Tạo mã tham chiếu tự động
         sequence = request.env['ir.sequence'].sudo().search([
@@ -121,6 +148,14 @@ class TrcfPurchaseController(http.Controller):
         # Lấy ngày giờ hiện tại theo timezone user
         user_tz = pytz.timezone(request.env.user.tz or 'UTC')
         today = datetime.now(user_tz).strftime('%d/%m/%Y %H:%M:%S')
+        
+        # Load purchase taxes (thuế mua hàng)
+        purchase_taxes = request.env['account.tax'].sudo().search([
+            ('type_tax_use', '=', 'purchase'),
+            ('company_id', '=', company_id)
+        ], order='amount')
+        
+        taxes_data = [{'id': tax.id, 'name': tax.name, 'amount': tax.amount} for tax in purchase_taxes]
         
         # Load payment methods từ POS (chỉ của công ty hiện tại)
         payment_methods = []
@@ -140,10 +175,10 @@ class TrcfPurchaseController(http.Controller):
         vals = {
             'suppliers': suppliers,
             'products': products,
-            'uoms': uoms,
             'reference': reference,
             'today': today,
             'payment_methods': payment_methods,
+            'taxes': taxes_data,
         }
         
         return request.render('trcf_fnb_inventory.purchase_form_template', vals)
@@ -267,9 +302,11 @@ class TrcfPurchaseController(http.Controller):
             
             _logger.info(f"Total lines created: {lines_created}")
             
-            # Luôn xác nhận đơn hàng để chuyển sang trạng thái 'purchase' (đơn mua hàng)
-            # Không còn trạng thái 'draft' (yêu cầu báo giá) nữa
+            # Xác nhận đơn hàng để chuyển sang trạng thái 'purchase'
+            # Picking sẽ được tạo tự động nhưng chưa validate (chờ xác nhận nhập kho)
             purchase_order.sudo().button_confirm()
+            
+            _logger.info(f"Purchase order {purchase_order.name} confirmed. Picking created but not validated yet.")
             
             # Redirect về danh sách với thông báo thành công
             return request.redirect('/trcf_fnb_inventory/purchase_list?success=1&po_id=' + str(purchase_order.id))
@@ -283,3 +320,60 @@ class TrcfPurchaseController(http.Controller):
             return self._render_purchase_form({
                 'error': f'Có lỗi xảy ra: {str(e)}',
             })
+    
+    @http.route('/trcf_fnb_inventory/purchase_receive/<int:po_id>', type='http', auth='user', website=False, methods=['POST'], csrf=True)
+    def purchase_receive(self, po_id, **kw):
+        """Xác nhận nhập kho cho purchase order"""
+        
+        import logging
+        _logger = logging.getLogger(__name__)
+        
+        try:
+            # Load purchase order
+            purchase_order = request.env['purchase.order'].sudo().browse(po_id)
+            
+            if not purchase_order.exists():
+                _logger.error(f"Purchase order {po_id} not found")
+                return request.redirect('/trcf_fnb_inventory/purchase_list?error=po_not_found')
+            
+            _logger.info(f"Processing receipt for PO {purchase_order.name} (ID: {po_id})")
+            
+            # Kiểm tra picking
+            if not purchase_order.picking_ids:
+                _logger.error(f"No picking found for PO {purchase_order.name}")
+                return request.redirect('/trcf_fnb_inventory/purchase_list?error=no_picking')
+            
+            # Validate tất cả picking liên quan
+            for picking in purchase_order.picking_ids:
+                _logger.info(f"Processing picking {picking.name} with state: {picking.state}")
+                
+                # Chỉ validate picking chưa done
+                if picking.state not in ('done', 'cancel'):
+                    # Set số lượng thực nhận = số lượng đặt
+                    for move in picking.move_ids:
+                        if move.state not in ('done', 'cancel'):
+                            move.quantity = move.product_uom_qty
+                            _logger.info(f"Set quantity for {move.product_id.name}: {move.quantity}")
+                    
+                    # Validate picking
+                    try:
+                        res = picking.button_validate()
+                        
+                        # Xử lý backorder wizard nếu có
+                        if isinstance(res, dict) and res.get('res_model') == 'stock.backorder.confirmation':
+                            backorder_wizard = request.env['stock.backorder.confirmation'].sudo().browse(res.get('res_id'))
+                            backorder_wizard.process_cancel_backorder()
+                        
+                        _logger.info(f"Picking {picking.name} validated successfully")
+                    except Exception as e:
+                        _logger.error(f"Error validating picking {picking.name}: {str(e)}")
+                        return request.redirect(f'/trcf_fnb_inventory/purchase_list?error=validation_failed&po_id={po_id}')
+                else:
+                    _logger.info(f"Picking {picking.name} already {picking.state}, skipping")
+            
+            _logger.info(f"Receipt completed for PO {purchase_order.name}")
+            return request.redirect(f'/trcf_fnb_inventory/purchase_list?success=receipt_confirmed&po_id={po_id}')
+            
+        except Exception as e:
+            _logger.error(f"Error processing receipt for PO {po_id}: {str(e)}")
+            return request.redirect(f'/trcf_fnb_inventory/purchase_list?error=unknown&message={str(e)}')
