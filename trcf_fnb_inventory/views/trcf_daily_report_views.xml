@@ -96,10 +96,24 @@
                                     <div class="flex flex-col md:flex-row items-center gap-6">
                                     <div class="relative w-48 h-48">
                                         <svg class="size-full" viewBox="0 0 36 36">
-                                        <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
-                                        <path class="stroke-green-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="60, 100" stroke-linecap="round" stroke-width="3"></path>
-                                        <path class="stroke-blue-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="25, 100" stroke-dashoffset="-60" stroke-linecap="round" stroke-width="3"></path>
-                                        <path class="stroke-orange-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="15, 100" stroke-dashoffset="-85" stroke-linecap="round" stroke-width="3"></path>
+                                            <!-- Background circle -->
+                                            <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+                                            <!-- Calculate total revenue for percentages -->
+                                            <t t-set="total_revenue" t-value="sum(p['revenue'] for p in revenue_by_presets)"/>
+                                            <t t-set="cumulative_offset" t-value="0"/>
+                                            <!-- Dynamic pie chart segments -->
+                                            <t t-foreach="revenue_by_presets" t-as="preset">
+                                                <t t-set="percentage" t-value="(preset['revenue'] / total_revenue * 100) if total_revenue > 0 else 0"/>
+                                                <t t-set="stroke_class" t-value="'stroke-' + preset['color']"/>
+                                                <path t-attf-class="#{stroke_class}" 
+                                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                                      fill="none" 
+                                                      t-attf-stroke-dasharray="#{percentage}, 100" 
+                                                      t-attf-stroke-dashoffset="#{-cumulative_offset}" 
+                                                      stroke-linecap="round" 
+                                                      stroke-width="3"></path>
+                                                <t t-set="cumulative_offset" t-value="cumulative_offset + percentage"/>
+                                            </t>
                                         </svg>
                                     </div>
                                     <div class="flex flex-col gap-3">
@@ -108,6 +122,8 @@
                                                 Không có dữ liệu đơn hàng
                                             </div>
                                         </t>
+                                        <!-- Calculate total revenue again for legend -->
+                                        <t t-set="total_revenue_legend" t-value="sum(p['revenue'] for p in revenue_by_presets)"/>
                                         <t t-foreach="revenue_by_presets" t-as="preset">
                                             <div class="flex items-center gap-3">
                                                 <t t-set="color_class" t-value="'bg-' + preset['color']"/>
@@ -129,10 +145,24 @@
                                     <div class="flex flex-col md:flex-row items-center gap-6">
                                     <div class="relative w-48 h-48">
                                         <svg class="size-full" viewBox="0 0 36 36">
-                                        <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
-                                        <path class="stroke-cyan-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="50, 100" stroke-linecap="round" stroke-width="3"></path>
-                                        <path class="stroke-violet-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="30, 100" stroke-dashoffset="-50" stroke-linecap="round" stroke-width="3"></path>
-                                        <path class="stroke-amber-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="20, 100" stroke-dashoffset="-80" stroke-linecap="round" stroke-width="3"></path>
+                                            <!-- Background circle -->
+                                            <path class="stroke-gray-200 dark:stroke-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+                                            <!-- Calculate total amount for percentages -->
+                                            <t t-set="total_amount" t-value="sum(m['amount'] for m in payment_methods)"/>
+                                            <t t-set="cumulative_offset_pm" t-value="0"/>
+                                            <!-- Dynamic pie chart segments -->
+                                            <t t-foreach="payment_methods" t-as="method">
+                                                <t t-set="percentage_pm" t-value="(method['amount'] / total_amount * 100) if total_amount > 0 else 0"/>
+                                                <t t-set="stroke_class_pm" t-value="'stroke-' + method['color']"/>
+                                                <path t-attf-class="#{stroke_class_pm}" 
+                                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                                      fill="none" 
+                                                      t-attf-stroke-dasharray="#{percentage_pm}, 100" 
+                                                      t-attf-stroke-dashoffset="#{-cumulative_offset_pm}" 
+                                                      stroke-linecap="round" 
+                                                      stroke-width="3"></path>
+                                                <t t-set="cumulative_offset_pm" t-value="cumulative_offset_pm + percentage_pm"/>
+                                            </t>
                                         </svg>
                                     </div>
                                     <div class="flex flex-col gap-3">
@@ -141,6 +171,8 @@
                                                 Không có dữ liệu thanh toán
                                             </div>
                                         </t>
+                                        <!-- Calculate total amount again for legend -->
+                                        <t t-set="total_amount_legend" t-value="sum(m['amount'] for m in payment_methods)"/>
                                         <t t-foreach="payment_methods" t-as="method">
                                             <div class="flex items-center gap-3">
                                                 <t t-set="color_class" t-value="'bg-' + method['color']"/>
@@ -208,6 +240,8 @@
                                                 <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                     <tr>
                                                         <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400">Phương thức</th>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Số lượng đơn</th>
+                                                        <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Số lượng món</th>
                                                         <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ngày</th>
                                                         <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Thu bán hàng</th>
                                                         <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
@@ -220,6 +254,12 @@
                                                         <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
                                                             <td class="p-3">
                                                                 <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="pm['name']"/>
+                                                            </td>
+                                                            <td class="p-3 text-right">
+                                                                <span class="text-sm text-blue-600 dark:text-blue-400" t-esc="pm['order_count']"/>
+                                                            </td>
+                                                            <td class="p-3 text-right">
+                                                                <span class="text-sm text-purple-600 dark:text-purple-400" t-esc="pm['total_qty']"/>
                                                             </td>
                                                             <td class="p-3 text-right">
                                                                 <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="pm['opening_balance_formatted']"/>
@@ -296,6 +336,8 @@
                                                         <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                             <tr>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400">Phương thức</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Số lượng đơn</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Số lượng món</th>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ca</th>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Thu bán hàng</th>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
@@ -308,6 +350,12 @@
                                                                 <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
                                                                     <td class="p-3">
                                                                         <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="pm['name']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm text-blue-600 dark:text-blue-400" t-esc="pm['order_count']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm text-purple-600 dark:text-purple-400" t-esc="pm['total_qty']"/>
                                                                     </td>
                                                                     <td class="p-3 text-right">
                                                                         <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="pm['opening_balance_formatted']"/>
@@ -392,6 +440,8 @@
                                                         <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                             <tr>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400">Phương thức</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Số lượng đơn</th>
+                                                                <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Số lượng món</th>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ca</th>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Thu bán hàng</th>
                                                                 <th class="p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
@@ -404,6 +454,12 @@
                                                                 <tr class="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50">
                                                                     <td class="p-3">
                                                                         <span class="text-sm font-medium text-gray-800 dark:text-white" t-esc="pm['name']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm text-blue-600 dark:text-blue-400" t-esc="pm['order_count']"/>
+                                                                    </td>
+                                                                    <td class="p-3 text-right">
+                                                                        <span class="text-sm text-purple-600 dark:text-purple-400" t-esc="pm['total_qty']"/>
                                                                     </td>
                                                                     <td class="p-3 text-right">
                                                                         <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="pm['opening_balance_formatted']"/>

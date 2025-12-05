@@ -289,6 +289,29 @@ class TrcfProcessingController(http.Controller):
         Returns:
             Created manufacturing order record
         """
+        # Get picking_type_id from settings
+        picking_type_id_str = request.env['ir.config_parameter'].sudo().get_param(
+            'trcf_fnb_inventory.trcf_processing_picking_type_id',
+            default=False
+        )
+        picking_type_id = int(picking_type_id_str) if picking_type_id_str else False
+        
+        # Fallback to default manufacturing picking type if not configured
+        if not picking_type_id:
+            _logger.warning("No processing picking type configured in settings, using company default")
+            default_picking_type = request.env['stock.picking.type'].sudo().search([
+                ('code', '=', 'mrp_operation'),
+                ('company_id', '=', request.env.company.id)
+            ], limit=1)
+            
+            if default_picking_type:
+                picking_type_id = default_picking_type.id
+                _logger.info(f"Using fallback picking type: {default_picking_type.name} (ID: {picking_type_id})")
+            else:
+                _logger.warning("No manufacturing picking type found for company")
+        else:
+            _logger.info(f"Using configured picking type ID: {picking_type_id}")
+        
         mo_vals = {
             'product_id': bom.product_id.id if bom.product_id else bom.product_tmpl_id.product_variant_id.id,
             'product_qty': product_qty,
@@ -297,6 +320,10 @@ class TrcfProcessingController(http.Controller):
             'origin': 'TRCF Processing',
             'company_id': request.env.company.id,
         }
+        
+        # Add picking_type_id if configured
+        if picking_type_id:
+            mo_vals['picking_type_id'] = picking_type_id
         
         mo = request.env['mrp.production'].sudo().create(mo_vals)
         _logger.info(f"Created MO {mo.name} for product {bom.product_tmpl_id.name}, qty: {product_qty}")

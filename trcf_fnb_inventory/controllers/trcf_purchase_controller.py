@@ -229,11 +229,35 @@ class TrcfPurchaseController(http.Controller):
                     'error': 'Vui lòng thêm ít nhất một sản phẩm',
                 })
             
+            # Lấy picking_type_id từ settings
+            picking_type_id_str = request.env['ir.config_parameter'].sudo().get_param(
+                'trcf_fnb_inventory.trcf_purchase_picking_type_id', 
+                default=False
+            )
+            
+            picking_type_id = int(picking_type_id_str) if picking_type_id_str else False
+            
+            # Nếu không có cấu hình, fallback về picking type mặc định của company
+            if not picking_type_id:
+                _logger.warning("No default picking type configured for purchase orders, using company default")
+                default_picking_type = request.env['stock.picking.type'].sudo().search([
+                    ('code', '=', 'incoming'),
+                    ('company_id', '=', request.env.company.id)
+                ], limit=1)
+                
+                if default_picking_type:
+                    picking_type_id = default_picking_type.id
+                    _logger.info(f"Using fallback picking type: {default_picking_type.name} (ID: {picking_type_id})")
+                else:
+                    _logger.error("No incoming picking type found for company")
+            else:
+                _logger.info(f"Using configured picking type ID: {picking_type_id}")
             
             # Tạo Purchase Order với company của user hiện tại
             po_vals = {
                 'partner_id': partner_id,
                 'company_id': request.env.company.id,  # Set company của user hiện tại
+                'picking_type_id': picking_type_id,  # Set picking type từ settings hoặc fallback
                 'date_order': date_order_dt,
                 'origin': reference,
                 'note': notes,

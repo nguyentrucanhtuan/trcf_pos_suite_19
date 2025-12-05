@@ -247,35 +247,57 @@ class TrcfScrapController(http.Controller):
             if product.is_kits and not bom_id:
                 return self._render_scrap_form(error='Sản phẩm này là Kit, vui lòng chọn BoM (công thức sản xuất)')
             
-            # Get default source location (stock)
-            warehouse = request.env['stock.warehouse'].sudo().search([
-                ('company_id', '=', request.env.company.id)
-            ], limit=1)
+            # Get source location from settings
+            source_location_id_str = request.env['ir.config_parameter'].sudo().get_param(
+                'trcf_fnb_inventory.trcf_scrap_location_id',
+                default=False
+            )
+            source_location_id = int(source_location_id_str) if source_location_id_str else False
             
-            source_location = warehouse.lot_stock_id if warehouse else False
-            
-            # Get scrap location (virtual location for scraps)
-            scrap_location = request.env['stock.location'].sudo().search([
-                ('usage', '=', 'inventory'),
-                ('name', 'ilike', 'scrap')
-            ], limit=1)
-            
-            # If no scrap location found, try to get any inventory location
-            if not scrap_location:
-                scrap_location = request.env['stock.location'].sudo().search([
-                    ('usage', '=', 'inventory')
+            # Fallback to warehouse stock location if not configured
+            if not source_location_id:
+                _logger.warning("No scrap source location configured in settings, using warehouse default")
+                warehouse = request.env['stock.warehouse'].sudo().search([
+                    ('company_id', '=', request.env.company.id)
                 ], limit=1)
+                source_location = warehouse.lot_stock_id if warehouse else False
+                source_location_id = source_location.id if source_location else False
             
-            if not scrap_location:
-                return self._render_scrap_form(error='Không tìm thấy kho hủy hàng')
+            # Get scrap destination location from settings
+            scrap_location_id_str = request.env['ir.config_parameter'].sudo().get_param(
+                'trcf_fnb_inventory.trcf_scrap_dest_location_id',
+                default=False
+            )
+            scrap_location_id = int(scrap_location_id_str) if scrap_location_id_str else False
+            
+            # Fallback to finding scrap location if not configured
+            if not scrap_location_id:
+                _logger.warning("No scrap destination location configured in settings, searching for scrap location")
+                scrap_location = request.env['stock.location'].sudo().search([
+                    ('scrap_location', '=', True)
+                ], limit=1)
+                
+                # If still not found, try inventory usage
+                if not scrap_location:
+                    scrap_location = request.env['stock.location'].sudo().search([
+                        ('usage', '=', 'inventory'),
+                        ('name', 'ilike', 'scrap')
+                    ], limit=1)
+                
+                scrap_location_id = scrap_location.id if scrap_location else False
+            
+            if not scrap_location_id:
+                return self._render_scrap_form(error='Không tìm thấy kho hủy hàng. Vui lòng cấu hình trong Settings.')
+            
+            _logger.info(f"Using source location ID: {source_location_id}, scrap location ID: {scrap_location_id}")
             
             # Create scrap record
             scrap_vals = {
                 'product_id': product.id,
                 'scrap_qty': scrap_qty,
                 'product_uom_id': product.uom_id.id,
-                'location_id': source_location.id if source_location else False,
-                'scrap_location_id': scrap_location.id,
+                'location_id': source_location_id,
+                'scrap_location_id': scrap_location_id,
                 'scrap_reason_tag_ids': [(6, 0, [reason_id])] if reason_id else False,  # Many2many field
                 'trcf_scrap_description': description,  # Save description
                 'company_id': request.env.company.id,
@@ -312,8 +334,8 @@ class TrcfScrapController(http.Controller):
                         'product_id': component.id,
                         'scrap_qty': component_qty,
                         'product_uom_id': bom_line.product_uom_id.id,
-                        'location_id': source_location.id if source_location else False,
-                        'scrap_location_id': scrap_location.id,
+                        'location_id': source_location_id,
+                        'scrap_location_id': scrap_location_id,
                         'scrap_reason_tag_ids': [(6, 0, [reason_id])] if reason_id else False,
                         'trcf_scrap_description': f"[Kit: {product.name}] {description}",
                         'company_id': request.env.company.id,

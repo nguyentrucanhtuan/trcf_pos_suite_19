@@ -511,15 +511,18 @@ class TrcfReportController(http.Controller):
             ('state', 'in', ['paid', 'done', 'invoiced']),
         ]
         
-        orders = request.env['pos.order'].sudo().search(domain_orders)
+        # Đếm tổng số đơn hàng (dùng search_count như get_pos_order_count)
+        total_orders = request.env['pos.order'].sudo().search_count(domain_orders)
         
-        if not orders:
+        if total_orders == 0:
             return None
         
-        # 4. Tính tổng doanh thu, số đơn và số món
+        # Lấy các đơn hàng để tính toán chi tiết
+        orders = request.env['pos.order'].sudo().search(domain_orders)
+        
+        # 4. Tính tổng doanh thu và số món
         total_revenue = sum(orders.mapped('amount_total'))
         total_qty = sum(orders.mapped('lines').mapped('qty'))
-        total_orders = len(orders)
         
         # 5. Lấy số dư đầu ngày từ phiên đầu tiên trong ngày (nếu có)
         first_session = request.env['pos.session'].sudo().search([
@@ -539,12 +542,22 @@ class TrcfReportController(http.Controller):
                 opening_balance = first_session.cash_register_balance_start
             
             # 2. Thu từ bán hàng (lấy từ pos.payment của các đơn hàng)
-            sales_income = sum(
-                payment.amount
-                for order in orders
-                for payment in order.payment_ids
-                if payment.payment_method_id == pm
-            )
+            # Đồng thời đếm số đơn và số lượng món
+            sales_income = 0
+            order_count = 0
+            total_qty_pm = 0  # Đổi tên để không ghi đè total_qty ở dòng 525
+            orders_with_pm = set()  # Để đếm số đơn duy nhất
+            
+            for order in orders:
+                for payment in order.payment_ids:
+                    if payment.payment_method_id == pm:
+                        sales_income += payment.amount
+                        if order.id not in orders_with_pm:
+                            orders_with_pm.add(order.id)
+                            order_count += 1
+                            # Tính tổng số lượng món trong đơn này
+                            total_qty_pm += sum(order.lines.mapped('qty'))
+                        break  # Đã tìm thấy payment method này trong đơn
             
             # 3. Chi phí trong khoảng thời gian với payment method này
             expenses = request.env['trcf.expense'].sudo().search([
@@ -575,6 +588,8 @@ class TrcfReportController(http.Controller):
                     'opening_balance_formatted': currency.format(opening_balance),
                     'sales_income': sales_income,
                     'sales_income_formatted': currency.format(sales_income),
+                    'order_count': order_count,
+                    'total_qty': int(total_qty_pm),
                     'expenses': total_expenses,
                     'expenses_formatted': currency.format(total_expenses),
                     'purchases': total_purchases,
@@ -641,12 +656,21 @@ class TrcfReportController(http.Controller):
                 opening_balance = session.cash_register_balance_start if pm.is_cash_count else 0
                 
                 # 2. Thu từ bán hàng trong phiên
-                sales_income = sum(
-                    payment.amount
-                    for order in orders
-                    for payment in order.payment_ids
-                    if payment.payment_method_id == pm
-                )
+                # Đồng thời đếm số đơn và số lượng món
+                sales_income = 0
+                order_count = 0
+                total_qty_pm = 0
+                orders_with_pm = set()
+                
+                for order in orders:
+                    for payment in order.payment_ids:
+                        if payment.payment_method_id == pm:
+                            sales_income += payment.amount
+                            if order.id not in orders_with_pm:
+                                orders_with_pm.add(order.id)
+                                order_count += 1
+                                total_qty_pm += sum(order.lines.mapped('qty'))
+                            break
                 
                 # 3. Chi phí từ lúc mở phiên đến hiện tại
                 expenses = request.env['trcf.expense'].sudo().search([
@@ -675,6 +699,8 @@ class TrcfReportController(http.Controller):
                     'opening_balance_formatted': currency.format(opening_balance),
                     'sales_income': sales_income,
                     'sales_income_formatted': currency.format(sales_income),
+                    'order_count': order_count,
+                    'total_qty': int(total_qty_pm),
                     'expenses': total_expenses,
                     'expenses_formatted': currency.format(total_expenses),
                     'purchases': total_purchases,
@@ -731,6 +757,7 @@ class TrcfReportController(http.Controller):
             
             # Tính số món bán ra
             total_qty = sum(session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']).mapped('lines').mapped('qty'))
+            total_qty_session = sum(session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']).mapped('lines').mapped('qty')) # Renamed to avoid conflict
             
             # Lấy tất cả payment methods của phiên
             payment_method_data = []
@@ -740,12 +767,21 @@ class TrcfReportController(http.Controller):
                 opening_balance = session.cash_register_balance_start if pm.is_cash_count else 0
                 
                 # 2. Thu từ bán hàng trong phiên
-                sales_income = sum(
-                    payment.amount
-                    for order in session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced'])
-                    for payment in order.payment_ids
-                    if payment.payment_method_id == pm
-                )
+                # Đồng thời đếm số đơn và số lượng món
+                sales_income = 0
+                order_count = 0
+                total_qty = 0
+                orders_with_pm = set()
+                
+                for order in session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']):
+                    for payment in order.payment_ids:
+                        if payment.payment_method_id == pm:
+                            sales_income += payment.amount
+                            if order.id not in orders_with_pm:
+                                orders_with_pm.add(order.id)
+                                order_count += 1
+                                total_qty += sum(order.lines.mapped('qty'))
+                            break
                 
                 # 3. Chi phí trong thời gian phiên với payment method này
                 expenses = request.env['trcf.expense'].sudo().search([
@@ -774,6 +810,8 @@ class TrcfReportController(http.Controller):
                     'opening_balance_formatted': currency.format(opening_balance),
                     'sales_income': sales_income,
                     'sales_income_formatted': currency.format(sales_income),
+                    'order_count': order_count,
+                    'total_qty': int(total_qty),
                     'expenses': total_expenses,
                     'expenses_formatted': currency.format(total_expenses),
                     'purchases': total_purchases,

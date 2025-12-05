@@ -6,6 +6,15 @@
             <field name="target">self</field>
         </record>
 
+        <!-- Settings Action -->
+        <record id="trcf_inventory_config_settings_action" model="ir.actions.act_window">
+            <field name="name">Cấu hình</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+            <field name="context" eval="{'module': 'trcf_fnb_inventory'}"/>
+        </record>
+
         <menuitem id="trcf_fnb_inventory_root_menu"
             name="TRCF Tồn kho"
             sequence="10" /> 
@@ -15,5 +24,13 @@
             parent="trcf_fnb_inventory_root_menu"
             action="trcf_daily_report_controller_action"
             sequence="1" />
+        
+        <!-- Settings Menu -->
+        <menuitem id="trcf_inventory_settings_menu"
+            name="Cấu hình"
+            parent="trcf_fnb_inventory_root_menu"
+            action="trcf_inventory_config_settings_action"
+            sequence="100"
+            groups="base.group_system"/>
     </data>
 </odoo>

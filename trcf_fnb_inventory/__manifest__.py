@@ -12,6 +12,7 @@
         'views/trcf_stock_scrap_views.xml',
         'views/trcf_sidebar_template.xml',
         'views/trcf_fnb_inventory_menus.xml',
+        'views/trcf_inventory_config_settings_views.xml',
         'views/trcf_daily_report_views.xml',
         'views/trcf_purchase_order_views.xml',
         'views/trcf_purchase_list_template.xml',
