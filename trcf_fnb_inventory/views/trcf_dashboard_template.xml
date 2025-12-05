@@ -58,82 +58,83 @@
 
                     <!-- Main Content -->
                     <main class="relative z-10 flex-grow p-8">
-                        <!-- Đã điều chỉnh minmax lên 300px để các ô rộng ra -->
-                        <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-8">
-                            
-                            <!-- Ô 1: Chi phí (đã cập nhật) -->
-                            <a href="/trcf_fnb_inventory/expense_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <!-- p-12 và rounded-xl -->
-                                <div class="flex items-center justify-center rounded-xl bg-blue-100 p-12">
-                                    <!-- font-size: 160px -->
-                                    <span class="material-symbols-outlined text-blue-600" style="font-size: 160px;">receipt_long</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <h2 class="text-base font-medium leading-tight text-gray-800">Chi phí</h2>
-                                </div>
-                            </a>
+                        
+                        <!-- Section 1: TỒN KHO -->
+                        <div class="mb-12">
+                            <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">TỒN KHO</h1>
+                            <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-8">
+                                
+                                <!-- Nhập hàng -->
+                                <a href="/trcf_fnb_inventory/purchase_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                    <div class="flex items-center justify-center rounded-xl bg-green-100 p-12">
+                                        <span class="material-symbols-outlined text-green-600" style="font-size: 160px;">inventory_2</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <h2 class="text-base font-medium leading-tight text-gray-800">Nhập hàng</h2>
+                                    </div>
+                                </a>
 
-                            <!-- Ô 2: Nhập hàng (đã cập nhật) -->
-                            <a href="/trcf_fnb_inventory/purchase_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <!-- p-12 và rounded-xl -->
-                                <div class="flex items-center justify-center rounded-xl bg-green-100 p-12">
-                                    <!-- font-size: 160px -->
-                                    <span class="material-symbols-outlined text-green-600" style="font-size: 160px;">inventory_2</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <h2 class="text-base font-medium leading-tight text-gray-800">Nhập hàng</h2>
-                                </div>
-                            </a>
+                                <!-- Chế biến -->
+                                <a href="/trcf_fnb_inventory/processing_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                    <div class="flex items-center justify-center rounded-xl bg-purple-100 p-12">
+                                        <span class="material-symbols-outlined text-purple-600" style="font-size: 160px;">settings</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <h2 class="text-base font-medium leading-tight text-gray-800">Chế biến</h2>
+                                    </div>
+                                </a>
 
-                            <!-- Ô 3: Chế biến (đã cập nhật) -->
-                            <a href="/trcf_fnb_inventory/processing_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <!-- p-12 và rounded-xl -->
-                                <div class="flex items-center justify-center rounded-xl bg-purple-100 p-12">
-                                    <!-- font-size: 160px -->
-                                    <span class="material-symbols-outlined text-purple-600" style="font-size: 160px;">settings</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <h2 class="text-base font-medium leading-tight text-gray-800">Chế biến</h2>
-                                </div>
-                            </a>
+                                <!-- Hủy hàng -->
+                                <a href="/trcf_fnb_inventory/scrap_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                    <div class="flex items-center justify-center rounded-xl bg-red-100 p-12">
+                                        <span class="material-symbols-outlined text-red-600" style="font-size: 160px;">cancel</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <h2 class="text-base font-medium leading-tight text-gray-800">Hủy hàng</h2>
+                                    </div>
+                                </a>
 
-                            <!-- Ô 4: Hủy hàng (đã cập nhật) -->
-                            <a href="/trcf_fnb_inventory/scrap_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <!-- p-12 và rounded-xl -->
-                                <div class="flex items-center justify-center rounded-xl bg-red-100 p-12">
-                                    <!-- font-size: 160px -->
-                                    <span class="material-symbols-outlined text-red-600" style="font-size: 160px;">cancel</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <h2 class="text-base font-medium leading-tight text-gray-800">Hủy hàng</h2>
-                                </div>
-                            </a>
+                                <!-- Kiểm kê -->
+                                <a href="/trcf_fnb_inventory/check_inventory_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                    <div class="flex items-center justify-center rounded-xl bg-yellow-100 p-12">
+                                        <span class="material-symbols-outlined text-yellow-600" style="font-size: 160px;">checklist</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <h2 class="text-base font-medium leading-tight text-gray-800">Kiểm kê</h2>
+                                    </div>
+                                </a>
 
-                            <!-- Ô 5: Kiểm kê (đã cập nhật) -->
-                            <a href="/trcf_fnb_inventory/check_inventory_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <!-- p-12 và rounded-xl -->
-                                <div class="flex items-center justify-center rounded-xl bg-yellow-100 p-12">
-                                    <!-- font-size: 160px -->
-                                    <span class="material-symbols-outlined text-yellow-600" style="font-size: 160px;">checklist</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <h2 class="text-base font-medium leading-tight text-gray-800">Kiểm kê</h2>
-                                </div>
-                            </a>
-
-                            <!-- Ô 6: Báo cáo (đã cập nhật) -->
-                            <a href="/trcf_fnb_inventory/daily_report" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                                <!-- p-12 và rounded-xl -->
-                                <div class="flex items-center justify-center rounded-xl bg-indigo-100 p-12">
-                                    <!-- font-size: 160px -->
-                                    <span class="material-symbols-outlined text-indigo-600" style="font-size: 160px;">bar_chart</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <h2 class="text-base font-medium leading-tight text-gray-800">Báo cáo</h2>
-                                </div>
-                            </a>
-
+                            </div>
                         </div>
+
+                        <!-- Section 2: KẾ TOÁN -->
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">KẾ TOÁN</h1>
+                            <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-8">
+                                
+                                <!-- Chi phí -->
+                                <a href="/trcf_fnb_inventory/expense_list" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                    <div class="flex items-center justify-center rounded-xl bg-blue-100 p-12">
+                                        <span class="material-symbols-outlined text-blue-600" style="font-size: 160px;">receipt_long</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <h2 class="text-base font-medium leading-tight text-gray-800">Chi phí</h2>
+                                    </div>
+                                </a>
+
+                                <!-- Báo cáo -->
+                                <a href="/trcf_fnb_inventory/daily_report" class="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                    <div class="flex items-center justify-center rounded-xl bg-indigo-100 p-12">
+                                        <span class="material-symbols-outlined text-indigo-600" style="font-size: 160px;">bar_chart</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <h2 class="text-base font-medium leading-tight text-gray-800">Báo cáo</h2>
+                                    </div>
+                                </a>
+
+                            </div>
+                        </div>
+
                     </main>
 
                 </div>
