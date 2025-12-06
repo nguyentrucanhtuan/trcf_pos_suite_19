@@ -109,6 +109,21 @@
                                                     </t>
                                                 </select>
                                             </label>
+                                            
+                                            <!-- Picking Type -->
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                    Chọn phiếu sản xuất <span class="text-red-500">*</span>
+                                                </p>
+                                                <select name="picking_type_id" id="picking_type_select" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                    <option value="">-- Chọn phiếu sản xuất --</option>
+                                                    <t t-foreach="picking_types" t-as="pt">
+                                                        <option t-att-value="pt.id">
+                                                            <t t-esc="pt.warehouse_id.name if pt.warehouse_id else 'N/A'"/>: <t t-esc="pt.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </label>
                                         </div>
                                     </div>
                                     
@@ -264,6 +279,12 @@
                         const productQty = parseFloat(document.getElementById('product_qty_input').value);
                         if (!productQty || productQty <= 0) {
                             alert('Vui lòng nhập số lượng sản xuất hợp lệ');
+                            return;
+                        }
+                        
+                        const pickingTypeId = document.getElementById('picking_type_select').value;
+                        if (!pickingTypeId) {
+                            alert('Vui lòng chọn phiếu sản xuất');
                             return;
                         }
                         

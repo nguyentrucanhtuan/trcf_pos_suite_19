@@ -52,6 +52,70 @@
                     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
                 }
                 
+                /* Custom Select Styles */
+                .custom-select-container {
+                    position: relative;
+                }
+
+                .custom-select-search {
+                    transition: all 0.2s ease;
+                }
+
+                .custom-select-dropdown {
+                    position: fixed;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    margin-top: 4px;
+                    border-radius: 0.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                    z-index: 100;
+                    opacity: 0;
+                    transform: translateY(-10px);
+                    transition: all 0.15s ease-out;
+                    pointer-events: none;
+                }
+
+                .custom-select-dropdown.active {
+                    opacity: 1;
+                    transform: translateY(0) !important;
+                    pointer-events: auto;
+                }
+
+                .custom-select-option {
+                    padding: 0.75rem 1rem;
+                    cursor: pointer;
+                    transition: all 0.1s ease;
+                }
+
+                .custom-select-option:hover,
+                .custom-select-option.highlighted {
+                    background-color: rgb(239 246 255);
+                }
+
+                .dark .custom-select-option:hover,
+                .dark .custom-select-option.highlighted {
+                    background-color: rgb(30 41 59);
+                }
+
+                .custom-select-option.selected {
+                    background-color: rgb(219 234 254);
+                }
+
+                .dark .custom-select-option.selected {
+                    background-color: rgb(30 58 138);
+                }
+
+                .custom-select-no-results {
+                    padding: 1rem;
+                    text-align: center;
+                    color: rgb(148 163 184);
+                }
+
+                /* Hide original select */
+                .custom-select-container select {
+                    display: none;
+                }
+                
                 /* Flatpickr custom styling */
                 .flatpickr-calendar {
                     font-family: 'Inter', sans-serif;
@@ -107,7 +171,7 @@
                                     <!-- Thông tin đơn hàng -->
                                     <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
                                         <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Thông tin đơn hàng</h2>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                                             
                                             <!-- Ngày nhập hàng (tự động) -->
                                             <label class="flex flex-col w-full">
@@ -122,6 +186,21 @@
                                             <label class="flex flex-col w-full">
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Mã tham chiếu</p>
                                                 <input name="reference" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary p-[15px] text-sm font-normal leading-normal" placeholder="Mã phiếu tự sinh hoặc tự nhập" t-att-value="reference or ''"/>
+                                            </label>
+                                            
+                                            <!-- Phiếu nhập kho -->
+                                            <label class="flex flex-col w-full">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                    Chọn kho <span class="text-red-500">*</span>
+                                                </p>
+                                                <select name="picking_type_id" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                    <option value="">-- Chọn kho --</option>
+                                                    <t t-foreach="picking_types" t-as="pt">
+                                                        <option t-att-value="pt.id">
+                                                            <t t-esc="pt.warehouse_id.name if pt.warehouse_id else 'N/A'"/>: <t t-esc="pt.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
                                             </label>
                                             
                                         </div>
@@ -262,6 +341,209 @@
                     let lineCounter = 0;
                     let paymentDatePicker = null;
                     
+                    // Helper: Remove Vietnamese accents for better search
+                    function removeVietnameseAccents(str) {
+                        return str.normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+                            .toLowerCase();
+                    }
+                    
+                    // Helper: Escape HTML
+                    function escapeHtml(text) {
+                        const map = {
+                            '&': '&amp;',
+                            '<': '&lt;',
+                            '>': '&gt;',
+                            '"': '&quot;',
+                            "'": '&#039;'
+                        };
+                        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+                    }
+                    
+                    // Helper: Debounce function
+                    function debounce(func, wait) {
+                        let timeout;
+                        return function executedFunction(...args) {
+                            const later = () => {
+                                clearTimeout(timeout);
+                                func(...args);
+                            };
+                            clearTimeout(timeout);
+                            timeout = setTimeout(later, wait);
+                        };
+                    }
+                    
+                    // Initialize product search for a specific line
+                    function initializeProductSearch(lineId) {
+                        const searchInput = document.getElementById('product_search_' + lineId);
+                        const dropdown = document.getElementById('product_dropdown_' + lineId);
+                        const select = document.getElementById('product_select_' + lineId);
+                        const clearBtn = document.getElementById('clear_search_' + lineId);
+                        const container = document.getElementById('product_container_' + lineId);
+                        
+                        let filteredProducts = [];
+                        let selectedIndex = -1;
+                        let isDropdownOpen = false;
+                        
+                        // Filter and render products
+                        const filterProducts = debounce(function(searchTerm) {
+                            if (!searchTerm) {
+                                filteredProducts = [...productsData];
+                            } else {
+                                const searchText = removeVietnameseAccents(searchTerm);
+                                filteredProducts = productsData.filter(p =>
+                                    removeVietnameseAccents(p.name).includes(searchText)
+                                );
+                            }
+                            selectedIndex = filteredProducts.length > 0 ? 0 : -1;
+                            renderDropdown();
+                        }, 300);
+                        
+                        // Render dropdown options
+                        function renderDropdown() {
+                            if (filteredProducts.length === 0) {
+                                dropdown.innerHTML = '<div class="custom-select-no-results">Không tìm thấy sản phẩm</div>';
+                                return;
+                            }
+                            
+                            dropdown.innerHTML = filteredProducts.map((product, index) => {
+                                const isSelected = index === selectedIndex;
+                                return `
+                                    <div class="custom-select-option ${isSelected ? 'highlighted' : ''}"
+                                         data-index="${index}"
+                                         data-value="${product.id}">
+                                        <div class="font-medium text-text-light-primary dark:text-text-dark-primary">
+                                            ${escapeHtml(product.name)}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                            
+                            // Add click listeners
+                            dropdown.querySelectorAll('.custom-select-option').forEach(option => {
+                                option.addEventListener('click', function() {
+                                    const index = parseInt(this.getAttribute('data-index'));
+                                    selectProduct(index);
+                                });
+                            });
+                        }
+                        
+                        // Open dropdown
+                        function openDropdown() {
+                            if (!isDropdownOpen) {
+                                isDropdownOpen = true;
+                                
+                                // Calculate position for fixed dropdown
+                                const rect = searchInput.getBoundingClientRect();
+                                const dropdownMaxHeight = 300;
+                                const spaceBelow = window.innerHeight - rect.bottom;
+                                const spaceAbove = rect.top;
+                                
+                                // Decide whether to show dropdown above or below input
+                                if (spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow) {
+                                    // Show above input
+                                    dropdown.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+                                    dropdown.style.top = 'auto';
+                                    dropdown.style.transform = 'translateY(10px)';
+                                } else {
+                                    // Show below input (default)
+                                    dropdown.style.top = (rect.bottom + 4) + 'px';
+                                    dropdown.style.bottom = 'auto';
+                                    dropdown.style.transform = 'translateY(-10px)';
+                                }
+                                
+                                dropdown.style.left = rect.left + 'px';
+                                dropdown.style.width = rect.width + 'px';
+                                
+                                dropdown.classList.add('active');
+                                filterProducts(searchInput.value);
+                            }
+                        }
+                        
+                        // Close dropdown
+                        function closeDropdown() {
+                            if (isDropdownOpen) {
+                                isDropdownOpen = false;
+                                dropdown.classList.remove('active');
+                            }
+                        }
+                        
+                        // Select product
+                        function selectProduct(index) {
+                            if (index < 0 || index >= filteredProducts.length) return;
+                            
+                            const product = filteredProducts[index];
+                            select.value = product.id;
+                            searchInput.value = product.name;
+                            closeDropdown();
+                            updateProductUOM(lineId);
+                            clearBtn.style.display = 'block';
+                        }
+                        
+                        // Clear search
+                        function clearSearch() {
+                            searchInput.value = '';
+                            select.value = '';
+                            clearBtn.style.display = 'none';
+                            closeDropdown();
+                            updateProductUOM(lineId);
+                        }
+                        
+                        // Keyboard navigation
+                        function handleKeyDown(e) {
+                            if (!isDropdownOpen) {
+                                if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                                    openDropdown();
+                                    e.preventDefault();
+                                }
+                                return;
+                            }
+                            
+                            switch(e.key) {
+                                case 'ArrowDown':
+                                    e.preventDefault();
+                                    selectedIndex = Math.min(selectedIndex + 1, filteredProducts.length - 1);
+                                    renderDropdown();
+                                    break;
+                                case 'ArrowUp':
+                                    e.preventDefault();
+                                    selectedIndex = Math.max(selectedIndex - 1, 0);
+                                    renderDropdown();
+                                    break;
+                                case 'Enter':
+                                    e.preventDefault();
+                                    if (selectedIndex >= 0) {
+                                        selectProduct(selectedIndex);
+                                    }
+                                    break;
+                                case 'Escape':
+                                    e.preventDefault();
+                                    closeDropdown();
+                                    break;
+                            }
+                        }
+                        
+                        // Event listeners
+                        searchInput.addEventListener('input', function(e) {
+                            filterProducts(e.target.value);
+                            openDropdown();
+                            clearBtn.style.display = e.target.value ? 'block' : 'none';
+                        });
+                        
+                        searchInput.addEventListener('focus', openDropdown);
+                        searchInput.addEventListener('keydown', handleKeyDown);
+                        clearBtn.addEventListener('click', clearSearch);
+                        
+                        // Close dropdown when clicking outside
+                        document.addEventListener('click', function(e) {
+                            if (!container.contains(e.target)) {
+                                closeDropdown();
+                            }
+                        });
+                    }
+                    
+                    
                     // Initialize date picker and add initial product line
                     document.addEventListener('DOMContentLoaded', function() {
                         // Initialize Flatpickr for payment date with time (date + time)
@@ -343,17 +625,27 @@
                         tr.className = 'border-b border-border-light dark:border-border-dark';
                         tr.id = 'line_' + lineId;
                         
-                        // Build product options
+                        // Build product options for hidden select
                         let productOptions = '<option value="">-- Chọn sản phẩm --</option>';
                         productsData.forEach(function(p) {
-                            productOptions += '<option value="' + p.id + '">' + p.name + '</option>';
+                            productOptions += '<option value="' + p.id + '" data-name="' + escapeHtml(p.name) + '">' + escapeHtml(p.name) + '</option>';
                         });
                         
                         tr.innerHTML = 
                             '<td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0">' +
-                                '<select onchange="updateProductUOM(' + lineId + ')" class="product-select form-select w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm">' +
-                                    productOptions +
-                                '</select>' +
+                                '<div class="custom-select-container" id="product_container_' + lineId + '">' +
+                                    '<div class="relative">' +
+                                        '<input type="text" id="product_search_' + lineId + '" ' +
+                                            'placeholder="Tìm kiếm sản phẩm..." ' +
+                                            'autocomplete="off" ' +
+                                            'class="custom-select-search form-input w-full rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm px-3 py-2"/>' +
+                                        '<span id="clear_search_' + lineId + '" class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary cursor-pointer hover:text-text-light-primary dark:hover:text-text-dark-primary text-base" style="display: none;">close</span>' +
+                                    '</div>' +
+                                    '<div id="product_dropdown_' + lineId + '" class="custom-select-dropdown bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark"></div>' +
+                                    '<select onchange="updateProductUOM(' + lineId + ')" id="product_select_' + lineId + '" class="product-select form-select">' +
+                                        productOptions +
+                                    '</select>' +
+                                '</div>' +
                             '</td>' +
                             '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
                                 '<select onchange="updatePriceOnUOMChange(' + lineId + ')" class="uom-select form-select w-full rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm">' +
@@ -378,6 +670,10 @@
                             '</td>';
                         
                         tbody.appendChild(tr);
+                        
+                        // Initialize search for this line
+                        initializeProductSearch(lineId);
+                        
                         calculateTotals();
                     }
                     
@@ -546,6 +842,12 @@
                         const partnerSelect = document.querySelector('select[name="partner_id"]');
                         if (!partnerSelect.value) {
                             alert('Vui lòng chọn nhà cung cấp');
+                            return;
+                        }
+                        
+                        const pickingTypeSelect = document.querySelector('select[name="picking_type_id"]');
+                        if (!pickingTypeSelect.value) {
+                            alert('Vui lòng chọn phiếu nhập kho');
                             return;
                         }
                         

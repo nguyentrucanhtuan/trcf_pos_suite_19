@@ -152,8 +152,15 @@ class TrcfProcessingController(http.Controller):
         # Prepare BOM data for template
         bom_list = [self._build_bom_info(bom) for bom in boms]
         
+        # Get manufacturing picking types for current company
+        picking_types = request.env['stock.picking.type'].sudo().search([
+            ('code', '=', 'mrp_operation'),
+            ('company_id', '=', current_company.id)
+        ], order='sequence,name')
+        
         values = {
             'boms': bom_list,
+            'picking_types': picking_types,
             'today': datetime.now().strftime('%d/%m/%Y'),
         }
         
@@ -233,6 +240,11 @@ class TrcfProcessingController(http.Controller):
             bom_id = int(form_data.get('bom_id'))
             product_qty = float(form_data.get('product_qty', 1))
             components_data = json.loads(form_data.get('components_data', '[]'))
+            picking_type_id = int(form_data.get('picking_type_id', 0)) if form_data.get('picking_type_id') else False
+            
+            # Validate picking type
+            if not picking_type_id:
+                return self._render_processing_form(error='Vui lòng chọn phiếu sản xuất')
             
             # Validate BOM
             bom = self._validate_and_get_bom(bom_id)
@@ -240,7 +252,7 @@ class TrcfProcessingController(http.Controller):
                 return self._render_processing_form(error=bom['error'])
             
             # Create manufacturing order
-            mo = self._create_mo_record(bom, product_qty)
+            mo = self._create_mo_record(bom, product_qty, picking_type_id)
             
             # Process the manufacturing order to completion
             self._process_manufacturing_order(mo, components_data)
@@ -278,39 +290,19 @@ class TrcfProcessingController(http.Controller):
         
         return bom
     
-    def _create_mo_record(self, bom, product_qty):
+    def _create_mo_record(self, bom, product_qty, picking_type_id):
         """
         Create manufacturing order record.
         
         Args:
             bom: BOM record to use
             product_qty: Quantity to produce
+            picking_type_id: Selected picking type ID from form
             
         Returns:
             Created manufacturing order record
         """
-        # Get picking_type_id from settings
-        picking_type_id_str = request.env['ir.config_parameter'].sudo().get_param(
-            'trcf_fnb_inventory.trcf_processing_picking_type_id',
-            default=False
-        )
-        picking_type_id = int(picking_type_id_str) if picking_type_id_str else False
-        
-        # Fallback to default manufacturing picking type if not configured
-        if not picking_type_id:
-            _logger.warning("No processing picking type configured in settings, using company default")
-            default_picking_type = request.env['stock.picking.type'].sudo().search([
-                ('code', '=', 'mrp_operation'),
-                ('company_id', '=', request.env.company.id)
-            ], limit=1)
-            
-            if default_picking_type:
-                picking_type_id = default_picking_type.id
-                _logger.info(f"Using fallback picking type: {default_picking_type.name} (ID: {picking_type_id})")
-            else:
-                _logger.warning("No manufacturing picking type found for company")
-        else:
-            _logger.info(f"Using configured picking type ID: {picking_type_id}")
+        _logger.info(f"Using selected picking type ID: {picking_type_id}")
         
         mo_vals = {
             'product_id': bom.product_id.id if bom.product_id else bom.product_tmpl_id.product_variant_id.id,
@@ -319,11 +311,8 @@ class TrcfProcessingController(http.Controller):
             'bom_id': bom.id,
             'origin': 'TRCF Processing',
             'company_id': request.env.company.id,
+            'picking_type_id': picking_type_id,
         }
-        
-        # Add picking_type_id if configured
-        if picking_type_id:
-            mo_vals['picking_type_id'] = picking_type_id
         
         mo = request.env['mrp.production'].sudo().create(mo_vals)
         _logger.info(f"Created MO {mo.name} for product {bom.product_tmpl_id.name}, qty: {product_qty}")

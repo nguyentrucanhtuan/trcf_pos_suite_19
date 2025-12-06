@@ -200,10 +200,27 @@ class TrcfScrapController(http.Controller):
                 ('usage', '=', 'inventory')
             ], limit=1)
         
+        # Get available source locations (internal locations)
+        source_locations = request.env['stock.location'].sudo().search([
+            ('usage', '=', 'internal'),
+            '|',
+            ('company_id', '=', current_company.id),
+            ('company_id', '=', False)
+        ], order='name')
+        
+        source_location_list = []
+        for loc in source_locations:
+            source_location_list.append({
+                'id': loc.id,
+                'name': loc.display_name,
+            })
+        
+        _logger.info(f"Loaded {len(source_location_list)} source locations for scrap form")
         
         values = {
             'products': product_list,
             'reasons': reason_list,
+            'source_locations': source_location_list,
             'scrap_location_id': scrap_location.id if scrap_location else False,
             'today': datetime.now().strftime('%d/%m/%Y'),
         }
@@ -247,12 +264,11 @@ class TrcfScrapController(http.Controller):
             if product.is_kits and not bom_id:
                 return self._render_scrap_form(error='Sản phẩm này là Kit, vui lòng chọn BoM (công thức sản xuất)')
             
-            # Get source location from settings
-            source_location_id_str = request.env['ir.config_parameter'].sudo().get_param(
-                'trcf_fnb_inventory.trcf_scrap_location_id',
-                default=False
-            )
-            source_location_id = int(source_location_id_str) if source_location_id_str else False
+            # Get source location from form
+            source_location_id = int(form_data.get('source_location_id', 0)) if form_data.get('source_location_id') else False
+            
+            if not source_location_id:
+                return self._render_scrap_form(error='Vui lòng chọn vị trí kho nguồn')
             
             # Fallback to warehouse stock location if not configured
             if not source_location_id:

@@ -6,8 +6,8 @@
                 <div class="flex items-center gap-3">
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeOsAlV_kN5CiucZser69FgmTC5AAnDme1lxSTY3AbhvESPQf4U4WqKxU4eJtzWd0BsCvuf2RDHkAl4EsCHIF1KfhzkY3kqtGH8Bo8cpF00UHeM-Q2HGYLE6e-10npr1MkzJMiXOS7Y0gY2Q9Fc9JlkJjV2dvk1e-8Us1XLt6k3N6Fx2wPWWtCSG2gt2GuXP0FSXLteHZiS_8GrTgSDLCmDmVKkWAgKq4Ws14ejlPDsR6FEsBIyFmFZgZvF1qSoeJRbtehkWfY10Ly");'></div>
                     <div class="flex flex-col">
-                        <h1 class="text-slate-900 dark:text-slate-200 text-base font-medium leading-normal">Tuấn Rang Cà Phê</h1>
-                        <p class="text-neutral-text dark:text-gray-400 text-sm font-normal leading-normal">Quản trị viên</p>
+                        <h1 class="text-slate-900 dark:text-slate-200 text-base font-medium leading-normal"><t t-esc="request.env.user.name"/></h1>
+                        <p class="text-neutral-text dark:text-gray-400 text-sm font-normal leading-normal"><t t-if="request.env.user.has_group('base.group_system')" t-esc="'Quản trị viên'"/><t t-else="" t-esc="'Nhân viên'"/></p>
                     </div>
                 </div>
                 <nav class="flex flex-col gap-2" id="sidebar-nav">

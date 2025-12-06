@@ -81,6 +81,11 @@ class TrcfPurchaseController(http.Controller):
                     receipt_color = 'yellow'
                     can_receive = True
             
+            # Lấy warehouse name từ picking_type
+            warehouse_name = '--'
+            if po.picking_type_id and po.picking_type_id.warehouse_id:
+                warehouse_name = po.picking_type_id.warehouse_id.name
+            
             orders_data.append({
                 'id': po.id,
                 'name': po.name,
@@ -93,6 +98,7 @@ class TrcfPurchaseController(http.Controller):
                 'amount_total': po.amount_total,
                 'date_order': date_formatted,
                 'payment_date': payment_date_formatted,
+                'warehouse_name': warehouse_name,
                 # Receipt status fields
                 'receipt_status': receipt_status,
                 'receipt_status_display': receipt_status_display,
@@ -164,12 +170,19 @@ class TrcfPurchaseController(http.Controller):
                 {'id': 0, 'name': 'Chuyển khoản'},
             ]
         
+        # Load picking types (incoming) cho công ty hiện tại
+        picking_types = request.env['stock.picking.type'].sudo().search([
+            ('code', '=', 'incoming'),
+            ('company_id', '=', company_id)
+        ], order='sequence,name')
+        
         vals = {
             'suppliers': suppliers,
             'products': products,
             'reference': reference,
             'today': today,
             'payment_methods': payment_methods,
+            'picking_types': picking_types,
         }
         
         return request.render('trcf_fnb_inventory.purchase_form_template', vals)
@@ -186,6 +199,10 @@ class TrcfPurchaseController(http.Controller):
             reference = kw.get('reference', '')
             notes = kw.get('notes', '')
             action = kw.get('action', 'draft')  # 'draft' hoặc 'confirm'
+            
+            # Lấy picking type từ form
+            picking_type_id_str = kw.get('picking_type_id', '')
+            picking_type_id = int(picking_type_id_str) if picking_type_id_str else False
             
             # Lấy payment fields
             payment_method_id_str = kw.get('payment_method_id', '')
@@ -220,38 +237,22 @@ class TrcfPurchaseController(http.Controller):
             
             # Validate
             if not partner_id:
-                return request.render('trcf_fnb_inventory.purchase_form_template', {
+                return self._render_purchase_form({
                     'error': 'Vui lòng chọn nhà cung cấp',
                 })
             
+            if not picking_type_id:
+                return self._render_purchase_form({
+                    'error': 'Vui lòng chọn phiếu nhập kho',
+                })
+            
             if not products_data or len(products_data) == 0:
-                return request.render('trcf_fnb_inventory.purchase_form_template', {
+                return self._render_purchase_form({
                     'error': 'Vui lòng thêm ít nhất một sản phẩm',
                 })
             
-            # Lấy picking_type_id từ settings
-            picking_type_id_str = request.env['ir.config_parameter'].sudo().get_param(
-                'trcf_fnb_inventory.trcf_purchase_picking_type_id', 
-                default=False
-            )
-            
-            picking_type_id = int(picking_type_id_str) if picking_type_id_str else False
-            
-            # Nếu không có cấu hình, fallback về picking type mặc định của company
-            if not picking_type_id:
-                _logger.warning("No default picking type configured for purchase orders, using company default")
-                default_picking_type = request.env['stock.picking.type'].sudo().search([
-                    ('code', '=', 'incoming'),
-                    ('company_id', '=', request.env.company.id)
-                ], limit=1)
-                
-                if default_picking_type:
-                    picking_type_id = default_picking_type.id
-                    _logger.info(f"Using fallback picking type: {default_picking_type.name} (ID: {picking_type_id})")
-                else:
-                    _logger.error("No incoming picking type found for company")
-            else:
-                _logger.info(f"Using configured picking type ID: {picking_type_id}")
+            # Picking type đã được validate và lấy từ form ở trên
+            _logger.info(f"Using selected picking type ID: {picking_type_id}")
             
             # Tạo Purchase Order với company của user hiện tại
             po_vals = {
