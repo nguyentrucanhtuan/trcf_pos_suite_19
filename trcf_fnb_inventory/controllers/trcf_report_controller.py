@@ -265,16 +265,8 @@ class TrcfReportController(http.Controller):
             aggregates=['amount:sum']
         )
         
-        # 6. Đếm số đơn hàng cho mỗi payment method
-        payment_method_order_count = {}
-        for order in request.env['pos.order'].browse(order_ids):
-            for payment in order.payment_ids:
-                pm_id = payment.payment_method_id.id
-                if pm_id not in payment_method_order_count:
-                    payment_method_order_count[pm_id] = set()
-                payment_method_order_count[pm_id].add(order.id)
         
-        # 7. Format kết quả
+        # 6. Format kết quả
         currency = request.env.company.currency_id
         payment_methods = []
         
@@ -283,7 +275,13 @@ class TrcfReportController(http.Controller):
         
         for idx, (payment_method, amount_sum) in enumerate(result):
             if payment_method:  # Bỏ qua nếu payment_method là False/None
-                order_count = len(payment_method_order_count.get(payment_method.id, set()))
+                # Đếm số đơn duy nhất cho payment method này
+                payments = request.env['pos.payment'].sudo().search([
+                    ('pos_order_id', 'in', order_ids),
+                    ('payment_method_id', '=', payment_method.id)
+                ])
+                order_count = len(set(payments.mapped('pos_order_id').ids))
+                
                 payment_methods.append({
                     'name': payment_method.name,
                     'amount': amount_sum or 0,
@@ -541,23 +539,26 @@ class TrcfReportController(http.Controller):
             if pm.is_cash_count and first_session and pm in first_session.payment_method_ids:
                 opening_balance = first_session.cash_register_balance_start
             
-            # 2. Thu từ bán hàng (lấy từ pos.payment của các đơn hàng)
-            # Đồng thời đếm số đơn và số lượng món
-            sales_income = 0
-            order_count = 0
-            total_qty_pm = 0  # Đổi tên để không ghi đè total_qty ở dòng 525
-            orders_with_pm = set()  # Để đếm số đơn duy nhất
+            # 2. Thu từ bán hàng - Dùng _read_group để chính xác
+            domain_payments = [
+                ('pos_order_id', 'in', orders.ids),
+                ('payment_method_id', '=', pm.id)
+            ]
             
-            for order in orders:
-                for payment in order.payment_ids:
-                    if payment.payment_method_id == pm:
-                        sales_income += payment.amount
-                        if order.id not in orders_with_pm:
-                            orders_with_pm.add(order.id)
-                            order_count += 1
-                            # Tính tổng số lượng món trong đơn này
-                            total_qty_pm += sum(order.lines.mapped('qty'))
-                        break  # Đã tìm thấy payment method này trong đơn
+            # Tính tổng tiền
+            result = request.env['pos.payment']._read_group(
+                domain=domain_payments,
+                aggregates=['amount:sum']
+            )
+            sales_income = result[0][0] if result and result[0] else 0
+            
+            # Đếm số đơn duy nhất
+            payments = request.env['pos.payment'].sudo().search(domain_payments)
+            unique_orders = payments.mapped('pos_order_id')
+            order_count = len(unique_orders)
+            
+            # Tính tổng số món trong các đơn này
+            total_qty_pm = sum(unique_orders.mapped('lines').mapped('qty'))
             
             # 3. Chi phí trong khoảng thời gian với payment method này
             expenses = request.env['trcf.expense'].sudo().search([
@@ -655,22 +656,26 @@ class TrcfReportController(http.Controller):
                 # 1. Số dư đầu ca (chỉ cash có)
                 opening_balance = session.cash_register_balance_start if pm.is_cash_count else 0
                 
-                # 2. Thu từ bán hàng trong phiên
-                # Đồng thời đếm số đơn và số lượng món
-                sales_income = 0
-                order_count = 0
-                total_qty_pm = 0
-                orders_with_pm = set()
+                # 2. Thu từ bán hàng - Dùng _read_group
+                domain_payments = [
+                    ('pos_order_id', 'in', orders.ids),
+                    ('payment_method_id', '=', pm.id)
+                ]
                 
-                for order in orders:
-                    for payment in order.payment_ids:
-                        if payment.payment_method_id == pm:
-                            sales_income += payment.amount
-                            if order.id not in orders_with_pm:
-                                orders_with_pm.add(order.id)
-                                order_count += 1
-                                total_qty_pm += sum(order.lines.mapped('qty'))
-                            break
+                # Tính tổng tiền
+                result = request.env['pos.payment']._read_group(
+                    domain=domain_payments,
+                    aggregates=['amount:sum']
+                )
+                sales_income = result[0][0] if result and result[0] else 0
+                
+                # Đếm số đơn duy nhất
+                payments = request.env['pos.payment'].sudo().search(domain_payments)
+                unique_orders = payments.mapped('pos_order_id')
+                order_count = len(unique_orders)
+                
+                # Tính tổng số món
+                total_qty_pm = sum(unique_orders.mapped('lines').mapped('qty'))
                 
                 # 3. Chi phí từ lúc mở phiên đến hiện tại
                 expenses = request.env['trcf.expense'].sudo().search([
@@ -757,7 +762,6 @@ class TrcfReportController(http.Controller):
             
             # Tính số món bán ra
             total_qty = sum(session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']).mapped('lines').mapped('qty'))
-            total_qty_session = sum(session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']).mapped('lines').mapped('qty')) # Renamed to avoid conflict
             
             # Lấy tất cả payment methods của phiên
             payment_method_data = []
@@ -766,22 +770,27 @@ class TrcfReportController(http.Controller):
                 # 1. Số dư đầu ca (chỉ cash có)
                 opening_balance = session.cash_register_balance_start if pm.is_cash_count else 0
                 
-                # 2. Thu từ bán hàng trong phiên
-                # Đồng thời đếm số đơn và số lượng món
-                sales_income = 0
-                order_count = 0
-                total_qty = 0
-                orders_with_pm = set()
+                # 2. Thu từ bán hàng - Dùng _read_group
+                paid_orders = session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced'])
+                domain_payments = [
+                    ('pos_order_id', 'in', paid_orders.ids),
+                    ('payment_method_id', '=', pm.id)
+                ]
                 
-                for order in session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']):
-                    for payment in order.payment_ids:
-                        if payment.payment_method_id == pm:
-                            sales_income += payment.amount
-                            if order.id not in orders_with_pm:
-                                orders_with_pm.add(order.id)
-                                order_count += 1
-                                total_qty += sum(order.lines.mapped('qty'))
-                            break
+                # Tính tổng tiền
+                result = request.env['pos.payment']._read_group(
+                    domain=domain_payments,
+                    aggregates=['amount:sum']
+                )
+                sales_income = result[0][0] if result and result[0] else 0
+                
+                # Đếm số đơn duy nhất
+                payments = request.env['pos.payment'].sudo().search(domain_payments)
+                unique_orders = payments.mapped('pos_order_id')
+                order_count = len(unique_orders)
+                
+                # Tính tổng số món
+                total_qty_pm = sum(unique_orders.mapped('lines').mapped('qty'))
                 
                 # 3. Chi phí trong thời gian phiên với payment method này
                 expenses = request.env['trcf.expense'].sudo().search([
@@ -811,7 +820,7 @@ class TrcfReportController(http.Controller):
                     'sales_income': sales_income,
                     'sales_income_formatted': currency.format(sales_income),
                     'order_count': order_count,
-                    'total_qty': int(total_qty),
+                    'total_qty': int(total_qty_pm),
                     'expenses': total_expenses,
                     'expenses_formatted': currency.format(total_expenses),
                     'purchases': total_purchases,

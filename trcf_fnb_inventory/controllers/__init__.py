@@ -5,3 +5,4 @@ from . import trcf_check_inventory_controller
 from . import trcf_scrap_controller
 from . import trcf_processing_controller
 from . import trcf_dashboard_controller
+from . import trcf_transfer_controller

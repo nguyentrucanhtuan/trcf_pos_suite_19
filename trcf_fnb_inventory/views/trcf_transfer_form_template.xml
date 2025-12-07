@@ -1,0 +1,518 @@
+<odoo>
+    <template id="transfer_form_template">
+
+        <xpath expr="//head" position="inside">
+            <meta charset="utf-8"/>
+            <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+            <meta name="csrf-token" t-att-content="request.csrf_token()"/>
+            <title>Chuyển Kho</title>
+            <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+            <script>
+                tailwind.config = {
+                    darkMode: "class",
+                    theme: {
+                        extend: {
+                            colors: {
+                                primary: '#2563eb',
+                                'primary-light': '#eff6ff',
+                                'primary-dark': '#1e40af',
+                                'background-light': '#f8fafc',
+                                'background-dark': '#020617',
+                                'text-light-primary': '#1e293b',
+                                'text-light-secondary': '#64748b',
+                                'text-dark-primary': '#f8fafc',
+                                'text-dark-secondary': '#94a3b8',
+                                'border-light': '#e2e8f0',
+                                'border-dark': '#1e293b',
+                            },
+                            fontFamily: {
+                                "display": ["Inter", "sans-serif"]
+                            },
+                            borderRadius: {
+                                "DEFAULT": "0.5rem",
+                                "lg": "0.75rem",
+                                "xl": "1rem",
+                                "full": "9999px"
+                            },
+                        },
+                    },
+                }
+            </script>
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                }
+                .material-symbols-outlined {
+                    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+
+                /* Custom Select Styles */
+                .custom-select-container {
+                    position: relative;
+                }
+
+                .custom-select-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    margin-top: 4px;
+                    border-radius: 0.75rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                    z-index: 50;
+                    opacity: 0;
+                    transform: translateY(-10px);
+                    transition: all 0.15s ease-out;
+                    pointer-events: none;
+                }
+
+                .custom-select-dropdown.active {
+                    opacity: 1;
+                    transform: translateY(0);
+                    pointer-events: auto;
+                }
+
+                .custom-select-option {
+                    padding: 1rem 1.25rem;
+                    cursor: pointer;
+                    transition: all 0.1s ease;
+                }
+
+                .custom-select-option:hover,
+                .custom-select-option.highlighted {
+                    background-color: rgb(239 246 255);
+                }
+
+                .dark .custom-select-option:hover,
+                .dark .custom-select-option.highlighted {
+                    background-color: rgb(30 41 59);
+                }
+
+                .custom-select-no-results {
+                    padding: 1.5rem;
+                    text-align: center;
+                    color: rgb(148 163 184);
+                }
+
+                /* Product line styles */
+                .product-line {
+                    transition: all 0.2s ease;
+                }
+
+                .product-line:hover {
+                    background-color: rgb(248 250 252);
+                }
+
+                .dark .product-line:hover {
+                    background-color: rgb(15 23 42);
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//body" position="replace">
+
+            <body class="font-display bg-background-light dark:bg-background-dark">
+                <div class="flex min-h-screen">
+                    <!-- SideNavBar -->
+                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+
+                    <!-- Main Content -->
+                    <main class="flex-1 p-8">
+                        <div class="w-full max-w-screen mx-auto">
+                            
+                            <!-- Error Message -->
+                            <t t-if="error">
+                                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                                    <p class="text-red-800 dark:text-red-200 text-sm font-medium">
+                                        <span class="material-symbols-outlined inline-block align-middle mr-2">error</span>
+                                        <t t-esc="error"/>
+                                    </p>
+                                </div>
+                            </t>
+                            
+                            <form id="transferForm" method="POST" action="/trcf_fnb_inventory/transfer_add">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="picking_type_id" t-att-value="picking_type_id"/>
+                                <input type="hidden" name="source_location_id" t-att-value="default_source_location_id"/>
+                                <input type="hidden" name="dest_location_id" t-att-value="default_dest_location_id"/>
+                                <input type="hidden" name="products_data" id="products_data"/>
+                                
+                                <header class="mb-8">
+                                    <t t-if="source_location_name and dest_location_name">
+                                        <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em] mb-2">
+                                            Chuyển Kho: <span class="text-primary"><t t-esc="source_location_name"/></span> → <span class="text-primary"><t t-esc="dest_location_name"/></span>
+                                        </p>
+                                    </t>
+                                    <t t-else="">
+                                        <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em] mb-2">Chuyển Kho</p>
+                                    </t>
+                                    <p class="text-text-light-secondary dark:text-text-dark-secondary text-base">Chuyển sản phẩm giữa các kho</p>
+                                </header>
+
+                                <!-- Products Section -->
+                                <div class="bg-white dark:bg-slate-900 border-2 border-border-light dark:border-border-dark rounded-2xl p-8 mb-8 shadow-sm">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <h3 class="text-2xl font-bold text-text-light-primary dark:text-text-dark-primary">Sản Phẩm Chuyển</h3>
+                                        <button type="button" id="addProductBtn" class="flex items-center gap-3 px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-xl text-lg font-bold transition-all hover:shadow-lg">
+                                            <span class="material-symbols-outlined text-2xl">add_circle</span>
+                                            <span>Thêm Sản Phẩm</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Product Lines Container -->
+                                    <div id="productLinesContainer" class="space-y-5">
+                                        <!-- Product lines will be added here dynamically -->
+                                    </div>
+
+                                    <!-- Empty State -->
+                                    <div id="emptyState" class="text-center py-16 text-text-light-secondary dark:text-text-dark-secondary">
+                                        <span class="material-symbols-outlined text-6xl mb-4 opacity-50">inventory_2</span>
+                                        <p class="text-xl font-medium">Chưa có sản phẩm nào</p>
+                                        <p class="text-sm mt-2 opacity-75">Nhấn "Thêm Sản Phẩm" để bắt đầu</p>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="flex gap-5">
+                                    <a href="/trcf_fnb_inventory/transfer_list" class="flex-1">
+                                        <button type="button" class="w-full h-16 px-6 rounded-xl border-2 border-border-light dark:border-border-dark text-text-light-primary dark:text-text-dark-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-lg font-bold">
+                                            Hủy
+                                        </button>
+                                    </a>
+                                    <button type="submit" class="flex-1 flex items-center justify-center gap-x-3 h-16 px-6 rounded-xl bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white transition-all hover:shadow-lg text-lg font-bold">
+                                        <span class="material-symbols-outlined text-2xl">check_circle</span>
+                                        <span>Xác Nhận Chuyển Kho</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </main>
+                </div>
+                
+                <!-- Product Data (hidden, for JavaScript) -->
+                <script id="productsData" type="application/json">
+                    <t t-esc="json.dumps(products)"/>
+                </script>
+
+                <!-- JavaScript -->
+                <script>
+                <![CDATA[
+                    // Global state
+                    let productLineCounter = 0;
+                    let allProducts = [];
+                    let productLines = [];
+
+                    // Load products data
+                    function loadProductsData() {
+                        const productsDataEl = document.getElementById('productsData');
+                        if (productsDataEl) {
+                            allProducts = JSON.parse(productsDataEl.textContent);
+                        }
+                    }
+
+                    // Remove Vietnamese accents for better search
+                    function removeVietnameseAccents(str) {
+                        return str.normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+                            .toLowerCase();
+                    }
+
+                    // Increment quantity
+                    function incrementQty(lineId) {
+                        const qtyInput = document.getElementById(`qty_${lineId}`);
+                        const currentValue = parseFloat(qtyInput.value) || 0;
+                        qtyInput.value = currentValue + 1;
+                    }
+
+                    // Decrement quantity
+                    function decrementQty(lineId) {
+                        const qtyInput = document.getElementById(`qty_${lineId}`);
+                        const currentValue = parseFloat(qtyInput.value) || 0;
+                        if (currentValue > 1) {
+                            qtyInput.value = currentValue - 1;
+                        }
+                    }
+
+                    // Add product line
+                    function addProductLine() {
+                        const lineId = productLineCounter++;
+                        const container = document.getElementById('productLinesContainer');
+                        const emptyState = document.getElementById('emptyState');
+
+                        // Hide empty state
+                        emptyState.style.display = 'none';
+
+                        // Create product line HTML
+                        const lineHtml = `
+                            <div class="product-line bg-slate-50 dark:bg-slate-800/50 border-2 border-border-light dark:border-border-dark rounded-2xl p-8 hover:border-primary/30 transition-all" data-line-id="${lineId}">
+                                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+                                    <!-- Product Search -->
+                                    <div class="md:col-span-5">
+                                        <label class="text-base font-bold text-text-light-primary dark:text-text-dark-primary mb-3 block">Sản phẩm</label>
+                                        <div class="custom-select-container">
+                                            <div class="relative">
+                                                <input
+                                                    type="text"
+                                                    id="product_search_${lineId}"
+                                                    placeholder="Tìm kiếm sản phẩm..."
+                                                    autocomplete="off"
+                                                    class="custom-select-search form-input w-full rounded-xl text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-2 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 h-16 pl-14 pr-14 text-lg font-medium shadow-sm"
+                                                />
+                                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary text-2xl">search</span>
+                                                <span id="clear_search_${lineId}" class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary cursor-pointer hover:text-text-light-primary dark:hover:text-text-dark-primary text-2xl" style="display: none;">close</span>
+                                            </div>
+                                            <div id="product_dropdown_${lineId}" class="custom-select-dropdown bg-white dark:bg-slate-900 border-2 border-border-light dark:border-border-dark"></div>
+                                            <input type="hidden" id="product_id_${lineId}" />
+                                        </div>
+                                    </div>
+
+                                    <!-- UOM -->
+                                    <div class="md:col-span-2">
+                                        <label class="text-base font-bold text-text-light-primary dark:text-text-dark-primary mb-3 block">Đơn vị</label>
+                                        <select
+                                            id="uom_${lineId}"
+                                            class="form-select w-full rounded-xl text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-2 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 h-16 px-5 text-lg font-medium shadow-sm"
+                                        >
+                                            <option value="">-- Chọn --</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Quantity with +/- buttons -->
+                                    <div class="md:col-span-2">
+                                        <label class="text-base font-bold text-text-light-primary dark:text-text-dark-primary mb-3 block">Số lượng</label>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" onclick="decrementQty(${lineId})" class="h-16 w-16 flex-shrink-0 flex items-center justify-center rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-text-light-primary dark:text-text-dark-primary transition-all border-2 border-border-light dark:border-border-dark shadow-sm hover:shadow-md">
+                                                <span class="material-symbols-outlined text-3xl font-bold">remove</span>
+                                            </button>
+                                            <input
+                                                type="number"
+                                                id="qty_${lineId}"
+                                                min="1"
+                                                step="1"
+                                                value="1"
+                                                class="form-input flex-1 text-center rounded-xl text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-2 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 h-16 w-20 px-2 text-2xl font-bold shadow-sm"
+                                            />
+                                            <button type="button" onclick="incrementQty(${lineId})" class="h-16 w-16 flex-shrink-0 flex items-center justify-center rounded-xl bg-primary hover:bg-primary-dark text-white transition-all shadow-sm hover:shadow-md">
+                                                <span class="material-symbols-outlined text-3xl font-bold">add</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Remove Button -->
+                                    <div class="md:col-span-1">
+                                        <button type="button" onclick="removeProductLine(${lineId})" class="w-full h-16 flex items-center justify-center gap-2 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-bold border-2 border-red-200 dark:border-red-800 hover:border-red-300">
+                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        container.insertAdjacentHTML('beforeend', lineHtml);
+
+                        // Initialize product search for this line
+                        initializeProductSearch(lineId);
+
+                        // Add to tracking
+                        productLines.push({
+                            id: lineId,
+                            product_id: null,
+                            qty: 1,
+                            uom_id: null,
+                        });
+                    }
+
+                    // Initialize product search for a line
+                    function initializeProductSearch(lineId) {
+                        const searchInput = document.getElementById(`product_search_${lineId}`);
+                        const dropdown = document.getElementById(`product_dropdown_${lineId}`);
+                        const clearBtn = document.getElementById(`clear_search_${lineId}`);
+                        const productIdInput = document.getElementById(`product_id_${lineId}`);
+                        const uomSelect = document.getElementById(`uom_${lineId}`);
+
+                        let filteredProducts = [];
+
+                        // Search input handler
+                        searchInput.addEventListener('input', function(e) {
+                            const searchTerm = removeVietnameseAccents(e.target.value);
+                            
+                            if (!searchTerm) {
+                                filteredProducts = [...allProducts];
+                            } else {
+                                filteredProducts = allProducts.filter(p => 
+                                    removeVietnameseAccents(p.name).includes(searchTerm)
+                                );
+                            }
+
+                            renderDropdown(lineId, filteredProducts);
+                            openDropdown(lineId);
+
+                            clearBtn.style.display = e.target.value ? 'block' : 'none';
+                        });
+
+                        searchInput.addEventListener('focus', () => {
+                            filteredProducts = [...allProducts];
+                            renderDropdown(lineId, filteredProducts);
+                            openDropdown(lineId);
+                        });
+
+                        // Clear button
+                        clearBtn.addEventListener('click', () => {
+                            searchInput.value = '';
+                            productIdInput.value = '';
+                            uomSelect.innerHTML = '<option value="">-- Chọn --</option>';
+                            clearBtn.style.display = 'none';
+                            closeDropdown(lineId);
+                        });
+
+                        // Close dropdown when clicking outside
+                        document.addEventListener('click', function(e) {
+                            const container = searchInput.closest('.custom-select-container');
+                            if (!container.contains(e.target)) {
+                                closeDropdown(lineId);
+                            }
+                        });
+                    }
+
+                    // Render dropdown
+                    function renderDropdown(lineId, products) {
+                        const dropdown = document.getElementById(`product_dropdown_${lineId}`);
+
+                        if (products.length === 0) {
+                            dropdown.innerHTML = '<div class="custom-select-no-results">Không tìm thấy sản phẩm</div>';
+                            return;
+                        }
+
+                        dropdown.innerHTML = products.map((product, index) => `
+                            <div class="custom-select-option" data-index="${index}" onclick="selectProduct(${lineId}, ${index}, ${products.map(p => p.id).indexOf(product.id)})">
+                                <div class="font-semibold text-text-light-primary dark:text-text-dark-primary text-base">${product.name}</div>
+                                <div class="text-sm text-text-light-secondary dark:text-text-dark-secondary mt-1">
+                                    ${product.qty_available} ${product.uom_name} có sẵn
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+
+                    // Open dropdown
+                    function openDropdown(lineId) {
+                        const dropdown = document.getElementById(`product_dropdown_${lineId}`);
+                        dropdown.classList.add('active');
+                    }
+
+                    // Close dropdown
+                    function closeDropdown(lineId) {
+                        const dropdown = document.getElementById(`product_dropdown_${lineId}`);
+                        dropdown.classList.remove('active');
+                    }
+
+                    // Select product
+                    function selectProduct(lineId, displayIndex, productIndex) {
+                        const product = allProducts[productIndex];
+                        const searchInput = document.getElementById(`product_search_${lineId}`);
+                        const productIdInput = document.getElementById(`product_id_${lineId}`);
+                        const uomSelect = document.getElementById(`uom_${lineId}`);
+                        const clearBtn = document.getElementById(`clear_search_${lineId}`);
+
+                        // Update inputs
+                        searchInput.value = product.name;
+                        productIdInput.value = product.id;
+                        clearBtn.style.display = 'block';
+
+                        // Populate UOM options
+                        uomSelect.innerHTML = '<option value="">-- Chọn --</option>';
+                        product.uoms.forEach(uom => {
+                            const option = document.createElement('option');
+                            option.value = uom.id;
+                            option.textContent = uom.name;
+                            uomSelect.appendChild(option);
+
+                            // Select default UOM
+                            if (uom.id === product.uom_id) {
+                                option.selected = true;
+                            }
+                        });
+
+                        closeDropdown(lineId);
+
+                        // Update product line data
+                        const line = productLines.find(l => l.id === lineId);
+                        if (line) {
+                            line.product_id = product.id;
+                        }
+                    }
+
+                    // Remove product line
+                    function removeProductLine(lineId) {
+                        const line = document.querySelector(`[data-line-id="${lineId}"]`);
+                        if (line) {
+                            line.remove();
+                        }
+
+                        // Remove from tracking
+                        productLines = productLines.filter(l => l.id !== lineId);
+
+                        // Show empty state if no lines
+                        const container = document.getElementById('productLinesContainer');
+                        const emptyState = document.getElementById('emptyState');
+                        if (container.children.length === 0) {
+                            emptyState.style.display = 'block';
+                        }
+                    }
+
+                    // Collect product data for submission
+                    function collectProductData() {
+                        const data = [];
+                        
+                        productLines.forEach(line => {
+                            const productId = document.getElementById(`product_id_${line.id}`).value;
+                            const qty = document.getElementById(`qty_${line.id}`).value;
+                            const uomId = document.getElementById(`uom_${line.id}`).value;
+
+                            if (productId && qty && uomId) {
+                                data.push({
+                                    product_id: parseInt(productId),
+                                    qty: parseFloat(qty),
+                                    uom_id: parseInt(uomId),
+                                });
+                            }
+                        });
+
+                        return data;
+                    }
+
+                    // Form submission
+                    document.addEventListener('DOMContentLoaded', function() {
+                        loadProductsData();
+
+                        // Add product button
+                        document.getElementById('addProductBtn').addEventListener('click', addProductLine);
+
+                        // Form submit
+                        document.getElementById('transferForm').addEventListener('submit', function(e) {
+                            const productsData = collectProductData();
+
+                            if (productsData.length === 0) {
+                                e.preventDefault();
+                                alert('Vui lòng thêm ít nhất một sản phẩm');
+                                return false;
+                            }
+
+                            // Set products data
+                            document.getElementById('products_data').value = JSON.stringify(productsData);
+
+                            return true;
+                        });
+                    });
+                ]]>
+                </script>
+            </body>
+            
+        </xpath>
+
+    </template>
+</odoo>

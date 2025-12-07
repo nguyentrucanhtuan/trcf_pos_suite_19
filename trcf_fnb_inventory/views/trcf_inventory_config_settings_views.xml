@@ -43,6 +43,22 @@
                         </setting>
 
                     </block>
+                    
+                    <block title="Cấu hình chuyển kho" name="transfer_settings">
+                        
+                        <setting id="trcf_transfer_source_location_setting" 
+                                 help="Kho nguồn mặc định khi tạo phiếu chuyển kho">
+                            <field name="trcf_transfer_source_location_id" 
+                                   placeholder="Chọn kho nguồn..."/>
+                        </setting>
+                        
+                        <setting id="trcf_transfer_dest_location_setting" 
+                                 help="Kho đích mặc định khi tạo phiếu chuyển kho">
+                            <field name="trcf_transfer_dest_location_id" 
+                                   placeholder="Chọn kho đích..."/>
+                        </setting>
+
+                    </block>
                 </app>
             </xpath>
         </field>

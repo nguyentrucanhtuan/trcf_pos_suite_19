@@ -25,6 +25,8 @@
         'views/trcf_processing_form_template.xml',
         'views/trcf_check_inventory_list_template.xml',
         'views/trcf_check_inventory_form_template.xml',
+        'views/trcf_transfer_list_template.xml',
+        'views/trcf_transfer_form_template.xml',
     ],
     'assets': {
         'web.assets_backend': [

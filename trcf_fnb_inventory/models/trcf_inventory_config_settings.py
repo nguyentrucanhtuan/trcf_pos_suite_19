@@ -34,6 +34,21 @@ class TrcfInventoryConfigSettings(models.TransientModel):
         domain="[('code', '=', 'mrp_operation'), ('company_id', '=', company_id)]",
         help='Chọn loại phiếu sản xuất sẽ được sử dụng khi tạo lệnh sản xuất. Kho nguồn và kho đích sẽ được lấy từ cấu hình của loại phiếu này.'
     )
+    
+    # Transfer settings
+    trcf_transfer_source_location_id = fields.Many2one(
+        'stock.location',
+        string='Vị trí kho nguồn mặc định cho chuyển kho',
+        domain="[('usage', '=', 'internal'), ('company_id', 'in', [company_id, False])]",
+        help='Kho nguồn mặc định khi tạo phiếu chuyển kho'
+    )
+    
+    trcf_transfer_dest_location_id = fields.Many2one(
+        'stock.location',
+        string='Vị trí kho đích mặc định cho chuyển kho',
+        domain="[('usage', '=', 'internal'), ('company_id', 'in', [company_id, False])]",
+        help='Kho đích mặc định khi tạo phiếu chuyển kho'
+    )
 
     
     @api.model
@@ -72,6 +87,22 @@ class TrcfInventoryConfigSettings(models.TransientModel):
         if processing_picking_type_id:
             res['trcf_processing_picking_type_id'] = int(processing_picking_type_id)
         
+        # Lấy giá trị transfer source location
+        transfer_source_location_id = self.env['ir.config_parameter'].sudo().get_param(
+            'trcf_fnb_inventory.trcf_transfer_source_location_id',
+            default=False
+        )
+        if transfer_source_location_id:
+            res['trcf_transfer_source_location_id'] = int(transfer_source_location_id)
+        
+        # Lấy giá trị transfer destination location
+        transfer_dest_location_id = self.env['ir.config_parameter'].sudo().get_param(
+            'trcf_fnb_inventory.trcf_transfer_dest_location_id',
+            default=False
+        )
+        if transfer_dest_location_id:
+            res['trcf_transfer_dest_location_id'] = int(transfer_dest_location_id)
+        
         return res
     
     def set_values(self):
@@ -99,4 +130,16 @@ class TrcfInventoryConfigSettings(models.TransientModel):
         self.env['ir.config_parameter'].sudo().set_param(
             'trcf_fnb_inventory.trcf_processing_picking_type_id',
             self.trcf_processing_picking_type_id.id if self.trcf_processing_picking_type_id else False
+        )
+        
+        # Lưu transfer source location
+        self.env['ir.config_parameter'].sudo().set_param(
+            'trcf_fnb_inventory.trcf_transfer_source_location_id',
+            self.trcf_transfer_source_location_id.id if self.trcf_transfer_source_location_id else False
+        )
+        
+        # Lưu transfer destination location
+        self.env['ir.config_parameter'].sudo().set_param(
+            'trcf_fnb_inventory.trcf_transfer_dest_location_id',
+            self.trcf_transfer_dest_location_id.id if self.trcf_transfer_dest_location_id else False
         )
