@@ -389,7 +389,7 @@
                         }
 
                         dropdown.innerHTML = products.map((product, index) => `
-                            <div class="custom-select-option" data-index="${index}" onclick="selectProduct(${lineId}, ${index}, ${products.map(p => p.id).indexOf(product.id)})">
+                            <div class="custom-select-option" data-index="${index}" onclick="selectProduct(${lineId}, ${product.id})">
                                 <div class="font-semibold text-text-light-primary dark:text-text-dark-primary text-base">${product.name}</div>
                                 <div class="text-sm text-text-light-secondary dark:text-text-dark-secondary mt-1">
                                     ${product.qty_available} ${product.uom_name} có sẵn
@@ -411,8 +411,10 @@
                     }
 
                     // Select product
-                    function selectProduct(lineId, displayIndex, productIndex) {
-                        const product = allProducts[productIndex];
+                    function selectProduct(lineId, productId) {
+                        const product = allProducts.find(p => p.id === productId);
+                        if (!product) return;
+                        
                         const searchInput = document.getElementById(`product_search_${lineId}`);
                         const productIdInput = document.getElementById(`product_id_${lineId}`);
                         const uomSelect = document.getElementById(`uom_${lineId}`);

@@ -25,6 +25,11 @@
                         <span class="material-symbols-outlined">archive</span>
                         <p class="text-sm font-medium leading-normal">NHẬP HÀNG</p>
                     </a>
+
+                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/transfer_list" data-path="/trcf_fnb_inventory/transfer_list">
+                        <span class="material-symbols-outlined">swap_horiz</span>
+                        <p class="text-sm font-medium leading-normal">CHUYỂN KHO</p>
+                    </a>
                
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/processing_list" data-path="/trcf_fnb_inventory/processing_list">
                         <span class="material-symbols-outlined">restaurant_menu</span>
@@ -39,11 +44,6 @@
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/check_inventory_list" data-path="/trcf_fnb_inventory/check_inventory_list">
                         <span class="material-symbols-outlined">inventory</span>
                         <p class="text-sm font-medium leading-normal">KIỂM KÊ</p>
-                    </a>
-
-                    <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/transfer_list" data-path="/trcf_fnb_inventory/transfer_list">
-                        <span class="material-symbols-outlined">swap_horiz</span>
-                        <p class="text-sm font-medium leading-normal">CHUYỂN KHO</p>
                     </a>
                     
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/daily_report" data-path="/trcf_fnb_inventory/daily_report">

@@ -1,0 +1,76 @@
+.momo-payment-dialog {
+    padding: 20px;
+    min-width: 400px;
+}
+
+.momo-payment-dialog .payment-header h3 {
+    color: #b0006d;
+    font-weight: bold;
+}
+
+.momo-payment-dialog .amount-display h2 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #b0006d !important;
+}
+
+.momo-payment-dialog .qr-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.momo-payment-dialog .qr-code-image {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.momo-payment-dialog .qr-code-image:hover {
+    transform: scale(1.05);
+}
+
+.momo-payment-dialog .payment-info {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.momo-payment-dialog .countdown-timer .alert {
+    display: inline-block;
+    padding: 8px 20px;
+    margin: 0;
+}
+
+.momo-payment-dialog .payment-footer button {
+    min-width: 150px;
+    padding: 10px 20px;
+    font-weight: 500;
+}
+
+.momo-payment-dialog .payment-footer .btn-success {
+    background-color: #b0006d;
+    border-color: #b0006d;
+}
+
+.momo-payment-dialog .payment-footer .btn-success:hover {
+    background-color: #8a0055;
+    border-color: #8a0055;
+}
+
+/* Animation for QR code */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(176, 0, 109, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(176, 0, 109, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(176, 0, 109, 0);
+    }
+}
+
+.momo-payment-dialog .qr-container img {
+    animation: pulse 2s infinite;
+}

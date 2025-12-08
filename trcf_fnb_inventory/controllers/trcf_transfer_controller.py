@@ -104,7 +104,7 @@ class TrcfTransferController(http.Controller):
         # GET request - show form
         return self._render_transfer_form()
     
-    @http.route('/trcf_fnb_inventory/get_product_uoms', type='json', auth='user')
+    @http.route('/trcf_fnb_inventory/get_product_uoms', type='jsonrpc', auth='user')
     def get_product_uoms(self, product_id):
         """
         AJAX endpoint to get compatible UOMs for a product.

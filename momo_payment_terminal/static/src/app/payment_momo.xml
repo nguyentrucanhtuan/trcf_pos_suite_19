@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="momo_payment_terminal.MomoPaymentDialog">
+        <div class="momo-payment-dialog">
+            <div class="payment-header text-center mb-3">
+                <h3>Thanh toán qua MOMO</h3>
+                <div class="amount-display mt-2">
+                    <h2 class="text-primary">
+                        <t t-out="formatCurrency(props.amount)"/>
+                    </h2>
+                </div>
+            </div>
+            
+            <div class="payment-body text-center">
+                <!-- QR Code Image -->
+                <div t-if="props.qrImage" class="qr-container mb-3">
+                    <img t-attf-src="data:image/png;base64,{{props.qrImage}}" 
+                         class="qr-code-image" 
+                         style="width: 250px; height: 250px; border: 2px solid #b0006d; padding: 10px; border-radius: 10px;"/>
+                </div>
+                
+                <!-- Default MOMO logo if no QR -->
+                <div t-else="" class="momo-logo-container mb-3">
+                    <div style="width: 250px; height: 250px; margin: 0 auto; background: linear-gradient(135deg, #b0006d 0%, #e91e63 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                        <div style="color: white; text-align: center;">
+                            <i class="fa fa-qrcode" style="font-size: 80px; margin-bottom: 10px;"/>
+                            <div style="font-size: 24px; font-weight: bold;">MOMO</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Info -->
+                <div class="payment-info mt-3">
+                    <p class="text-muted mb-2">Quét mã QR bằng app MOMO để thanh toán</p>
+                    <div t-if="props.phoneNumber" class="phone-info">
+                        <small>Hoặc chuyển khoản đến số: <strong t-out="props.phoneNumber"/></small>
+                    </div>
+                    <div t-if="props.merchantId" class="merchant-info mt-1">
+                        <small>Mã cửa hàng: <strong t-out="props.merchantId"/></small>
+                    </div>
+                </div>
+                
+                <!-- Countdown Timer -->
+                <div class="countdown-timer mt-3">
+                    <div class="alert alert-warning">
+                        <i class="fa fa-clock-o"/> Thời gian còn lại: <strong t-out="state.countdown"/> giây</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-footer mt-4">
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-secondary" t-on-click="cancelPayment">
+                        <i class="fa fa-times"/> Hủy thanh toán
+                    </button>
+                    <button class="btn btn-success" t-on-click="confirmPayment">
+                        <i class="fa fa-check"/> Xác nhận đã thanh toán
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

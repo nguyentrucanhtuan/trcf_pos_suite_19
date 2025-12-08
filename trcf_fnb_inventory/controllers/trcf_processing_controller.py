@@ -92,7 +92,7 @@ class TrcfProcessingController(http.Controller):
         # GET request - show form with available BOMs
         return self._render_processing_form()
     
-    @http.route('/trcf_fnb_inventory/get_bom_components', type='json', auth='user')
+    @http.route('/trcf_fnb_inventory/get_bom_components', type='jsonrpc', auth='user')
     def get_bom_components(self, bom_id):
         """
         AJAX endpoint to get BOM components.

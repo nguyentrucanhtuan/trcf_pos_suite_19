@@ -69,7 +69,7 @@ class TrcfCheckInventoryController(http.Controller):
         })
 
     @http.route('/trcf_fnb_inventory/get_template_products', 
-                type='json', auth='user')
+                type='jsonrpc', auth='user')
     def get_template_products(self, template_id, **kw):
         """
         AJAX endpoint: Trả về danh sách sản phẩm + tồn kho hệ thống
