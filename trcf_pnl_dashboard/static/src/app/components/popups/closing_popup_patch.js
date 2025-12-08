@@ -12,6 +12,7 @@ patch(ClosePosPopup.prototype, {
         this.state.trcf_loading = true;
         this.state.trcf_expenses = [];
         this.state.trcf_purchases = [];
+        this.state.trcf_payment_income = {};  // {payment_method_id: amount}
 
         // Toggle states for collapsible sections
         this.state.trcf_show_cash_expenses = false;
@@ -50,8 +51,16 @@ patch(ClosePosPopup.prototype, {
             ['name', 'trcf_amount', 'trcf_payment_method_id', 'trcf_payment_date', 'create_date', 'state']
         );
 
+        // Load payment income using new API (uses _read_group for efficiency)
+        const paymentIncome = await this.pos.data.call(
+            'pos.session',
+            'get_payment_income_by_method',
+            [session.id, startAt, stopAt]
+        );
+
         // Store in reactive state to trigger re-render
         this.state.trcf_expenses = expenses || [];
+        this.state.trcf_payment_income = paymentIncome || {};
         this.state.trcf_purchases = []; // Temporarily empty, will add later
         this.state.trcf_loading = false;
     },
@@ -242,37 +251,10 @@ patch(ClosePosPopup.prototype, {
     },
 
     // Calculate income from actual payment lines (excluding opening balance)
+    // Now uses data loaded from database instead of looping through in-memory orders
     getPaymentIncomeByMethod(paymentMethodId) {
-        if (!this.pos || !this.pos.models || !this.pos.models["pos.order"]) {
-            return 0;
-        }
-
-        // Get all orders (filter will include paid, invoiced, done states)
-        const allOrders = Array.from(this.pos.models["pos.order"].getAll());
-
-        // Filter to paid/invoiced/done orders
-        const orders = allOrders.filter(
-            order => order.state === 'paid' || order.state === 'invoiced' || order.state === 'done'
-        );
-
-        // Sum up payment amounts for this payment method
-        let total = 0;
-        for (const order of orders) {
-            if (order.payment_ids && order.payment_ids.length > 0) {
-                for (const payment of order.payment_ids) {
-                    // Check if payment is done and not a change payment
-                    if (payment.isDone && payment.isDone() && !payment.is_change) {
-                        // Check if payment method matches
-                        const pmId = payment.payment_method_id?.id;
-                        if (pmId === paymentMethodId) {
-                            total += payment.amount || 0;
-                        }
-                    }
-                }
-            }
-        }
-
-        return total;
+        // Use loaded data from database (persists after reload)
+        return this.state.trcf_payment_income[paymentMethodId] || 0;
     },
 
     // Get all payment methods with their data for template
