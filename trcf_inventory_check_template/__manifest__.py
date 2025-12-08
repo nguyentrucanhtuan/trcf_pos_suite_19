@@ -22,6 +22,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/trcf_inventory_check_sequence.xml',
+        'views/product_template_views.xml',
         'views/trcf_inventory_check_template_views.xml',
         'views/trcf_inventory_check_views.xml',
     ],
