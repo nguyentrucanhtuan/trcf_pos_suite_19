@@ -44,7 +44,7 @@ class TrcfPosPaymentMethod(models.Model):
 
     def _get_payment_terminal_selection(self):
         """Add TRCF MoMo terminal to the list of available terminals"""
-        return super()._get_payment_terminal_selection() + [('trcf_momo', 'MoMo QR')]
+        return super()._get_payment_terminal_selection() + [('trcf_momo', 'TRCF MOMO QR')]
     
     @api.model
     def create_momo_payment_rpc(self, order_id, amount, order_info=None, session_id=None, config_id=None):
