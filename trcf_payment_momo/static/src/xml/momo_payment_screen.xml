@@ -16,4 +16,13 @@
         </xpath>
     </t>
 
+    <!-- Hide electronic payment controls for MoMo terminal to prevent fraud -->
+    <t t-name="trcf_payment_momo.PaymentLines" t-inherit="point_of_sale.PaymentScreenPaymentLines" t-inherit-mode="extension">
+        <!-- Hide entire electronic_payment div when MoMo terminal is used -->
+        <xpath expr="//div[hasclass('electronic_payment')]" position="attributes">
+            <attribute name="t-if">line.payment_method_id.use_payment_terminal !== 'trcf_momo'</attribute>
+        </xpath>
+    </t>
+
 </templates>
+
