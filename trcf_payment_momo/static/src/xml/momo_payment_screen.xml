@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Extend PaymentScreenDue to add MoMo QR display below the amount -->
+    <t t-name="trcf_payment_momo.PaymentScreenDue" t-inherit="point_of_sale.PaymentScreenDue" t-inherit-mode="extension">
+        <xpath expr="//section[hasclass('paymentlines-container')]" position="after">
+            <div t-if="showMomoQr" class="momo-qr-container d-flex flex-column align-items-center justify-content-center py-3">
+                <div class="momo-qr-wrapper" style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <img t-att-src="momoQrCode" alt="MoMo QR Code" style="width: 180px; height: 180px;"/>
+                </div>
+                <div class="text-center mt-2" style="color: #a50064; font-weight: bold;">
+                    <i class="fa fa-mobile me-1"/>
+                    Quét mã QR bằng MoMo
+                </div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

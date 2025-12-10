@@ -1,19 +1,27 @@
 <odoo>
-    <!-- View mở rộng POS Payment Method - Thêm cấu hình MoMo QR -->
+    <!-- View mở rộng POS Payment Method - Cấu hình MoMo -->
     <record id="view_trcf_pos_payment_method_form" model="ir.ui.view">
         <field name="name">trcf.pos.payment.method.form</field>
         <field name="model">pos.payment.method</field>
         <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='use_payment_terminal']" position="after">
-                <group invisible="use_payment_terminal != 'trcf_momo'">
-                    <separator string="Cấu hình MoMo"/>
+                <group invisible="use_payment_terminal != 'trcf_momo'" string="Cấu hình MoMo API">
+                    <field name="momo_test_mode"/>
+                    <field name="momo_partner_code" placeholder="Để trống để dùng test credentials"/>
+                    <field name="momo_access_key" placeholder="Để trống để dùng test credentials"/>
+                    <field name="momo_secret_key" password="True" placeholder="Để trống để dùng test credentials"/>
+                    <separator string="QR Tĩnh (Dự phòng)"/>
                     <field name="momo_qr_code" widget="image" 
                            class="oe_avatar"
                            options='{"size": [200, 200]}'/>
                     <div class="alert alert-info" role="alert">
-                        <strong>Hướng dẫn:</strong> Mở app MoMo → Ví của tôi → Nhận tiền → 
-                        Chụp màn hình hoặc tải ảnh QR và upload lên đây.
+                        <strong>Lưu ý:</strong> 
+                        <ul>
+                            <li>Để trống Partner Code/Access Key/Secret Key sẽ dùng test credentials mặc định của MoMo</li>
+                            <li>QR tĩnh sẽ được dùng khi không thể gọi API MoMo</li>
+                            <li>Bật "Chế độ Test" để dùng sandbox môi trường test</li>
+                        </ul>
                     </div>
                 </group>
             </xpath>
