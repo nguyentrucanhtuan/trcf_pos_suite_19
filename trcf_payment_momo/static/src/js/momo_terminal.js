@@ -165,6 +165,7 @@ patch(PaymentScreen.prototype, {
 
     /**
      * Handle successful payment notification from webhook
+     * - Validates notification matches current pending order
      * - Marks payment line as done
      * - Shows success QR
      * - Auto-validates order
@@ -180,9 +181,26 @@ patch(PaymentScreen.prototype, {
             return;
         }
 
-        // Find MoMo payment line
+        // Guard: ensure order is still in draft state (not already validated)
+        if (this.currentOrder.state !== 'draft') {
+            return;
+        }
+
+        // Guard: ensure notification matches current pending order
+        // Compare pos_order_ref from webhook with our pendingOrderId
+        if (this.momoState.pendingOrderId && data.pos_order_ref) {
+            const pendingId = String(this.momoState.pendingOrderId);
+            const notificationId = String(data.pos_order_ref);
+            if (!pendingId.includes(notificationId) && !notificationId.includes(pendingId)) {
+                // Notification is for a different order, ignore
+                return;
+            }
+        }
+
+        // Find MoMo payment line that is not yet done
         const momoLine = this.paymentLines.find(
             line => line.payment_method_id?.use_payment_terminal === 'trcf_momo'
+                && ['waiting', 'pending', 'retry'].includes(line.getPaymentStatus())
         );
 
         if (momoLine) {
@@ -192,11 +210,14 @@ patch(PaymentScreen.prototype, {
             // Update QR to show success
             this.momoState.qrCode = SUCCESS_QR;
 
+            // Clear pending order ID to prevent duplicate processing
+            this.momoState.pendingOrderId = null;
+
             // Auto-validate order (triggers receipt printing via trcf_printer_manager)
             setTimeout(() => {
                 try {
                     const currentOrder = this.currentOrder;
-                    if (currentOrder && currentOrder.isPaid() && !currentOrder.isRefundInProcess()) {
+                    if (currentOrder && currentOrder.state === 'draft' && currentOrder.isPaid() && !currentOrder.isRefundInProcess()) {
                         this.validateOrder(false);
                     }
                 } catch (e) {
