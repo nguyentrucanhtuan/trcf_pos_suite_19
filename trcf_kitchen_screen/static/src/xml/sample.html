@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hệ Thống Hiển Thị Bếp - Light Theme</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#28a745",
+                        "primary-light": "#e9f6ec",
+                        "background-light": "#f8f9fa",
+                        "background-dark": "#102218",
+                        "text-primary": "#1f2937",
+                        "text-secondary": "#6b7280",
+                        "border-color": "#e5e7eb",
+                        "urgent": "#dc3545",
+                        "urgent-light": "#fdebec",
+                        "new": "#ffc107",
+                        "new-light": "#fff8e6",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+
+        .item-checkbox:checked+.item-content {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+
+        .item-checkbox:checked+.item-content .item-note {
+            text-decoration: line-through;
+        }
+
+        .item-checkbox:checked~.check-button {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .item-checkbox:checked~.check-button .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        #recipe-mode:checked~#recipe-container .recipe-details {
+            display: block;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="font-display bg-background-light text-text-primary">
+    <div class="relative flex min-h-screen w-full flex-col">
+        <header class="sticky top-0 z-10 border-b border-border-color bg-background-light/80 backdrop-blur-sm">
+            <div class="flex items-center justify-between p-4">
+                <div class="flex size-12 shrink-0 items-center justify-start">
+                    <span class="material-symbols-outlined text-3xl text-text-primary">restaurant_menu</span>
+                </div>
+                <h1 class="flex-1 text-center text-xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Đơn
+                    Hàng Bếp</h1>
+                <div class="flex w-12 items-center justify-end">
+                    <button
+                        class="flex h-12 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg bg-transparent p-0 text-base font-bold leading-normal tracking-[0.015em] text-text-primary">
+                        <span class="material-symbols-outlined text-text-primary">tune</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="w-full">
+            <input class="absolute -left-full top-0 size-0 opacity-0" id="recipe-mode" type="checkbox" />
+            <div class="flex items-center justify-end gap-2 p-4 pt-4 sm:px-4">
+                <label class="cursor-pointer text-sm font-medium text-text-secondary" for="recipe-mode">Chế độ công
+                    thức</label>
+                <label class="relative inline-flex cursor-pointer items-center" for="recipe-mode">
+                    <span
+                        class="relative h-6 w-11 rounded-full bg-gray-200 transition-colors after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white"></span>
+                </label>
+            </div>
+            <div class="grid grid-cols-1 gap-4 p-2 sm:p-4 sm:pt-0 lg:grid-cols-2 xl:grid-cols-4" id="recipe-container">
+                <div class="flex flex-col rounded-xl border-2 border-urgent bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Bàn 12
+                                </p>
+                                <p class="text-base font-medium leading-normal text-urgent">15 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Phở Bò
+                                                Tái</p>
+                                            <p class="item-note text-sm text-text-secondary">Ít bánh, thêm hành</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="recipe-details mt-2 hidden w-full rounded-lg bg-primary-light p-3 text-sm text-gray-700">
+                                        <span class="font-semibold">Công thức:</span>
+                                        <ul class="list-disc pl-5">
+                                            <li>Thịt bò: 100g</li>
+                                            <li>Bánh phở: 150g</li>
+                                            <li>Hành lá: 10g</li>
+                                            <li>Nước dùng: 400ml</li>
+                                        </ul>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-urgent">1x Bún Chả - Không
+                                                hành</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Nem Rán
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Trà Đá
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Bia Hà
+                                                Nội</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border-2 border-new bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Bàn 08
+                                </p>
+                                <p class="text-base font-medium leading-normal text-new">5 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Cơm Tấm
+                                                Sườn Bì Chả</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Canh Khổ
+                                                Qua</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Gỏi Cuốn
+                                            </p>
+                                            <p class="item-note text-sm text-text-secondary">Nước chấm chua ngọt</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Chè Ba
+                                                Màu</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Coca-Cola
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border border-border-color bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Bàn 03
+                                </p>
+                                <p class="text-base font-normal leading-normal text-text-secondary">2 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Bánh Mì
+                                                Đặc Biệt</p>
+                                            <p class="item-note text-sm text-text-secondary">Thêm pate, không cay</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Cà Phê
+                                                Sữa Đá</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="recipe-details mt-2 hidden w-full rounded-lg bg-primary-light p-3 text-sm text-gray-700">
+                                        <span class="font-semibold">Công thức:</span>
+                                        <ul class="list-disc pl-5">
+                                            <li>Cà phê: 50</li>
+                                            <li>Đường: 20</li>
+                                            <li>Sữa đặc: 30</li>
+                                        </ul>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Bún Bò
+                                                Huế</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Chả Giò
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Nước Suối
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border border-border-color bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Bàn 15
+                                </p>
+                                <p class="text-base font-normal leading-normal text-text-secondary">1 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Hủ Tiếu
+                                                Nam Vang</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Bò Lúc
+                                                Lắc</p>
+                                            <p class="item-note text-sm text-text-secondary">Ăn với cơm trắng</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Rau Muống
+                                                Xào Tỏi</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Nước
+                                                Chanh</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Kem Dừa
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border-2 border-new bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Bàn 05
+                                </p>
+                                <p class="text-base font-medium leading-normal text-new">8 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Mì Quảng
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Cao Lầu
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Bánh Đập
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Bia Larue
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border border-border-color bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Mang
+                                    Về 01</p>
+                                <p class="text-base font-normal leading-normal text-text-secondary">10 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Bún Đậu
+                                                Mắm Tôm</p>
+                                            <p class="item-note text-sm text-text-secondary">Đầy đủ topping</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Lòng Dồi
+                                                Hấp</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Trà Tắc
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Chả Cốm
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border border-border-color bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Bàn 07
+                                </p>
+                                <p class="text-base font-normal leading-normal text-text-secondary">4 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Lẩu Thái
+                                                Hải Sản</p>
+                                            <p class="item-note text-sm text-text-secondary">Cay vừa, 2 người ăn</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Mì Tôm
+                                                Thêm</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Ba Chỉ Bò
+                                                Mỹ</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Nấm Kim
+                                                Châm</p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Nước Ngọt
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border-2 border-urgent bg-white shadow-md">
+                    <div class="flex grow flex-col">
+                        <div class="flex grow flex-col gap-3 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-2xl font-bold leading-tight tracking-[-0.015em] text-text-primary">Bàn 09
+                                </p>
+                                <p class="text-base font-medium leading-normal text-urgent">20 phút trước</p>
+                            </div>
+                            <div class="-mx-4 border-t border-border-color"></div>
+                            <div class="flex flex-col divide-y divide-border-color">
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">4x Bánh Xèo
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">2x Nem Lụi
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">1x Bò Lá Lốt
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer py-2">
+                                    <input class="item-checkbox absolute size-0 opacity-0" type="checkbox" />
+                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                        <div class="item-content flex-1">
+                                            <p class="text-base font-bold leading-normal text-text-primary">4x Trà Chanh
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="check-button flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-border-color bg-white transition-colors">
+                                            <span class="material-symbols-outlined text-xl">done</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-border-color p-3">
+                        <button
+                            class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white transition-colors hover:bg-green-700">Hoàn
+                            thành</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

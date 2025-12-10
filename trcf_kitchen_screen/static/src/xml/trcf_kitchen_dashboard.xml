@@ -1,73 +1,191 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="trcf_kitchen_screen.KitchenDashboardTemplate">
-        <div class="kitchen-container">
-            <!-- Header -->
-            <header class="header">
-                <h1>🍳 Kitchen Screen - Màn hình bếp</h1>
-                <div class="datetime" id="datetime"></div>
-            </header>
+        <!-- Tailwind CDN -->
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+        
+        <!-- Tailwind Config -->
+        <script>
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    darkMode: "class",
+                    theme: {
+                        extend: {
+                            colors: {
+                                "primary": "#28a745",
+                                "primary-light": "#e9f6ec",
+                                "background-light": "#f8f9fa",
+                                "background-dark": "#102218",
+                                "text-primary": "#1f2937",
+                                "text-secondary": "#6b7280",
+                                "border-color": "#e5e7eb",
+                                "urgent": "#dc3545",
+                                "urgent-light": "#fdebec",
+                                "new": "#ffc107",
+                                "new-light": "#fff8e6",
+                            },
+                            fontFamily: {
+                                "display": ["Work Sans", "Noto Sans", "sans-serif"]
+                            },
+                        },
+                    },
+                }
+            }
+        </script>
 
-            <!-- Main Content -->
-            <main class="main-content">
-                <!-- Order Header -->
-                <div class="order-header">
-                    <div class="order-title">📋 Đơn mới</div>
-                    <div class="order-counter" id="orderCounter">
-                        <t t-esc="state.draft_count"/>
-                    </div>
-                </div>
+        <!-- Custom Styles -->
+        <style>
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+            .item-checkbox:checked + .item-content {
+                text-decoration: line-through;
+                color: #6b7280;
+            }
+            .item-checkbox:checked + .item-content .item-note {
+                text-decoration: line-through;
+            }
+            .item-checkbox:checked ~ .check-button {
+                background-color: #28a745;
+                border-color: #28a745;
+                color: white;
+            }
+            .item-checkbox:checked ~ .check-button .material-symbols-outlined {
+                font-variation-settings: 'FILL' 1;
+            }
+            .kitchen-body {
+                font-family: 'Work Sans', 'Noto Sans', sans-serif;
+                background-color: #f8f9fa;
+                color: #1f2937;
+                min-height: 100vh;
+            }
+            .line-completed .item-content {
+                text-decoration: line-through;
+                color: #6b7280;
+            }
 
-                <!-- Orders Grid -->
-                <div class="orders-grid" id="ordersGrid">
-                    <t t-foreach="getOrdersByStatus('draft')" t-as="order" t-key="order.id">
-                        <div class="order-card">
-                            <div class="order-info">
-                                <div class="order-number"><t t-esc="order.table_id[1]"/> - <t t-esc="order.id"/></div>
-                                <div class="order-time"><t t-esc="order.date_order"/> (5 phút trước)</div>
-                                <!-- <div class="order-status">Đơn mới</div> -->
-                            </div>
-                            
-                            <div class="order-items">
-                                
-                                <ul class="items-list">
-                                    <t t-foreach="getOrderLines(order.id)" t-as="line" t-key="line.id">
-                                        <li t-att-class="line.trcf_order_status != 'draft' ? 'completed' : ''">
-                                            <span class="item-quantity"><t t-esc="line.qty" /></span>
-                                            <span class="item-name"
-                                                t-on-click="() => this.markOrderLineReady(line.id)"
-                                                >
-                                                <t t-esc="line.full_product_name" />
-                                            </span>
-                                            <span class="item-status">✅</span>
-                                        </li>
-                                    </t>
-                                </ul>
-                            </div>
-                            
-                            <div class="order-actions">
-                                <button 
-                                    t-on-click="() => this.markAsDone(order.id)" 
-                                    t-att-disabled="isOrderLoading(order.id)"
-                                    class="action-btn btn-ready">
-                                    <t t-if="isOrderLoading(order.id)">⏳ Đang xử lý...</t>
-                                    <t t-else="">➡️ Sẵn sàng</t>
-                                </button>
-                                <!-- <button class="action-btn btn-complete">
-                                    ✅ HUỶ
-                                </button> -->
-                            </div>
+            .check-button {
+                color: white;
+            }
+
+            .line-completed .check-button {
+                background-color: #28a745;
+                border-color: #28a745;
+                color: #28a745;
+            }
+        </style>
+
+        <div class="kitchen-body">
+            <div class="relative flex min-h-screen w-full flex-col">
+                <!-- Header -->
+                <header class="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/80 backdrop-blur-sm">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-start">
+                            <span class="text-3xl">🍳</span>
                         </div>
-                    </t>
-                </div>
+                        <h1 class="flex-1 text-center text-xl font-bold leading-tight tracking-tight text-gray-800">
+                            Đơn Hàng Bếp
+                        </h1>
+                        <div class="flex w-12 items-center justify-end gap-2">
+                            <span class="text-sm font-medium text-gray-500">
+                                <t t-esc="state.draft_count"/> đơn
+                            </span>
+                        </div>
+                    </div>
+                </header>
 
-                <!-- Empty State (Hidden by default) -->
-                <!-- <div class="empty-state" style="display: none;">
-                    <div class="empty-icon">📝</div>
-                    <h3>Không có đơn hàng mới</h3>
-                    <p>Tất cả đơn hàng đã được xử lý</p>
-                </div> -->
-            </main>
+                <!-- Main Content -->
+                <main class="w-full p-2">
+                    <input class="absolute -left-full top-0 size-0 opacity-0" id="recipe-mode" type="checkbox" />
+                    <div class="flex items-center justify-end gap-2 p-4 pt-4 sm:px-4">
+                        <label class="cursor-pointer text-sm font-medium text-text-secondary" for="recipe-mode">Chế độ công
+                            thức</label>
+                        <label class="relative inline-flex cursor-pointer items-center" for="recipe-mode">
+                            <span
+                                class="relative h-6 w-11 rounded-full bg-gray-200 transition-colors after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white"></span>
+                        </label>
+                    </div>
+                    <!-- Orders Grid -->
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <t t-foreach="getOrdersByStatus('draft')" t-as="order" t-key="order.id">
+                            <!-- Order Card -->
+                            <div t-att-class="'flex flex-col rounded-xl bg-white shadow-md ' + getOrderBorderClass(order)">
+                                <div class="flex grow flex-col">
+                                    <div class="flex grow flex-col gap-3 p-4">
+                                        <!-- Order Header -->
+                                        <div class="flex items-center justify-between gap-3">
+                                            <p class="text-2xl font-bold leading-tight tracking-tight text-gray-800">
+                                                <t t-if="order.table_id">
+                                                    <t t-esc="order.table_id[1]"/>
+                                                </t>
+                                                <t t-else="">
+                                                    Đơn #<t t-esc="order.id"/>
+                                                </t>
+                                            </p>
+                                            <p t-att-class="'text-base font-medium leading-normal ' + getTimeClass(order)">
+                                                <t t-esc="getRelativeTime(order.date_order)"/>
+                                            </p>
+                                        </div>
+
+                                        <!-- Divider -->
+                                        <div class="-mx-4 border-t border-gray-200"></div>
+
+                                        <!-- Order Items -->
+                                        <div class="flex flex-col divide-y divide-gray-200">
+                                            <t t-foreach="getOrderLines(order.id)" t-as="line" t-key="line.id">
+                                                <div t-att-class="'relative cursor-pointer py-2 ' + (line.trcf_order_status !== 'draft' ? 'line-completed' : '')"
+                                                     t-on-click="() => this.markOrderLineReady(line.id)">
+                                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                                        <div class="item-content flex-1">
+                                                            <p class="text-base font-bold leading-normal text-gray-800">
+                                                                <t t-esc="line.qty"/>x <t t-esc="line.full_product_name"/>
+                                                            </p>
+                                                            <t t-if="line.note">
+                                                                <p class="item-note text-sm text-gray-500">
+                                                                    <t t-esc="line.note"/>
+                                                                </p>
+                                                            </t>
+                                                        </div>
+                                                        <div class="check-button flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-gray-400 bg-white transition-colors">
+                                                            <span class="text-xl font-bold">✓</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Complete Button -->
+                                <div class="border-t border-gray-200 p-3">
+                                    <button 
+                                        t-on-click="() => this.markAsDone(order.id)"
+                                        t-att-disabled="isOrderLoading(order.id)"
+                                        class="w-full rounded-lg bg-green-600 py-3 text-base font-bold text-white transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <t t-if="isOrderLoading(order.id)">
+                                            ⏳ Đang xử lý...
+                                        </t>
+                                        <t t-else="">
+                                            ✓ Hoàn thành
+                                         </t>
+                                    </button>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Empty State -->
+                        <t t-if="state.draft_count === 0">
+                            <div class="col-span-full flex flex-col items-center justify-center py-20">
+                                <span class="text-6xl">📋</span>
+                                <h3 class="mt-4 text-xl font-semibold text-gray-500">Không có đơn hàng mới</h3>
+                                <p class="mt-2 text-gray-400">Tất cả đơn hàng đã được xử lý</p>
+                            </div>
+                        </t>
+                    </div>
+                </main>
+            </div>
         </div>
     </t>
 </templates>
