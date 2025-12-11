@@ -115,14 +115,22 @@
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
                                                     Chọn phiếu sản xuất <span class="text-red-500">*</span>
                                                 </p>
-                                                <select name="picking_type_id" id="picking_type_select" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
-                                                    <option value="">-- Chọn phiếu sản xuất --</option>
-                                                    <t t-foreach="picking_types" t-as="pt">
-                                                        <option t-att-value="pt.id">
-                                                            <t t-esc="pt.warehouse_id.name if pt.warehouse_id else 'N/A'"/>: <t t-esc="pt.name"/>
-                                                        </option>
-                                                    </t>
-                                                </select>
+                                                <!-- Nếu cho phép nhân viên chọn: hiển thị dropdown -->
+                                                <t t-if="allow_employee_select">
+                                                    <select name="picking_type_id" id="picking_type_select" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                        <option value="">-- Chọn phiếu sản xuất --</option>
+                                                        <t t-foreach="picking_types" t-as="pt">
+                                                            <option t-att-value="pt.id" t-att-selected="pt.id == default_picking_type_id">
+                                                                <t t-esc="pt.warehouse_id.name if pt.warehouse_id else 'N/A'"/>: <t t-esc="pt.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </t>
+                                                <!-- Nếu không cho phép: hiển thị giá trị mặc định (readonly) + hidden input -->
+                                                <t t-else="">
+                                                    <input type="hidden" name="picking_type_id" id="picking_type_select" t-att-value="default_picking_type_id"/>
+                                                    <input readonly="readonly" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px] text-sm font-normal leading-normal cursor-not-allowed" type="text" t-att-value="default_picking_type_name or 'Chưa cấu hình'" title="Phiếu sản xuất mặc định do admin cấu hình"/>
+                                                </t>
                                             </label>
                                         </div>
                                     </div>

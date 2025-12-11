@@ -243,14 +243,22 @@
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
                                                     Vị trí kho nguồn <span class="text-red-500">*</span>
                                                 </p>
-                                                <select name="source_location_id" id="source_location_select" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-14 px-4 text-base font-normal leading-normal">
-                                                    <option value="">-- Chọn vị trí kho --</option>
-                                                    <t t-foreach="source_locations" t-as="location">
-                                                        <option t-att-value="location['id']">
-                                                            <t t-esc="location['name']"/>
-                                                        </option>
-                                                    </t>
-                                                </select>
+                                                <!-- Nếu cho phép nhân viên chọn: hiển thị dropdown -->
+                                                <t t-if="allow_employee_select">
+                                                    <select name="source_location_id" id="source_location_select" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-14 px-4 text-base font-normal leading-normal">
+                                                        <option value="">-- Chọn vị trí kho --</option>
+                                                        <t t-foreach="source_locations" t-as="location">
+                                                            <option t-att-value="location['id']" t-att-selected="location['id'] == default_source_location_id">
+                                                                <t t-esc="location['name']"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </t>
+                                                <!-- Nếu không cho phép: hiển thị giá trị mặc định (readonly) + hidden input -->
+                                                <t t-else="">
+                                                    <input type="hidden" name="source_location_id" id="source_location_select" t-att-value="default_source_location_id"/>
+                                                    <input readonly="readonly" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-14 px-4 text-base font-normal leading-normal cursor-not-allowed" type="text" t-att-value="default_source_location_name or 'Chưa cấu hình'" title="Kho nguồn mặc định do admin cấu hình"/>
+                                                </t>
                                             </label>
                                         </div>
                                         

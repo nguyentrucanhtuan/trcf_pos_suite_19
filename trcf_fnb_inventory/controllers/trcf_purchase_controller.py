@@ -125,6 +125,7 @@ class TrcfPurchaseController(http.Controller):
         
         # Lấy company hiện tại
         company_id = request.env.company.id
+        IrConfigParam = request.env['ir.config_parameter'].sudo()
         
         # Load nhà cung cấp (suppliers)
         suppliers = request.env['res.partner'].sudo().search([
@@ -176,6 +177,20 @@ class TrcfPurchaseController(http.Controller):
             ('company_id', '=', company_id)
         ], order='sequence,name')
         
+        # Lấy setting cho phép nhân viên chọn và default picking type
+        allow_employee_select = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_allow_employee_select_purchase', 'False') == 'True'
+        default_picking_type_id = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_purchase_picking_type_id', default=False)
+        
+        # Lấy thông tin default picking type để hiển thị
+        default_picking_type_name = ''
+        if default_picking_type_id:
+            default_pt = request.env['stock.picking.type'].sudo().browse(int(default_picking_type_id))
+            if default_pt.exists():
+                warehouse_name = default_pt.warehouse_id.name if default_pt.warehouse_id else 'N/A'
+                default_picking_type_name = f"{warehouse_name}: {default_pt.name}"
+        
         vals = {
             'suppliers': suppliers,
             'products': products,
@@ -183,6 +198,9 @@ class TrcfPurchaseController(http.Controller):
             'today': today,
             'payment_methods': payment_methods,
             'picking_types': picking_types,
+            'allow_employee_select': allow_employee_select,
+            'default_picking_type_id': int(default_picking_type_id) if default_picking_type_id else False,
+            'default_picking_type_name': default_picking_type_name,
         }
         
         return request.render('trcf_fnb_inventory.purchase_form_template', vals)

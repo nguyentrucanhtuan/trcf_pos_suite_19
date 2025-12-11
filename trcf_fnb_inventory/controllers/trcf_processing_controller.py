@@ -139,6 +139,7 @@ class TrcfProcessingController(http.Controller):
             Rendered template
         """
         current_company = request.env.company
+        IrConfigParam = request.env['ir.config_parameter'].sudo()
         
         # Get BOMs for current company
         boms = request.env['mrp.bom'].sudo().search([
@@ -158,10 +159,27 @@ class TrcfProcessingController(http.Controller):
             ('company_id', '=', current_company.id)
         ], order='sequence,name')
         
+        # Lấy setting cho phép nhân viên chọn và default picking type
+        allow_employee_select = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_allow_employee_select_processing', 'False') == 'True'
+        default_picking_type_id = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_processing_picking_type_id', default=False)
+        
+        # Lấy thông tin default picking type để hiển thị
+        default_picking_type_name = ''
+        if default_picking_type_id:
+            default_pt = request.env['stock.picking.type'].sudo().browse(int(default_picking_type_id))
+            if default_pt.exists():
+                warehouse_name = default_pt.warehouse_id.name if default_pt.warehouse_id else 'N/A'
+                default_picking_type_name = f"{warehouse_name}: {default_pt.name}"
+        
         values = {
             'boms': bom_list,
             'picking_types': picking_types,
             'today': datetime.now().strftime('%d/%m/%Y'),
+            'allow_employee_select': allow_employee_select,
+            'default_picking_type_id': int(default_picking_type_id) if default_picking_type_id else False,
+            'default_picking_type_name': default_picking_type_name,
         }
         
         if error:

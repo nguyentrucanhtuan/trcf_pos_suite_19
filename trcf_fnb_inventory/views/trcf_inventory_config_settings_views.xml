@@ -11,9 +11,15 @@
                     <block title="Cấu hình nhập hàng" name="purchase_settings">
                         
                         <setting id="trcf_purchase_picking_type_setting" 
-                                 help="Chọn loại phiếu nhập kho sẽ được sử dụng khi tạo đơn mua hàng. Kho đích sẽ được lấy từ cấu hình của loại phiếu này.">
+                                 help="Chọn loại phiếu nhập kho sẽ được sử dụng khi tạo đơn mua hàng.">
                             <field name="trcf_purchase_picking_type_id" 
                                    placeholder="Chọn loại phiếu nhập kho..."/>
+                        </setting>
+                        
+                        <setting id="trcf_allow_employee_select_purchase_setting"
+                                 string="Cho phép nhân viên chọn phiếu nhập kho"
+                                 help="Nếu bật, nhân viên có thể chọn phiếu nhập kho. Nếu tắt, sử dụng giá trị mặc định.">
+                            <field name="trcf_allow_employee_select_purchase"/>
                         </setting>
 
                     </block>
@@ -21,9 +27,15 @@
                     <block title="Cấu hình chế biến" name="processing_settings">
                         
                         <setting id="trcf_processing_picking_type_setting" 
-                                 help="Chọn loại phiếu sản xuất sẽ được sử dụng khi tạo lệnh sản xuất. Kho nguồn và kho đích sẽ được lấy từ cấu hình của loại phiếu này.">
+                                 help="Chọn loại phiếu sản xuất sẽ được sử dụng khi tạo lệnh sản xuất.">
                             <field name="trcf_processing_picking_type_id" 
                                    placeholder="Chọn loại phiếu sản xuất..."/>
+                        </setting>
+                        
+                        <setting id="trcf_allow_employee_select_processing_setting"
+                                 string="Cho phép nhân viên chọn phiếu chế biến"
+                                 help="Nếu bật, nhân viên có thể chọn phiếu chế biến. Nếu tắt, sử dụng giá trị mặc định.">
+                            <field name="trcf_allow_employee_select_processing"/>
                         </setting>
 
                     </block>
@@ -41,6 +53,12 @@
                             <field name="trcf_scrap_dest_location_id" 
                                    placeholder="Chọn kho đích cho hàng huỷ..."/>
                         </setting>
+                        
+                        <setting id="trcf_allow_employee_select_scrap_setting"
+                                 string="Cho phép nhân viên chọn kho huỷ hàng"
+                                 help="Nếu bật, nhân viên có thể chọn kho nguồn và kho ảo. Nếu tắt, sử dụng giá trị mặc định.">
+                            <field name="trcf_allow_employee_select_scrap"/>
+                        </setting>
 
                     </block>
                     
@@ -56,6 +74,12 @@
                                  help="Kho đích mặc định khi tạo phiếu chuyển kho">
                             <field name="trcf_transfer_dest_location_id" 
                                    placeholder="Chọn kho đích..."/>
+                        </setting>
+                        
+                        <setting id="trcf_allow_employee_select_transfer_setting"
+                                 string="Cho phép nhân viên chọn kho chuyển"
+                                 help="Nếu bật, nhân viên có thể chọn kho nguồn và kho đích. Nếu tắt, sử dụng giá trị mặc định.">
+                            <field name="trcf_allow_employee_select_transfer"/>
                         </setting>
 
                     </block>

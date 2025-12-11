@@ -168,6 +168,7 @@ class TrcfTransferController(http.Controller):
             Rendered template
         """
         current_company = request.env.company
+        IrConfigParam = request.env['ir.config_parameter'].sudo()
         
         # Get all storable products
         products = request.env['product.product'].sudo().search([
@@ -225,9 +226,12 @@ class TrcfTransferController(http.Controller):
             })
         
         # Get default locations from settings
-        IrConfigParam = request.env['ir.config_parameter'].sudo()
         default_source_id = IrConfigParam.get_param('trcf_fnb_inventory.trcf_transfer_source_location_id', default=False)
         default_dest_id = IrConfigParam.get_param('trcf_fnb_inventory.trcf_transfer_dest_location_id', default=False)
+        
+        # Get allow_employee_select setting
+        allow_employee_select = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_allow_employee_select_transfer', 'False') == 'True'
         
         # Get location names for display
         source_location_name = ''
@@ -256,6 +260,7 @@ class TrcfTransferController(http.Controller):
             'dest_location_name': dest_location_name,
             'picking_type_id': picking_type.id if picking_type else False,
             'today': datetime.now().strftime('%d/%m/%Y'),
+            'allow_employee_select': allow_employee_select,
         }
         
         if error:

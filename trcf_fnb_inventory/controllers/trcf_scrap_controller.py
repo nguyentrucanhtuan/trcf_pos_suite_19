@@ -108,6 +108,7 @@ class TrcfScrapController(http.Controller):
             Rendered template
         """
         current_company = request.env.company
+        IrConfigParam = request.env['ir.config_parameter'].sudo()
         
         # Get all products (both storable and consumable can be scrapped)
         products = request.env['product.product'].sudo().search([
@@ -217,12 +218,54 @@ class TrcfScrapController(http.Controller):
         
         _logger.info(f"Loaded {len(source_location_list)} source locations for scrap form")
         
+        # Get available scrap locations (inventory/virtual locations)
+        scrap_locations = request.env['stock.location'].sudo().search([
+            ('usage', '=', 'inventory'),
+            '|',
+            ('company_id', '=', current_company.id),
+            ('company_id', '=', False)
+        ], order='name')
+        
+        scrap_location_list = []
+        for loc in scrap_locations:
+            scrap_location_list.append({
+                'id': loc.id,
+                'name': loc.display_name,
+            })
+        
+        # Lấy setting cho phép nhân viên chọn và default locations
+        allow_employee_select = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_allow_employee_select_scrap', 'False') == 'True'
+        default_source_location_id = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_scrap_location_id', default=False)
+        default_scrap_location_id = IrConfigParam.get_param(
+            'trcf_fnb_inventory.trcf_scrap_dest_location_id', default=False)
+        
+        # Lấy thông tin default locations để hiển thị
+        default_source_location_name = ''
+        if default_source_location_id:
+            default_src = request.env['stock.location'].sudo().browse(int(default_source_location_id))
+            if default_src.exists():
+                default_source_location_name = default_src.display_name
+        
+        default_scrap_location_name = ''
+        if default_scrap_location_id:
+            default_scrap = request.env['stock.location'].sudo().browse(int(default_scrap_location_id))
+            if default_scrap.exists():
+                default_scrap_location_name = default_scrap.display_name
+        
         values = {
             'products': product_list,
             'reasons': reason_list,
             'source_locations': source_location_list,
+            'scrap_locations': scrap_location_list,
             'scrap_location_id': scrap_location.id if scrap_location else False,
             'today': datetime.now().strftime('%d/%m/%Y'),
+            'allow_employee_select': allow_employee_select,
+            'default_source_location_id': int(default_source_location_id) if default_source_location_id else False,
+            'default_source_location_name': default_source_location_name,
+            'default_scrap_location_id': int(default_scrap_location_id) if default_scrap_location_id else False,
+            'default_scrap_location_name': default_scrap_location_name,
         }
         
         
