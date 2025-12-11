@@ -1,6 +1,6 @@
 /** @odoo-module **/
 import { registry } from "@web/core/registry";
-const { Component, onWillStart, useState, onMounted } = owl;
+const { Component, onWillStart, useState, onMounted, markup } = owl;
 import { useService } from "@web/core/utils/hooks";
 
 export class TrcfKitchenDashboard extends Component {
@@ -37,6 +37,7 @@ export class TrcfKitchenDashboard extends Component {
             waiting_count: 0,
             ready_count: 0,
             loadingOrders: [],
+            showRecipe: false,  // Toggle hiển thị công thức
         });
 
         self.setupAudio();
@@ -269,6 +270,11 @@ export class TrcfKitchenDashboard extends Component {
         return this.state.loadingOrders.includes(orderId);
     }
 
+    // TOGGLE HIỂN THỊ CÔNG THỨC
+    toggleRecipe() {
+        this.state.showRecipe = !this.state.showRecipe;
+    }
+
     // =============  HELPER METHODS =============
     // Lấy orders theo trạng thái - KHÔNG CẦN FILTER config_id vì server đã filter theo screen
     getOrdersByStatus(status) {
@@ -282,6 +288,12 @@ export class TrcfKitchenDashboard extends Component {
         return this.state.order_lines.filter(line =>
             line.order_id && line.order_id[0] === orderId
         );
+    }
+
+    // Render HTML content (cho công thức)
+    renderHtml(htmlString) {
+        if (!htmlString) return '';
+        return markup(htmlString);
     }
 
     getScreenIdFromURL() {

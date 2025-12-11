@@ -93,9 +93,17 @@ class TrcfPosOrder(models.Model):
             # Nếu screen không có category nào, hiện tất cả
             filtered_lines = pos_orders.lines
         
+        # ✅ THÊM public_description (công thức) vào order_lines
+        order_lines_data = []
+        for line in filtered_lines:
+            line_data = line.read()[0]  # Lấy data mặc định
+            # Thêm public_description từ product template
+            line_data['public_description'] = line.product_id.product_tmpl_id.public_description or ''
+            order_lines_data.append(line_data)
+        
         values = {
             "orders": pos_orders.read(), 
-            "order_lines": filtered_lines.read(),
+            "order_lines": order_lines_data,
             "screen_info": {
                 "screen_id": screen_id,
                 "screen_name": screen.screen_name,
