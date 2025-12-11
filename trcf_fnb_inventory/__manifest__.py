@@ -29,14 +29,10 @@
         'views/trcf_transfer_form_template.xml',
     ],
     'assets': {
-        'web.assets_backend': [
-            '/trcf_fnb_inventory/static/src/css/report_styles.css',
-        ],
         'web.assets_common': [
             'https://cdn.tailwindcss.com?plugins=forms,container-queries',
             'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
             'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined',
-            '/trcf_fnb_inventory/static/src/js/tailwind_config.js',
         ],
     },
     'installable': True,

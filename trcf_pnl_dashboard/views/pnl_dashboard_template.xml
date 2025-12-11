@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="pnl_dashboard_template" name="P&amp;L Dashboard">
+        <html>
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>Báo cáo Lãi lỗ - TRCF PNL</title>
+                <!-- Tailwind CDN -->
+                <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+                <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+                <script>
+                    tailwind.config = {
+                        darkMode: "class",
+                        theme: {
+                            extend: {
+                                colors: {
+                                    "primary": "#137fec",
+                                    "background-light": "#f6f7f8",
+                                    "success": "#28a745",
+                                    "danger": "#dc3545",
+                                    "neutral-text": "#6c757d",
+                                },
+                                fontFamily: {
+                                    "display": ["Inter", "sans-serif"]
+                                },
+                            },
+                        },
+                    }
+                </script>
+                <style>
+                    .material-symbols-outlined {
+                        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                    }
+                    body {
+                        font-family: 'Inter', sans-serif;
+                        background-color: #f6f7f8;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .back-btn:hover {
+                        background-color: #e2e8f0;
+                    }
+                </style>
+            </head>
+            <body>
+                <!-- Top Navigation Bar -->
+                <nav class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <a href="/odoo" class="back-btn flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 transition-colors">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            <span class="text-sm font-medium">Quay lại Odoo</span>
+                        </a>
+                        <span class="text-slate-300">|</span>
+                        <span class="text-lg font-bold text-slate-800">TRCF PNL Dashboard</span>
+                    </div>
+                </nav>
+
+                <!-- Main Content -->
+                <main class="p-8">
+                    <div class="w-full max-w-7xl mx-auto">
+                        <!-- PageHeading -->
+                        <header class="mb-6">
+                            <div class="flex flex-wrap items-center justify-between gap-4">
+                                <div class="flex flex-col gap-1">
+                                    <h1 class="text-slate-900 text-3xl font-bold leading-tight">Báo cáo Lãi lỗ</h1>
+                                    <p class="text-neutral-text text-base font-normal leading-normal">Xem tổng quan về tình hình tài chính của doanh nghiệp.</p>
+                                </div>
+                                <button class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-wide hover:bg-primary/90 transition-colors">
+                                    <span class="material-symbols-outlined text-base">download</span>
+                                    <span class="truncate">Xuất báo cáo</span>
+                                </button>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3 mt-6">
+                                <a href="/trcf_pnl/dashboard?period=day"
+                                   t-att-class="'flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg pl-4 pr-3 transition-colors ' + ('bg-primary/10 text-primary' if period == 'day' else 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50')">
+                                    <p class="text-sm font-medium leading-normal">Hôm nay</p>
+                                </a>
+                                <a href="/trcf_pnl/dashboard?period=week"
+                                   t-att-class="'flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg pl-4 pr-3 transition-colors ' + ('bg-primary/10 text-primary' if period == 'week' else 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50')">
+                                    <p class="text-sm font-medium leading-normal">Tuần này</p>
+                                </a>
+                                <a href="/trcf_pnl/dashboard?period=month"
+                                   t-att-class="'flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg pl-4 pr-3 transition-colors ' + ('bg-primary/10 text-primary' if period == 'month' else 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50')">
+                                    <p class="text-sm font-medium leading-normal">Tháng này</p>
+                                </a>
+                                <span class="text-slate-300">|</span>
+                                <span class="text-sm text-slate-600">Từ:</span>
+                                <input type="date" id="date_from" t-att-value="date_from" 
+                                       class="h-9 px-3 rounded-lg border border-slate-200 text-sm"/>
+                                <span class="text-sm text-slate-600">Đến:</span>
+                                <input type="date" id="date_to" t-att-value="date_to"
+                                       class="h-9 px-3 rounded-lg border border-slate-200 text-sm"/>
+                                <button onclick="applyCustomDate()" 
+                                        class="flex h-9 items-center justify-center gap-x-2 rounded-lg bg-primary text-white px-4 text-sm font-medium hover:bg-primary/90">
+                                    <span class="material-symbols-outlined text-base">search</span>
+                                    Áp dụng
+                                </button>
+                            </div>
+                            <script>
+                                function applyCustomDate() {
+                                    var dateFrom = document.getElementById('date_from').value;
+                                    var dateTo = document.getElementById('date_to').value;
+                                    if (dateFrom &amp;&amp; dateTo) {
+                                        window.location.href = '/trcf_pnl/dashboard?period=custom&amp;date_from=' + dateFrom + '&amp;date_to=' + dateTo;
+                                    }
+                                }
+                            </script>
+                        </header>
+
+                        <!-- Content Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Left Column: P&amp;L Table -->
+                            <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200">
+                                <h2 class="text-lg font-bold text-slate-900 mb-4">Báo cáo Kết quả Kinh doanh</h2>
+                                <div class="space-y-1">
+                                    <!-- Doanh thu -->
+                                    <div class="flex justify-between items-center py-3 border-b border-slate-200">
+                                        <span class="text-slate-800">Doanh thu</span>
+                                        <span class="font-semibold text-slate-900"><t t-esc="'{:,.0f}đ'.format(pnl['revenue'])"/></span>
+                                    </div>
+                                    <!-- Giá vốn hàng bán -->
+                                    <details class="group py-3 border-b border-slate-200">
+                                        <summary class="flex justify-between items-center cursor-pointer list-none">
+                                            <span class="text-slate-800">Giá vốn hàng bán (COGS)</span>
+                                            <div class="flex items-center gap-4">
+                                                <span class="font-semibold text-slate-900">(<t t-esc="'{:,.0f}đ'.format(pnl['cogs'])"/>) <span class="text-sm text-orange-600"><t t-esc="pnl['cogs_margin']"/>%</span></span>
+                                                <span class="material-symbols-outlined text-neutral-text group-open:rotate-180 transition-transform">expand_more</span>
+                                            </div>
+                                        </summary>
+                                        <div class="mt-2 pl-6 space-y-1 text-neutral-text">
+                                            <div class="flex justify-between items-center py-1">
+                                                <span>Đã thanh toán</span>
+                                                <span>(<t t-esc="'{:,.0f}đ'.format(pnl['cogs_paid'])"/>)</span>
+                                            </div>
+                                            <div class="flex justify-between items-center py-1">
+                                                <span>Đang công nợ</span>
+                                                <span>(<t t-esc="'{:,.0f}đ'.format(pnl['cogs_unpaid'])"/>)</span>
+                                            </div>
+                                        </div>
+                                    </details>
+                                    <!-- Lợi nhuận gộp -->
+                                    <div class="flex justify-between items-center py-3 border-b-2 border-slate-300">
+                                        <span class="font-bold text-slate-900">Lợi nhuận gộp</span>
+                                        <span class="font-bold text-slate-900"><t t-esc="'{:,.0f}đ'.format(pnl['gross_profit'])"/> <span class="text-sm text-green-600"><t t-esc="pnl['gross_margin']"/>%</span></span>
+                                    </div>
+                                    <!-- Chi phí hoạt động -->
+                                    <details class="group py-3 border-b border-slate-200">
+                                        <summary class="flex justify-between items-center cursor-pointer list-none">
+                                            <span class="text-slate-800">Chi phí hoạt động</span>
+                                            <div class="flex items-center gap-4">
+                                                <span class="font-semibold text-slate-900">(<t t-esc="'{:,.0f}đ'.format(pnl['operating_expenses'])"/>) <span class="text-sm text-orange-600"><t t-esc="pnl['opex_margin']"/>%</span></span>
+                                                <span class="material-symbols-outlined text-neutral-text group-open:rotate-180 transition-transform">expand_more</span>
+                                            </div>
+                                        </summary>
+                                        <div class="mt-2 pl-6 space-y-2">
+                                            <!-- Đã thanh toán -->
+                                            <details class="group/paid border-b border-slate-100 pb-2">
+                                                <summary class="flex justify-between items-center cursor-pointer list-none text-neutral-text">
+                                                    <span class="font-medium">Đã thanh toán</span>
+                                                    <div class="flex items-center gap-2">
+                                                        <span>(<t t-esc="'{:,.0f}đ'.format(pnl['opex_paid'])"/>)</span>
+                                                        <span class="material-symbols-outlined text-sm group-open/paid:rotate-180 transition-transform">expand_more</span>
+                                                    </div>
+                                                </summary>
+                                                <div class="mt-2 pl-4 space-y-1">
+                                                    <t t-foreach="pnl['expense_categories'].items()" t-as="category_item">
+                                                        <t t-set="category_name" t-value="category_item[0]"/>
+                                                        <t t-set="category_info" t-value="category_item[1]"/>
+                                                        <t t-if="category_info['paid'] > 0">
+                                                            <div class="flex justify-between items-center py-1 text-sm text-slate-600">
+                                                                <span><t t-esc="category_name"/> <span class="text-xs text-orange-600"><t t-esc="category_info['margin']"/>%</span></span>
+                                                                <span>(<t t-esc="'{:,.0f}đ'.format(category_info['paid'])"/>)</span>
+                                                            </div>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                            </details>
+                                            
+                                            <!-- Chưa thanh toán -->
+                                            <details class="group/unpaid">
+                                                <summary class="flex justify-between items-center cursor-pointer list-none text-neutral-text">
+                                                    <span class="font-medium">Chưa thanh toán</span>
+                                                    <div class="flex items-center gap-2">
+                                                        <span>(<t t-esc="'{:,.0f}đ'.format(pnl['opex_unpaid'])"/>)</span>
+                                                        <span class="material-symbols-outlined text-sm group-open/unpaid:rotate-180 transition-transform">expand_more</span>
+                                                    </div>
+                                                </summary>
+                                                <div class="mt-2 pl-4 space-y-1">
+                                                    <t t-foreach="pnl['expense_categories'].items()" t-as="category_item">
+                                                        <t t-set="category_name" t-value="category_item[0]"/>
+                                                        <t t-set="category_info" t-value="category_item[1]"/>
+                                                        <t t-if="category_info['unpaid'] > 0">
+                                                            <div class="flex justify-between items-center py-1 text-sm text-slate-600">
+                                                                <span><t t-esc="category_name"/> <span class="text-xs text-orange-600"><t t-esc="category_info['margin']"/>%</span></span>
+                                                                <span>(<t t-esc="'{:,.0f}đ'.format(category_info['unpaid'])"/>)</span>
+                                                            </div>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                            </details>
+                                        </div>
+                                    </details>
+                                    <!-- Lợi nhuận trước thuế -->
+                                    <div class="flex justify-between items-center py-3 border-b-2 border-slate-300">
+                                        <span class="font-bold text-slate-900">Lợi nhuận trước thuế</span>
+                                        <span class="font-bold text-slate-900"><t t-esc="'{:,.0f}đ'.format(pnl['profit_before_tax'])"/> <span class="text-sm text-green-600"><t t-esc="pnl['profit_before_tax_margin']"/>%</span></span>
+                                    </div>
+                                    <!-- Thuế -->
+                                    <div class="flex justify-between items-center py-3 border-b border-slate-200">
+                                        <span class="text-slate-800">Thuế</span>
+                                        <span class="font-semibold text-slate-900">(<t t-esc="'{:,.0f}đ'.format(pnl['tax'])"/>)</span>
+                                    </div>
+                                    <!-- Lợi nhuận ròng -->
+                                    <div class="flex justify-between items-center pt-4">
+                                        <span class="font-bold text-xl text-slate-900">Lợi nhuận ròng</span>
+                                        <span class="font-bold text-xl text-slate-900"><t t-esc="'{:,.0f}đ'.format(pnl['net_profit'])"/> <span class="text-base text-green-600"><t t-esc="pnl['net_margin']"/>%</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Stats Cards -->
+                            <!-- Cash Flow by Payment Method -->
+                            <div class="lg:col-span-1 flex flex-col gap-6">
+                                <!-- Header Card -->
+                                <div class="bg-white p-6 rounded-xl border border-slate-200">
+                                    <h3 class="text-slate-900 text-lg font-bold mb-4">Dòng tiền theo PTTT</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-slate-600">Lý thuyết</span>
+                                            <span class="font-semibold text-slate-900"><t t-esc="'{:,.0f}đ'.format(cf_total_expected)"/></span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-slate-600">Thực nhận</span>
+                                            <span class="font-semibold text-slate-900"><t t-esc="'{:,.0f}đ'.format(cf_total_counted)"/></span>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+                                            <span class="text-sm font-medium text-slate-800">Chênh lệch</span>
+                                            <div class="flex items-center gap-2">
+                                                <span t-att-class="'font-bold ' + ('text-red-600' if cf_total_difference &lt; 0 else 'text-green-600' if cf_total_difference &gt; 0 else 'text-slate-900')">
+                                                    <t t-esc="'{:,.0f}đ'.format(cf_total_difference)"/>
+                                                </span>
+                                                <span t-att-class="'text-xs font-medium px-2 py-0.5 rounded ' + ('bg-red-100 text-red-700' if cf_total_variance &lt; 0 else 'bg-green-100 text-green-700' if cf_total_variance &gt; 0 else 'bg-slate-100 text-slate-700')">
+                                                    <t t-esc="cf_total_variance"/>%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Payment Methods Detail -->
+                                <div class="bg-white p-6 rounded-xl border border-slate-200">
+                                    <h4 class="text-slate-900 text-base font-bold mb-4">Chi tiết theo phương thức</h4>
+                                    <div class="space-y-4">
+                                        <t t-foreach="payment_flow.items()" t-as="pm_item">
+                                            <t t-set="pm_name" t-value="pm_item[0]"/>
+                                            <t t-set="pm_data" t-value="pm_item[1]"/>
+                                            <details class="group/pm border border-slate-200 rounded-lg">
+                                                <summary class="flex justify-between items-center p-3 cursor-pointer list-none hover:bg-slate-50">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="material-symbols-outlined text-sm text-slate-600 group-open/pm:rotate-180 transition-transform">expand_more</span>
+                                                        <span class="font-medium text-slate-800"><t t-esc="pm_name"/></span>
+                                                    </div>
+                                                    <span t-att-class="'text-xs font-medium px-2 py-0.5 rounded ' + ('bg-red-100 text-red-700' if pm_data['variance_pct'] &lt; 0 else 'bg-green-100 text-green-700' if pm_data['variance_pct'] &gt; 0 else 'bg-slate-100 text-slate-700')">
+                                                        <t t-esc="pm_data['variance_pct']"/>%
+                                                    </span>
+                                                </summary>
+                                                <div class="px-4 pb-3 space-y-2 text-sm">
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-slate-600">Lý thuyết</span>
+                                                        <span class="text-slate-900"><t t-esc="'{:,.0f}đ'.format(pm_data['expected'])"/></span>
+                                                    </div>
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-slate-600">Thực nhận</span>
+                                                        <span class="text-slate-900"><t t-esc="'{:,.0f}đ'.format(pm_data['counted'])"/></span>
+                                                    </div>
+                                                    <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                                                        <span class="text-slate-700 font-medium">Chênh lệch</span>
+                                                        <span t-att-class="'font-semibold ' + ('text-red-600' if pm_data['difference'] &lt; 0 else 'text-green-600' if pm_data['difference'] &gt; 0 else 'text-slate-900')">
+                                                            <t t-esc="'{:,.0f}đ'.format(pm_data['difference'])"/>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </details>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </body>
+        </html>
+    </template>
+</odoo>

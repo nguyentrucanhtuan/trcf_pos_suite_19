@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- URL Action to open P&L Dashboard -->
+    <record id="action_pnl_dashboard" model="ir.actions.act_url">
+        <field name="name">Báo cáo Lãi lỗ</field>
+        <field name="url">/trcf_pnl/dashboard</field>
+        <field name="target">self</field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_trcf_pnl_root"
+              name="TRCF PNL"
+              sequence="21"
+              web_icon="trcf_pnl_dashboard,static/description/icon.png"/>
+    
+    <menuitem id="menu_pnl_dashboard"
+              name="Báo cáo Lãi lỗ"
+              parent="menu_trcf_pnl_root"
+              action="action_pnl_dashboard"
+              sequence="10"/>
+</odoo>
