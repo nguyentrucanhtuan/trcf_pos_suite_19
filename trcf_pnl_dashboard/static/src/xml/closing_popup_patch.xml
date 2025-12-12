@@ -4,14 +4,32 @@
     <!-- Extend POS Closing Popup to add owner withdrawal fields -->
     <t t-name="trcf_pnl_dashboard.ClosePosPopup" t-inherit="point_of_sale.ClosePosPopup" t-inherit-mode="extension">
         
-        <!-- Hide default cash count input (replaced with custom one in our summary) -->
-        <xpath expr="//div[@t-if='pos.config.cash_control'][label[text()='Cash Count']]" position="replace">
-            <!-- Hidden: using custom cash count input in payment summary table -->
+        <!-- Add CSS to hide default input fields -->
+        <xpath expr="//hr" position="after">
+            <style>
+                /* Hide all mb-3 divs that come right after hr (these are the input fields) */
+                .close-pos-popup hr + div.mb-3,
+                .close-pos-popup hr ~ div.mb-3,
+                .close-pos-popup hr ~ div.w-100.mb-3 {
+                    display: none !important;
+                }
+                
+                /* But keep notes-container visible */
+                .close-pos-popup .notes-container {
+                    display: flex !important;
+                }
+                
+                /* Keep our custom trcf fields visible */
+                .close-pos-popup .trcf-payment-summary,
+                .close-pos-popup .trcf-cash-management {
+                    display: block !important;
+                }
+            </style>
         </xpath>
-
-        <!-- Hide default non-cash payment count inputs (replaced with custom ones) -->
-        <xpath expr="//div[@t-foreach='props.non_cash_payment_methods'][@t-as='pm'][@class='w-100 mb-3']" position="replace">
-            <!-- Hidden: using custom payment count inputs in payment summary table -->
+        
+        <!-- Replace non-cash payment inputs with empty div to completely remove them -->
+        <xpath expr="//div[@t-foreach='props.non_cash_payment_methods']" position="replace">
+            <!-- Removed: using custom payment inputs in trcf-payment-summary -->
         </xpath>
 
         <!-- Replace payment-methods-overview with custom summary -->
