@@ -79,6 +79,61 @@ class TrcfReportController(http.Controller):
         # Lấy báo cáo phiên đang mở
         open_sessions = self.get_open_session_summary(current_start, current_end)
         
+        # Tổng hợp tất cả bất thường từ các phiên
+        all_anomalies = []
+        
+        # Thu thập split payment orders từ open sessions
+        for session in (open_sessions or []):
+            for item in session.get('split_payment_orders', []):
+                if item.get('type') == 'discount':
+                    all_anomalies.append({
+                        'type': 'discount',
+                        'session_name': session['name'],
+                        'order_name': item['order_name'],
+                        'product_name': item['product_name'],
+                        'discount_percent': item['discount_percent'],
+                        'original_price': item['original_price'],
+                        'final_price': item['final_price'],
+                        'qty': item['qty'],
+                        'severity': 'info',
+                    })
+                else:
+                    all_anomalies.append({
+                        'type': 'split_payment',
+                        'session_name': session['name'],
+                        'order_name': item['name'],
+                        'payment_count': item['payment_count'],
+                        'payment_methods': item['payment_methods'],
+                        'amount': item['amount'],
+                        'severity': 'warning',
+                    })
+        
+        # Thu thập split payment orders từ closed sessions
+        for session in (sessions or []):
+            for item in session.get('split_payment_orders', []):
+                if item.get('type') == 'discount':
+                    all_anomalies.append({
+                        'type': 'discount',
+                        'session_name': session['name'],
+                        'order_name': item['order_name'],
+                        'product_name': item['product_name'],
+                        'discount_percent': item['discount_percent'],
+                        'original_price': item['original_price'],
+                        'final_price': item['final_price'],
+                        'qty': item['qty'],
+                        'severity': 'info',
+                    })
+                else:
+                    all_anomalies.append({
+                        'type': 'split_payment',
+                        'session_name': session['name'],
+                        'order_name': item['name'],
+                        'payment_count': item['payment_count'],
+                        'payment_methods': item['payment_methods'],
+                        'amount': item['amount'],
+                        'severity': 'warning',
+                    })
+        
         vals = {
             'filter_type': filter_type,
             'date_from': date_from,
@@ -97,6 +152,7 @@ class TrcfReportController(http.Controller):
             'sessions': sessions,
             'day_summary': day_summary,
             'open_sessions': open_sessions,
+            'anomalies': all_anomalies,
         }
 
         return request.render('trcf_fnb_inventory.daily_report_template', vals)
@@ -718,6 +774,32 @@ class TrcfReportController(http.Controller):
             start_at_local = pytz.utc.localize(session.start_at).astimezone(user_tz) if session.start_at else None
             current_time_local = now_user_tz.strftime('%H:%M')
             
+            # Phát hiện đơn có nhiều phương thức thanh toán (split payment)
+            split_payment_orders = []
+            for order in orders:
+                payment_count = len(order.payment_ids)
+                if payment_count > 1:
+                    payment_methods = ', '.join(order.payment_ids.mapped('payment_method_id.name'))
+                    split_payment_orders.append({
+                        'name': order.name,
+                        'payment_count': payment_count,
+                        'payment_methods': payment_methods,
+                        'amount': order.amount_total,
+                    })
+                
+                # Phát hiện discount trong order lines
+                for line in order.lines:
+                    if line.discount > 0:
+                        split_payment_orders.append({
+                            'type': 'discount',
+                            'order_name': order.name,
+                            'product_name': line.product_id.name if line.product_id else 'Unknown',
+                            'discount_percent': line.discount,
+                            'original_price': line.price_unit,
+                            'final_price': line.price_unit * (1 - line.discount/100),
+                            'qty': line.qty,
+                        })
+            
             session_list.append({
                 'name': session.name,
                 'user_name': session.user_id.name,
@@ -728,7 +810,10 @@ class TrcfReportController(http.Controller):
                 'order_count': total_orders,
                 'total_qty': int(total_qty),
                 'payment_methods': payment_method_data,
+                'split_payment_count': len(split_payment_orders),
+                'split_payment_orders': split_payment_orders,
             })
+
         
         return session_list
     def get_session_details(self, start_date, end_date):
@@ -833,6 +918,32 @@ class TrcfReportController(http.Controller):
             start_at_local = pytz.utc.localize(session.start_at).astimezone(user_tz) if session.start_at else None
             stop_at_local = pytz.utc.localize(session.stop_at).astimezone(user_tz) if session.stop_at else None
             
+            # Phát hiện đơn có nhiều phương thức thanh toán (split payment)
+            split_payment_orders = []
+            for order in paid_orders:
+                payment_count = len(order.payment_ids)
+                if payment_count > 1:
+                    payment_methods = ', '.join(order.payment_ids.mapped('payment_method_id.name'))
+                    split_payment_orders.append({
+                        'name': order.name,
+                        'payment_count': payment_count,
+                        'payment_methods': payment_methods,
+                        'amount': order.amount_total,
+                    })
+                
+                # Phát hiện discount trong order lines
+                for line in order.lines:
+                    if line.discount > 0:
+                        split_payment_orders.append({
+                            'type': 'discount',
+                            'order_name': order.name,
+                            'product_name': line.product_id.name if line.product_id else 'Unknown',
+                            'discount_percent': line.discount,
+                            'original_price': line.price_unit,
+                            'final_price': line.price_unit * (1 - line.discount/100),
+                            'qty': line.qty,
+                        })
+            
             session_list.append({
                 'name': session.name,
                 'user_name': session.user_id.name,
@@ -843,6 +954,9 @@ class TrcfReportController(http.Controller):
                 'order_count': session.order_count,
                 'total_qty': int(total_qty),
                 'payment_methods': payment_method_data,
+                'split_payment_count': len(split_payment_orders),
+                'split_payment_orders': split_payment_orders,
             })
+
         
         return session_list
