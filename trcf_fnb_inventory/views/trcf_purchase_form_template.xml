@@ -888,8 +888,12 @@
                             return;
                         }
                         
+                        // Check for both select and hidden input (depending on allow_employee_select)
                         const pickingTypeSelect = document.querySelector('select[name="picking_type_id"]');
-                        if (!pickingTypeSelect.value) {
+                        const pickingTypeHidden = document.querySelector('input[name="picking_type_id"]');
+                        const pickingTypeValue = pickingTypeSelect ? pickingTypeSelect.value : (pickingTypeHidden ? pickingTypeHidden.value : '');
+                        
+                        if (!pickingTypeValue) {
                             alert('Vui lòng chọn phiếu nhập kho');
                             return;
                         }
