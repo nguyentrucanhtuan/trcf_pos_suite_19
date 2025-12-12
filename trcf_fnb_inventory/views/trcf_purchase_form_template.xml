@@ -136,19 +136,29 @@
         <xpath expr="//body" position="replace">
 
             <body class="font-display bg-background-light dark:bg-background-dark">
-                <div class="flex min-h-screen">
+                <div class="flex min-h-screen relative">
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-gray-700 dark:text-gray-300">menu</span>
+                    </button>
+                    
+                    <!-- Mobile Overlay -->
+                    <div id="mobile-overlay" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+                    
                     <!-- SideNavBar -->
-                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    <div id="sidebar-wrapper" class="hidden md:block fixed md:relative inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+                        <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    </div>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8">
+                    <main class="flex-1 p-4 md:p-6 lg:p-8 pt-16 md:pt-4">
                         <div class="w-full max-w-screen mx-auto">
                             
                             <!-- Error Message -->
                             <t t-if="error">
-                                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                                    <p class="text-red-800 dark:text-red-200 text-sm font-medium">
-                                        <span class="material-symbols-outlined inline-block align-middle mr-2">error</span>
+                                <div class="mb-4 md:mb-6 p-3 md:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg md:rounded-xl">
+                                    <p class="text-red-800 dark:text-red-200 text-xs md:text-sm font-medium">
+                                        <span class="material-symbols-outlined inline-block align-middle mr-1 md:mr-2 text-sm md:text-base">error</span>
                                         <t t-esc="error"/>
                                     </p>
                                 </div>
@@ -159,43 +169,43 @@
                                 <input type="hidden" name="products_data" id="products_data" value="[]"/>
                                 <input type="hidden" name="action" id="form_action" value="draft"/>
                                 
-                                <header class="mb-6">
-                                    <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em] mb-4">Tạo Phiếu Nhập Hàng</p>
-                                    <button type="button" onclick="submitForm('confirm')" class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-sm font-bold">
-                                        <span class="material-symbols-outlined text-base">save</span>
+                                <header class="mb-4 md:mb-6">
+                                    <p class="text-text-light-primary dark:text-text-dark-primary text-xl md:text-2xl lg:text-4xl font-black leading-tight tracking-[-0.033em] mb-3 md:mb-4">Tạo Phiếu Nhập Hàng</p>
+                                    <button type="button" onclick="submitForm('confirm')" class="flex items-center justify-center gap-x-2 h-9 md:h-10 px-3 md:px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-xs md:text-sm font-bold">
+                                        <span class="material-symbols-outlined text-sm md:text-base">save</span>
                                         <span>Tạo đơn mua hàng</span>
                                     </button>
                                 </header>
                                 
-                                <div class="flex flex-col gap-8">
+                                <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
                                     <!-- Thông tin đơn hàng -->
-                                    <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Thông tin đơn hàng</h2>
-                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                    <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-lg md:rounded-xl p-4 md:p-6">
+                                        <h2 class="text-text-light-primary dark:text-white text-base md:text-lg lg:text-xl font-bold leading-tight mb-4 md:mb-6">Thông tin đơn hàng</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
                                             
                                             <!-- Ngày nhập hàng (tự động) -->
                                             <label class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Ngày nhập hàng</p>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">Ngày nhập hàng</p>
                                                 <div class="relative">
-                                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary">calendar_today</span>
-                                                    <input readonly="readonly" class="form-input pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px] text-sm font-normal leading-normal cursor-not-allowed" type="text" t-att-value="today" title="Ngày nhập hàng được tự động lấy từ thời gian tạo đơn"/>
+                                                    <span class="material-symbols-outlined absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary text-lg md:text-xl">calendar_today</span>
+                                                    <input readonly="readonly" class="form-input pl-10 md:pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-10 md:h-12 p-[10px] md:p-[15px] text-xs md:text-sm font-normal leading-normal cursor-not-allowed" type="text" t-att-value="today" title="Ngày nhập hàng được tự động lấy từ thời gian tạo đơn"/>
                                                 </div>
                                             </label>
                                             
                                             <!-- Mã tham chiếu -->
                                             <label class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Mã tham chiếu</p>
-                                                <input name="reference" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary p-[15px] text-sm font-normal leading-normal" placeholder="Mã phiếu tự sinh hoặc tự nhập" t-att-value="reference or ''"/>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">Mã tham chiếu</p>
+                                                <input name="reference" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-10 md:h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary p-[10px] md:p-[15px] text-xs md:text-sm font-normal leading-normal" placeholder="Mã phiếu tự sinh hoặc tự nhập" t-att-value="reference or ''"/>
                                             </label>
                                             
                                             <!-- Phiếu nhập kho -->
                                             <label class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">
                                                     Chọn kho <span class="text-red-500">*</span>
                                                 </p>
                                                 <!-- Nếu cho phép nhân viên chọn: hiển thị dropdown -->
                                                 <t t-if="allow_employee_select">
-                                                    <select name="picking_type_id" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                    <select name="picking_type_id" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-10 md:h-12 px-3 text-xs md:text-sm font-normal leading-normal">
                                                         <option value="">-- Chọn kho --</option>
                                                         <t t-foreach="picking_types" t-as="pt">
                                                             <option t-att-value="pt.id" t-att-selected="pt.id == default_picking_type_id">
@@ -207,7 +217,7 @@
                                                 <!-- Nếu không cho phép: hiển thị giá trị mặc định (readonly) + hidden input -->
                                                 <t t-else="">
                                                     <input type="hidden" name="picking_type_id" t-att-value="default_picking_type_id"/>
-                                                    <input readonly="readonly" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px] text-sm font-normal leading-normal cursor-not-allowed" type="text" t-att-value="default_picking_type_name or 'Chưa cấu hình'" title="Kho mặc định do admin cấu hình"/>
+                                                    <input readonly="readonly" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-10 md:h-12 p-[10px] md:p-[15px] text-xs md:text-sm font-normal leading-normal cursor-not-allowed" type="text" t-att-value="default_picking_type_name or 'Chưa cấu hình'" title="Kho mặc định do admin cấu hình"/>
                                                 </t>
                                             </label>
                                             
@@ -215,16 +225,16 @@
                                     </div>
                                     
                                     <!-- Thông tin thanh toán -->
-                                    <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Thông tin thanh toán</h2>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-lg md:rounded-xl p-4 md:p-6">
+                                        <h2 class="text-text-light-primary dark:text-white text-base md:text-lg lg:text-xl font-bold leading-tight mb-4 md:mb-6">Thông tin thanh toán</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                                             
                                             <!-- Nhà cung cấp -->
                                             <label class="flex flex-col w-full md:col-span-2">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">
                                                     Nhà cung cấp <span class="text-red-500">*</span>
                                                 </p>
-                                                <select name="partner_id" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
+                                                <select name="partner_id" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-10 md:h-12 px-3 text-xs md:text-sm font-normal leading-normal">
                                                     <option value="">-- Chọn nhà cung cấp --</option>
                                                     <t t-foreach="suppliers" t-as="supplier">
                                                         <option t-att-value="supplier.id" t-esc="supplier.name"/>
@@ -234,24 +244,24 @@
                                             
                                             <!-- Trạng thái thanh toán -->
                                             <div class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Trạng thái thanh toán</p>
-                                                <div class="flex items-center gap-6 h-12">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">Trạng thái thanh toán</p>
+                                                <div class="flex items-center gap-4 md:gap-6 h-10 md:h-12">
                                                     <label class="flex items-center gap-2 cursor-pointer">
                                                         <input class="form-radio text-primary focus:ring-primary/50 w-4 h-4" name="payment_status" type="radio" value="paid"/>
-                                                        <span class="text-text-light-primary dark:text-white text-sm">Đã thanh toán</span>
+                                                        <span class="text-text-light-primary dark:text-white text-xs md:text-sm">Đã thanh toán</span>
                                                     </label>
                                                     <label class="flex items-center gap-2 cursor-pointer">
                                                         <input checked="checked" class="form-radio text-primary focus:ring-primary/50 w-4 h-4" name="payment_status" type="radio" value="unpaid"/>
-                                                        <span class="text-text-light-primary dark:text-white text-sm">Chưa thanh toán</span>
+                                                        <span class="text-text-light-primary dark:text-white text-xs md:text-sm">Chưa TT</span>
                                                     </label>
                                                 </div>
                                             </div>
                                             
                                             <!-- Phương thức thanh toán -->
                                             <label class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Phương thức thanh toán</p>
-                                                <select name="payment_method_id" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
-                                                    <option value="">-- Chọn phương thức --</option>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">Phương thức TT</p>
+                                                <select name="payment_method_id" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-10 md:h-12 px-3 text-xs md:text-sm font-normal leading-normal">
+                                                    <option value="">-- Chọn --</option>
                                                     <t t-foreach="payment_methods" t-as="pm">
                                                         <option t-att-value="pm.get('id')" t-esc="pm.get('name')"/>
                                                     </t>
@@ -260,39 +270,39 @@
                                             
                                             <!-- Ngày thanh toán -->
                                             <label class="flex flex-col w-full md:col-span-2">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Ngày thanh toán</p>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">Ngày thanh toán</p>
                                                 <div class="relative">
-                                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary pointer-events-none">calendar_today</span>
-                                                    <input id="payment_date_input" name="payment_date" class="form-input pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 p-[15px] text-sm font-normal leading-normal cursor-pointer" placeholder="DD/MM/YYYY HH:MM:SS" type="text" readonly="readonly"/>
+                                                    <span class="material-symbols-outlined absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary pointer-events-none text-lg md:text-xl">calendar_today</span>
+                                                    <input id="payment_date_input" name="payment_date" class="form-input pl-10 md:pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-10 md:h-12 p-[10px] md:p-[15px] text-xs md:text-sm font-normal leading-normal cursor-pointer" placeholder="DD/MM/YYYY HH:MM:SS" type="text" readonly="readonly"/>
                                                 </div>
                                             </label>
                                             
                                             <!-- Ghi chú đơn hàng -->
                                             <label class="flex flex-col w-full md:col-span-2">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Ghi chú đơn hàng</p>
-                                                <input name="notes" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary p-[15px] text-sm font-normal leading-normal" placeholder="Thêm ghi chú về đơn hàng..."/>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium leading-normal pb-1 md:pb-2">Ghi chú</p>
+                                                <input name="notes" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-10 md:h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary p-[10px] md:p-[15px] text-xs md:text-sm font-normal leading-normal" placeholder="Thêm ghi chú..."/>
                                             </label>
                                             
                                         </div>
                                     </div>
                                     
                                     <!-- Chi tiết sản phẩm -->
-                                    <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Chi tiết Sản phẩm</h2>
+                                    <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-lg md:rounded-xl p-4 md:p-6">
+                                        <h2 class="text-text-light-primary dark:text-white text-base md:text-lg lg:text-xl font-bold leading-tight mb-4 md:mb-6">Chi tiết Sản phẩm</h2>
                                         <div class="flow-root">
-                                            <div class="-mx-6 -my-2 overflow-x-auto">
-                                                <div class="inline-block min-w-full py-2 align-middle sm:px-6">
+                                            <div class="-mx-4 md:-mx-6 -my-2 overflow-x-auto">
+                                                <div class="inline-block min-w-full py-2 align-middle px-4 md:px-6">
                                                     <div class="overflow-hidden">
                                                         <table class="min-w-full" id="productsTable">
                                                             <thead class="border-b border-border-light dark:border-border-dark">
                                                                 <tr>
-                                                                    <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary sm:pl-0 w-[25%]" scope="col">Sản phẩm</th>
-                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Đơn vị tính</th>
-                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Số lượng</th>
-                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[20%]" scope="col">Đơn giá</th>
-                                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">VAT (%)</th>
-                                                                    <th class="relative py-3.5 pl-3 pr-4 sm:pr-0" scope="col">
-                                                                        <span class="sr-only">Hành động</span>
+                                                                    <th class="py-2 md:py-3.5 pl-2 md:pl-4 pr-2 md:pr-3 text-left text-xs md:text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[30%]" scope="col">Sản phẩm</th>
+                                                                    <th class="px-2 md:px-3 py-2 md:py-3.5 text-left text-xs md:text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%] hidden sm:table-cell" scope="col">ĐVT</th>
+                                                                    <th class="px-2 md:px-3 py-2 md:py-3.5 text-left text-xs md:text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">SL</th>
+                                                                    <th class="px-2 md:px-3 py-2 md:py-3.5 text-left text-xs md:text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[20%]" scope="col">Giá</th>
+                                                                    <th class="px-2 md:px-3 py-2 md:py-3.5 text-left text-xs md:text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%] hidden md:table-cell" scope="col">VAT</th>
+                                                                    <th class="relative py-2 md:py-3.5 pl-2 md:pl-3 pr-2 md:pr-4" scope="col">
+                                                                        <span class="sr-only">Xóa</span>
                                                                     </th>
                                                                 </tr>
                                                             </thead>
@@ -305,23 +315,23 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="mt-6 flex flex-col md:flex-row items-start gap-6">
+                                        <div class="mt-4 md:mt-6 flex flex-col md:flex-row items-start gap-4 md:gap-6">
                                             <div class="w-full md:w-auto flex-grow">
-                                                <button type="button" onclick="addProductLine()" class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary text-sm font-bold leading-normal hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
-                                                    <span class="material-symbols-outlined">add_circle</span> Thêm sản phẩm
+                                                <button type="button" onclick="addProductLine()" class="flex items-center justify-center gap-2 w-full px-4 md:px-5 py-2 md:py-3 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary text-xs md:text-sm font-bold leading-normal hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
+                                                    <span class="material-symbols-outlined text-lg md:text-xl">add_circle</span> Thêm sản phẩm
                                                 </button>
                                             </div>
                                             <div class="w-full md:w-2/5 lg:w-1/3">
-                                                <div class="space-y-3 text-text-light-secondary dark:text-text-dark-secondary text-sm">
+                                                <div class="space-y-2 md:space-y-3 text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm">
                                                     <div class="flex justify-between items-center">
-                                                        <p>Số tiền trước thuế</p>
+                                                        <p>Trước thuế</p>
                                                         <p class="font-medium text-text-light-primary dark:text-white" id="subtotal">0đ</p>
                                                     </div>
                                                     <div id="vatBreakdown">
                                                         <!-- VAT breakdown will be added here -->
                                                     </div>
-                                                    <div class="border-t border-border-light dark:border-border-dark my-3"></div>
-                                                    <div class="flex justify-between items-center text-base">
+                                                    <div class="border-t border-border-light dark:border-border-dark my-2 md:my-3"></div>
+                                                    <div class="flex justify-between items-center text-sm md:text-base">
                                                         <p class="font-bold text-text-light-primary dark:text-white">Tổng cộng</p>
                                                         <p class="font-bold text-primary dark:text-primary" id="total">0đ</p>
                                                     </div>
@@ -334,6 +344,31 @@
                         </div>
                     </main>
                 </div>
+                
+                <!-- Mobile Menu JavaScript -->
+                <script>
+                <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const menuBtn = document.getElementById('mobile-menu-btn');
+                        const sidebar = document.getElementById('sidebar-wrapper');
+                        const overlay = document.getElementById('mobile-overlay');
+                        
+                        if (menuBtn && sidebar && overlay) {
+                            menuBtn.addEventListener('click', function() {
+                                sidebar.classList.toggle('hidden');
+                                sidebar.classList.toggle('translate-x-0');
+                                overlay.classList.toggle('hidden');
+                            });
+                            
+                            overlay.addEventListener('click', function() {
+                                sidebar.classList.add('hidden');
+                                sidebar.classList.remove('translate-x-0');
+                                overlay.classList.add('hidden');
+                            });
+                        }
+                    });
+                ]]>
+                </script>
                 
                 <!-- JavaScript -->
                 <script>

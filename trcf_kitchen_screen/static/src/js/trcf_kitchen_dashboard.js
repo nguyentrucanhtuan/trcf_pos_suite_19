@@ -37,6 +37,7 @@ export class TrcfKitchenDashboard extends Component {
             waiting_count: 0,
             ready_count: 0,
             loadingOrders: [],
+            loadingOrderLines: [],  // Track loading state cho từng món
             showRecipe: false,  // Toggle hiển thị công thức
         });
 
@@ -262,7 +263,27 @@ export class TrcfKitchenDashboard extends Component {
     }
 
     async markOrderLineReady(orderLineId) {
-        await this.updateOrderLineStatus(orderLineId, 'ready')
+        var self = this;
+
+        // Thêm vào loading state
+        if (!self.state.loadingOrderLines.includes(orderLineId)) {
+            self.state.loadingOrderLines.push(orderLineId);
+        }
+
+        try {
+            await this.updateOrderLineStatus(orderLineId, 'ready');
+        } finally {
+            // Xóa khỏi loading state
+            const index = self.state.loadingOrderLines.indexOf(orderLineId);
+            if (index > -1) {
+                self.state.loadingOrderLines.splice(index, 1);
+            }
+        }
+    }
+
+    // Kiểm tra order line đang loading
+    isOrderLineLoading(orderLineId) {
+        return this.state.loadingOrderLines.includes(orderLineId);
     }
 
     // KIỂM TRA ORDER ĐANG LOADING

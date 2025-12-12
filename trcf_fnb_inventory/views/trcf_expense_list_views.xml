@@ -46,76 +46,104 @@
                 .material-symbols-outlined {
                     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
                 }
+                
+                /* Mobile table styles */
+                .table-scroll-wrapper {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }
+                .sticky-col {
+                    position: sticky;
+                    left: 0;
+                    background: inherit;
+                    z-index: 1;
+                }
+                @media (max-width: 768px) {
+                    .mobile-table th,
+                    .mobile-table td {
+                        padding: 0.5rem 0.75rem;
+                        font-size: 0.75rem;
+                    }
+                }
             </style>
         </xpath>
 
         <xpath expr="//body" position="replace">
 
             <body class="font-display bg-background-light dark:bg-background-dark">
-                <div class="flex min-h-screen">
+                <div class="flex min-h-screen relative">
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-gray-700 dark:text-gray-300">menu</span>
+                    </button>
+                    
+                    <!-- Mobile Overlay -->
+                    <div id="mobile-overlay" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+                    
                     <!-- SideNavBar -->
-                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    <div id="sidebar-wrapper" class="hidden md:block fixed md:relative inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+                        <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    </div>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8">
+                    <main class="flex-1 p-4 md:p-6 lg:p-8 pt-16 md:pt-4">
                         <div class="w-full max-w-screen mx-auto">
-                            <header class="mb-6">
-                            <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em]">Danh Sách Chi Phí</p>
+                            <header class="mb-4 md:mb-6">
+                            <p class="text-text-light-primary dark:text-text-dark-primary text-xl md:text-2xl lg:text-4xl font-black leading-tight tracking-[-0.033em]">Danh Sách Chi Phí</p>
                             </header>
-                            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-border-light dark:border-border-dark">
+                            <div class="flex flex-wrap items-center justify-between gap-3 md:gap-4 mb-3 md:mb-4 p-3 md:p-4 bg-white dark:bg-slate-900 rounded-lg md:rounded-xl border border-border-light dark:border-border-dark">
                                 <a href="/trcf_fnb_inventory/expense_add" class="inline-block">
-                                    <button class="flex items-center justify-center gap-x-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-sm font-bold">
-                                        <span class="material-symbols-outlined text-base">add_circle</span>
+                                    <button class="flex items-center justify-center gap-x-2 h-9 md:h-10 px-3 md:px-4 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-xs md:text-sm font-bold">
+                                        <span class="material-symbols-outlined text-sm md:text-base">add_circle</span>
                                         <span>Thêm chi phí</span>
                                     </button>
                                 </a>
                             </div>
                             
                             <!-- Statistics Cards -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
                                 <!-- Total Expenses Card -->
-                                <div class="p-6 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl shadow-lg">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <p class="text-white/80 text-sm font-medium">Tổng Chi Phí</p>
-                                        <span class="material-symbols-outlined text-white/60">payments</span>
+                                <div class="p-3 md:p-4 lg:p-6 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-lg md:rounded-xl shadow-lg col-span-2 md:col-span-1">
+                                    <div class="flex items-center justify-between mb-1 md:mb-2">
+                                        <p class="text-white/80 text-xs md:text-sm font-medium">Tổng Chi Phí</p>
+                                        <span class="material-symbols-outlined text-white/60 text-sm md:text-base">payments</span>
                                     </div>
-                                    <p class="text-white text-3xl font-bold"><t t-esc="total_amount_formatted"/> <t t-esc="currency_symbol"/></p>
+                                    <p class="text-white text-lg md:text-2xl lg:text-3xl font-bold"><t t-esc="total_amount_formatted"/> <t t-esc="currency_symbol"/></p>
                                     <p class="text-white/70 text-xs mt-1">Hôm nay</p>
                                 </div>
                                 
                                 <!-- Payment Method Stats -->
                                 <t t-foreach="payment_method_stats" t-as="pm_stat">
-                                    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-border-light dark:border-border-dark shadow-sm">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium"><t t-esc="pm_stat['name']"/></p>
-                                            <span class="material-symbols-outlined text-primary dark:text-blue-400">account_balance_wallet</span>
+                                    <div class="p-3 md:p-4 lg:p-6 bg-white dark:bg-slate-900 rounded-lg md:rounded-xl border border-border-light dark:border-border-dark shadow-sm">
+                                        <div class="flex items-center justify-between mb-1 md:mb-2">
+                                            <p class="text-text-light-secondary dark:text-text-dark-secondary text-xs md:text-sm font-medium truncate"><t t-esc="pm_stat['name']"/></p>
+                                            <span class="material-symbols-outlined text-primary dark:text-blue-400 text-sm md:text-base">account_balance_wallet</span>
                                         </div>
-                                        <p class="text-text-light-primary dark:text-white text-2xl font-bold"><t t-esc="pm_stat['amount_formatted']"/> <t t-esc="currency_symbol"/></p>
+                                        <p class="text-text-light-primary dark:text-white text-base md:text-xl lg:text-2xl font-bold"><t t-esc="pm_stat['amount_formatted']"/> <t t-esc="currency_symbol"/></p>
                                     </div>
                                 </t>
                             </div>
                             
-                            <div class="overflow-hidden rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-slate-900">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left">
+                            <div class="overflow-hidden rounded-lg md:rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 max-w-full">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left mobile-table">
                                 <thead class="bg-slate-50 dark:bg-slate-800/50">
                                     <tr>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Loại Chi Phí</th>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Tên Chi Phí</th>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Số Tiền</th>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Hình Thức TT</th>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Trạng Thái TT</th>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Ngày Thanh Toán</th>
-                                    <th class="px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Thời Gian Tạo</th>
+                                    <th class="px-2 md:px-4 py-2 md:py-3 text-left text-text-light-secondary dark:text-text-dark-secondary text-xs font-semibold leading-normal">Tên</th>
+                                    <th class="px-2 md:px-4 py-2 md:py-3 text-left text-text-light-secondary dark:text-text-dark-secondary text-xs font-semibold leading-normal">Số Tiền</th>
+                                    <th class="px-2 md:px-4 py-2 md:py-3 text-left text-text-light-secondary dark:text-text-dark-secondary text-xs font-semibold leading-normal hidden sm:table-cell">Loại</th>
+                                    <th class="px-2 md:px-4 py-2 md:py-3 text-left text-text-light-secondary dark:text-text-dark-secondary text-xs font-semibold leading-normal hidden md:table-cell">PT TT</th>
+                                    <th class="px-2 md:px-4 py-2 md:py-3 text-left text-text-light-secondary dark:text-text-dark-secondary text-xs font-semibold leading-normal hidden md:table-cell">Trạng Thái</th>
+                                    <th class="px-2 md:px-4 py-2 md:py-3 text-left text-text-light-secondary dark:text-text-dark-secondary text-xs font-semibold leading-normal hidden lg:table-cell">Ngày TT</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-border-light dark:divide-border-dark">
                                     <t t-if="not total_expenses">
                                         <tr>
-                                            <td colspan="7" class="px-6 py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
+                                            <td colspan="7" class="px-4 md:px-6 py-6 md:py-8 text-center text-text-light-secondary dark:text-text-dark-secondary">
                                                 <div class="flex flex-col items-center gap-2">
-                                                    <span class="material-symbols-outlined text-4xl">payments</span>
-                                                    <p>Chưa có chi phí nào trong ngày hôm nay</p>
+                                                    <span class="material-symbols-outlined text-2xl md:text-4xl">payments</span>
+                                                    <p class="text-xs md:text-sm">Chưa có chi phí nào trong ngày hôm nay</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -123,18 +151,18 @@
                                     <t t-else="">
                                         <t t-foreach="total_expenses" t-as="expense">
                                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                                <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap"><t t-esc="expense['expense_type']"/></td>
-                                                <td class="px-6 py-4 text-text-light-primary dark:text-white font-medium text-sm leading-normal whitespace-nowrap"><t t-esc="expense['expense_name']"/></td>
-                                                <td class="px-6 py-4 text-text-light-primary dark:text-white text-sm font-medium leading-normal whitespace-nowrap"><t t-esc="expense['expense_total_amount_formatted']"/> <t t-esc="expense['expense_currency']"/></td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary"><t t-esc="expense['payment_method']"/></span>
+                                                <td class="px-2 md:px-4 py-2 md:py-3 text-text-light-primary dark:text-white font-medium text-xs leading-normal"><t t-esc="expense['expense_name']"/></td>
+                                                <td class="px-2 md:px-4 py-2 md:py-3 text-text-light-primary dark:text-white text-xs font-semibold leading-normal whitespace-nowrap"><t t-esc="expense['expense_total_amount_formatted']"/></td>
+                                                <td class="px-2 md:px-4 py-2 md:py-3 text-text-light-secondary dark:text-text-dark-secondary text-xs font-normal leading-normal hidden sm:table-cell"><t t-esc="expense['expense_type']"/></td>
+                                                <td class="px-2 md:px-4 py-2 md:py-3 whitespace-nowrap hidden md:table-cell">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-text-light-secondary dark:text-text-dark-secondary"><t t-esc="expense['payment_method']"/></span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <span t-if="expense.get('state') == 'paid'" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">Đã thanh toán</span>
-                                                    <span t-elif="expense.get('state') == 'approved'" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">Đã duyệt</span>
-                                                    <span t-else="" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400">Nháp</span>
+                                                <td class="px-2 md:px-4 py-2 md:py-3 whitespace-nowrap hidden md:table-cell">
+                                                    <span t-if="expense.get('state') == 'paid'" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">Đã TT</span>
+                                                    <span t-elif="expense.get('state') == 'approved'" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">Duyệt</span>
+                                                    <span t-else="" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400">Nháp</span>
                                                 </td>
-                                                <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap">
+                                                <td class="px-2 md:px-4 py-2 md:py-3 text-text-light-secondary dark:text-text-dark-secondary text-xs font-normal leading-normal whitespace-nowrap hidden lg:table-cell">
                                                     <t t-if="expense.get('payment_date')">
                                                         <t t-esc="expense.get('payment_date')"/>
                                                     </t>
@@ -142,7 +170,6 @@
                                                         <span class="text-gray-400">-</span>
                                                     </t>
                                                 </td>
-                                                <td class="px-6 py-4 text-text-light-secondary dark:text-text-dark-secondary text-sm font-normal leading-normal whitespace-nowrap"><t t-esc="expense['create_date']"/></td>
                                             </tr>
                                         </t>
                                     </t>
@@ -153,6 +180,31 @@
                         </div>
                     </main>
                 </div>
+                
+                <!-- Mobile Menu JavaScript -->
+                <script>
+                <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const menuBtn = document.getElementById('mobile-menu-btn');
+                        const sidebar = document.getElementById('sidebar-wrapper');
+                        const overlay = document.getElementById('mobile-overlay');
+                        
+                        if (menuBtn && sidebar && overlay) {
+                            menuBtn.addEventListener('click', function() {
+                                sidebar.classList.toggle('hidden');
+                                sidebar.classList.toggle('translate-x-0');
+                                overlay.classList.toggle('hidden');
+                            });
+                            
+                            overlay.addEventListener('click', function() {
+                                sidebar.classList.add('hidden');
+                                sidebar.classList.remove('translate-x-0');
+                                overlay.classList.add('hidden');
+                            });
+                        }
+                    });
+                ]]>
+                </script>
             </body>
             
         </xpath>
