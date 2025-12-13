@@ -11,9 +11,19 @@ class PosOrderLine(models.Model):
     @api.model
     def update_order_line_status(self, order_line_id, new_status): 
         """Cập nhật trạng thái sản phẩm và gửi thông báo tới tất cả màn hình"""
+        
+        import logging
+        from datetime import datetime
+        _logger = logging.getLogger(__name__)
             
         try:
             order_line = self.env["pos.order.line"].browse(order_line_id)
+            
+            if not order_line.exists():
+                return {'success': False, 'error': 'Order line không tồn tại'}
+            
+            # Lưu trạng thái cũ
+            old_status = order_line.trcf_order_status
 
             # Cập nhật trạng thái mới
             order_line.write({'trcf_order_status': new_status})
@@ -27,6 +37,11 @@ class PosOrderLine(models.Model):
             payload_data = {
                 'message': 'pos_order_line_status_updated',
                 'res_model': 'pos.order.line',
+                'line_id': order_line_id,  # ✅ THÊM line_id
+                'old_status': old_status,   # ✅ THÊM old_status
+                'new_status': new_status,   # ✅ THÊM new_status
+                'order_id': order_line.order_id.id,  # ✅ THÊM order_id
+                'timestamp': datetime.now().isoformat(),  # ✅ THÊM timestamp
             }
             
             self.env["bus.bus"]._sendone(channel_name, bus_type, payload_data)
@@ -34,24 +49,50 @@ class PosOrderLine(models.Model):
             return {'success': True}
 
         except Exception as e:
-            self._logger.error(f"❌ Lỗi cập nhật trạng thái đơn hàng {order_line_id}: {str(e)}")
+            _logger.error(f"❌ Lỗi cập nhật trạng thái order line {order_line_id}: {str(e)}")
             return {'success': False, 'error': str(e)}
 
 
     @api.model
     def check_order_done(self, order_id):
         """Kiểm tra và cập nhật trạng thái đơn hàng thành done nếu tất cả order lines đều ready"""
+        
+        import logging
+        from datetime import datetime
+        _logger = logging.getLogger(__name__)
+        
         try:
             order = self.env['pos.order'].browse(order_id)
             
             if order and order.lines:
                 # Đếm số line không phải 'ready'
                 not_ready_count = len(order.lines.filtered(lambda line: line.trcf_order_status != 'ready'))
+                
                 if not_ready_count == 0:
-                    order.write({'trcf_order_status': 'done'})  # ✅ LƯU VÀO DB
+                    # ✅ TẤT CẢ MÓN ĐÃ XONG → AUTO COMPLETE ĐƠN
+                    old_status = order.trcf_order_status
+                    order.write({'trcf_order_status': 'done'})
+                    
+                    # ✅ GỬI BUS MESSAGE ĐỂ UPDATE UI
+                    channel_name = 'pos_order_status_updated'
+                    bus_type = 'notification'
+                    payload_data = {
+                        'message': 'pos_order_status_updated',
+                        'res_model': 'pos.order',
+                        'order_id': order_id,
+                        'old_status': old_status,
+                        'new_status': 'done',
+                        'config_id': order.config_id.id,
+                        'order_name': order.display_name,
+                        'timestamp': datetime.now().isoformat(),
+                        'auto_completed': True,  # ✅ Đánh dấu là auto-complete
+                    }
+                    
+                    self.env["bus.bus"]._sendone(channel_name, bus_type, payload_data)
+                    
                     return True
             return False
             
         except Exception as e:
-            self._logger.error(f"❌ Lỗi kiểm tra order {order_id}: {str(e)}")
+            _logger.error(f"❌ Lỗi kiểm tra order {order_id}: {str(e)}")
             return False

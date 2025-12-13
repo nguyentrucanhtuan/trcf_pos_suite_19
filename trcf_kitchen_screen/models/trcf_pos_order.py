@@ -26,16 +26,44 @@ class TrcfPosOrder(models.Model):
 
         orders = super().create(vals_list)
 
-        #begin: send message
-        channel_name = 'pos_order_created'
-        bus_type = 'notification'
-        payload_data = {
-            'message': 'pos_order_created',
-            'res_model': 'pos.order',
-            'config_id': orders.config_id.id,
-        }
-        self.env["bus.bus"]._sendone(channel_name, bus_type, payload_data)
-        #end: send message
+        # ✅ GỬI FULL DATA TRONG BUS MESSAGE - TRÁNH FETCH LẠI
+        for order in orders:
+            # Lấy order lines data
+            order_lines_data = []
+            for line in order.lines:
+                line_data = {
+                    'id': line.id,
+                    'product_id': [line.product_id.id, line.product_id.name],
+                    'product_id_pos_categ_ids': line.product_id.product_tmpl_id.pos_categ_ids.ids,  # ✅ Category IDs để filter
+                    'qty': line.qty,
+                    'note': line.note or '',
+                    'trcf_order_status': line.trcf_order_status,  # ✅ Đúng field name
+                    'public_description': line.product_id.product_tmpl_id.public_description or '',
+                    'order_id': [order.id, order.name]
+                }
+                order_lines_data.append(line_data)
+            
+            # Gửi bus message với full data
+            channel_name = 'pos_order_created'
+            bus_type = 'notification'
+            payload_data = {
+                'message': 'pos_order_created',
+                'res_model': 'pos.order',
+                'config_id': order.config_id.id,
+                # ✅ THÊM FULL ORDER DATA
+                'order_data': {
+                    'id': order.id,
+                    'name': order.name,
+                    'pos_reference': order.pos_reference,
+                    'date_order': order.date_order.isoformat() if order.date_order else None,
+                    'trcf_order_status': order.trcf_order_status,
+                    'amount_total': order.amount_total,
+                    'partner_id': [order.partner_id.id, order.partner_id.name] if order.partner_id else False,
+                },
+                'order_lines': order_lines_data,
+                'timestamp': datetime.now().isoformat(),  # ✅ Thêm timestamp để tracking
+            }
+            self.env["bus.bus"]._sendone(channel_name, bus_type, payload_data)
 
         return orders
     
@@ -58,18 +86,15 @@ class TrcfPosOrder(models.Model):
 
     @api.model 
     def get_orders_by_screen_id(self, screen_id): 
-        """Lấy đơn hàng đã lọc theo màn hình và danh mục"""
+        """Lấy danh sách đơn hàng theo màn hình kitchen"""
         
+        # ✅ Import logging ở đầu function
+        import logging
         _logger = logging.getLogger(__name__)
         
-        # Lấy thông tin màn hình
         screen = self.env['trcf.kitchenscreen'].browse(screen_id)
         
-        if not screen.exists():
-            return {'orders': [], 'order_lines': [], 'screen_info': {}}
-        
-        # ✅ Kiểm tra có config không
-        if not screen.pos_config_id:
+        if not screen.exists() or not screen.pos_config_id:
             return {'orders': [], 'order_lines': [], 'screen_info': {}}
         
         config_id = screen.pos_config_id.id  # ✅ Lấy ID trước
@@ -81,17 +106,20 @@ class TrcfPosOrder(models.Model):
         ], order="date_order asc")
 
         # ✅ LỌC ORDER LINES THEO CATEGORY
+        
         if screen.pos_categ_ids:
-            # Lấy danh sách category IDs từ screen
+            # ✅ CÓ CATEGORY → LỌC THEO CATEGORY
             screen_category_ids = screen.pos_categ_ids.ids
-
+            
             filtered_lines = self.env["pos.order.line"].search([
                 ("order_id", "in", pos_orders.ids),
                 ("product_id.pos_categ_ids", "in", screen_category_ids)
             ])
+            
         else: 
-            # Nếu screen không có category nào, hiện tất cả
-            filtered_lines = pos_orders.lines
+            # ✅ KHÔNG CÓ CATEGORY → KHÔNG HIỆN GÌ
+            # Screen phải chọn ít nhất 1 category mới hiện món
+            filtered_lines = self.env["pos.order.line"]  # Empty recordset
         
         # ✅ THÊM public_description (công thức) vào order_lines
         order_lines_data = []
@@ -107,7 +135,7 @@ class TrcfPosOrder(models.Model):
             "screen_info": {
                 "screen_id": screen_id,
                 "screen_name": screen.screen_name,
-                "categories": screen.pos_categ_ids.mapped('name'),
+                "categories": screen.pos_categ_ids.ids,  # ✅ Trả về IDs thay vì names
                 "config_id": config_id
             }
         }
@@ -131,7 +159,6 @@ class TrcfPosOrder(models.Model):
             # Cập nhật trạng thái mới
             order.write({'trcf_order_status': new_status})
             
-            self._logger.info(f"✅ Cập nhật đơn hàng {order.display_name} (ID: {order_id}): {old_status} -> {new_status}")
             
             # ✅ GỬI THÔNG BÁO BUS ĐỂN TẤT CẢ MÀN HÌNH
             channel_name = 'pos_order_status_updated'
@@ -148,7 +175,6 @@ class TrcfPosOrder(models.Model):
             }
             
             self.env["bus.bus"]._sendone(channel_name, bus_type, payload_data)
-            self._logger.info(f"📡 Đã gửi bus message: {payload_data}")
             
             return {
                 'success': True, 

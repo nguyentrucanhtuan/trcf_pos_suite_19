@@ -12,6 +12,12 @@ export class TrcfKitchenDashboard extends Component {
         // ✅ LẤY SCREEN ID TỪ URL odoo/action-xxx/SCREEN_ID/action-yyy
         this.screen_id = this.getScreenIdFromURL();
 
+        // ✅ SETUP DEBOUNCING & DUPLICATE TRACKING
+        this.pendingOrderUpdates = new Set();
+        this.pendingLineUpdates = new Set();
+        this.updateTimer = null;
+        this.DEBOUNCE_DELAY = 300; // 300ms
+
         // THÊM CHANNEL
         this.busService.addChannel("pos_order_created");
         this.busService.addChannel("pos_order_status_updated");
@@ -32,6 +38,8 @@ export class TrcfKitchenDashboard extends Component {
             order_details: [],
             order_lines: [],
             config_id: null,
+            screen_name: 'Đơn Hàng Bếp',  // ✅ Tên màn hình
+            screen_category_ids: [],  // ✅ Category IDs của screen để filter
             stages: 'draft',
             draft_count: 0,
             waiting_count: 0,
@@ -109,51 +117,54 @@ export class TrcfKitchenDashboard extends Component {
     onBusMessage(message) {
         var self = this
 
-        // SỬ LÝ ĐƠN MỚI
+        // ✅ XỬ LÝ ĐƠN MỚI - INCREMENTAL UPDATE
         if (message.message === "pos_order_created"
             && message.res_model === "pos.order"
             && message.config_id) {
 
-            console.log("đã nhận được thông tin", message);
-
             // PHÁT ÂM THANH THÔNG BÁO
             self.playNotificationSound();
 
-            // LOAD LẠI DỮ LIỆU ĐƠN HÀNG
-            self.loadOrderData();
+            // ✅ THÊM TRỰC TIẾP VÀO STATE - KHÔNG RELOAD
+            if (message.order_data && message.order_lines) {
+                self.addNewOrderIncremental(message.order_data, message.order_lines);
+            } else {
+                // Fallback - nếu không có data thì mới fetch
+                self.loadOrderData();
+            }
 
             return;
         }
 
 
-        // Xử lý cập nhật trạng thái đơn hàng
+        // ✅ XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN - DEBOUNCED
         if (message.message === "pos_order_status_updated" &&
             message.res_model === "pos.order" &&
             message.config_id == self.config_id) {
 
-            console.log("🔄 Kitchen cập nhật trạng thái!", message);
-            console.log(`📋 ${message.order_name}: ${message.old_status} → ${message.new_status}`);
+            // Thêm vào pending queue
+            self.pendingOrderUpdates.add({
+                order_id: message.order_id,
+                new_status: message.new_status,
+                old_status: message.old_status
+            });
 
-            // Tự động cập nhật UI
-            self.loadOrderData();
+            // Debounce update
+            self.scheduleUpdate();
 
-            // Dọn dẹp loading state
-            const loadingIndex = self.state.loadingOrders.indexOf(message.order_id);
-            if (loadingIndex > -1) {
-                self.state.loadingOrders.splice(loadingIndex, 1);
-                console.log(`🧹 Xóa loading state cho order ${message.order_id}`);
-            }
-
-            return; // Thoát sớm
+            return;
         }
 
-        //Sử lý cập nhật trạng thái món
+        // ✅ XỬ LÝ CẬP NHẬT TRẠNG THÁI MÓN - DEBOUNCED
         if (message.message === "pos_order_line_status_updated" &&
             message.res_model === "pos.order.line") {
 
-            // LOAD LẠI DỮ LIỆU ĐƠN HÀNG
-            self.loadOrderData();
-            console.log("🔄 Kitchen cập nhật trạng thái món!", message);
+            self.pendingLineUpdates.add({
+                line_id: message.line_id,
+                new_status: message.new_status
+            });
+
+            self.scheduleUpdate();
 
             return;
         }
@@ -164,10 +175,6 @@ export class TrcfKitchenDashboard extends Component {
         try {
             const result = await self.orm.call("pos.order", "get_orders_by_screen_id", [this.screen_id]);
 
-            console.log('Screen ID:', this.screen_id);
-            console.log('Orders:', result.orders);  // ✅ Giờ sẽ có data
-            console.log('Order Lines:', result.order_lines);
-            console.log('Screen Info:', result.screen_info);
         } catch (error) {
             console.error('Error loading order data:', error);
         }
@@ -179,30 +186,20 @@ export class TrcfKitchenDashboard extends Component {
             //const result = await self.orm.call("pos.order", "get_orders_by_config_id", [self.config_id]);
             const result = await self.orm.call("pos.order", "get_orders_by_screen_id", [this.screen_id]);
 
-            // ✅ LẤY config_id TỪ screen_info
-            if (result['screen_info'] && result['screen_info'].config_id) {
-                self.config_id = result['screen_info'].config_id;
+            // ✅ LẤY config_id, screen_name VÀ categories TỪ screen_info
+            if (result['screen_info']) {
+                const screenInfo = result['screen_info'];  // ✅ Object, không phải array!
+                self.config_id = screenInfo.config_id || null;
+                self.state.screen_name = screenInfo.screen_name || 'Đơn Hàng Bếp';
+                self.state.screen_category_ids = screenInfo.categories || [];  // ✅ Lưu category IDs
             }
 
-            self.state.order_details = result['orders'];
-            self.state.order_lines = result['order_lines'];
-            self.state.config_id = self.config_id;
+            // ✅ CẬP NHẬT STATE
+            self.state.order_details = result['orders'] || [];
+            self.state.order_lines = result['order_lines'] || [];
 
-            // Cập nhật số lượng đơn hàng - KHÔNG CẦN FILTER config_id vì server đã filter theo screen
-            self.state.draft_count = self.state.order_details.filter((order) =>
-                order.trcf_order_status == 'draft'
-            ).length;
-
-            self.state.waiting_count = self.state.order_details.filter((order) =>
-                order.trcf_order_status == 'waiting'
-            ).length;
-
-            self.state.ready_count = self.state.order_details.filter((order) =>
-                order.trcf_order_status == 'done'
-            ).length;
-
-            console.log('Order loaded:', self.state);
-            console.log('Screen config_id:', self.config_id);
+            // ✅ CẬP NHẬT COUNTERS
+            self.updateCounters();
 
         } catch (error) {
             console.error('Error loading order data:', error);
@@ -210,50 +207,55 @@ export class TrcfKitchenDashboard extends Component {
     }
 
     // ✅ =============  CÁC METHOD CẬP NHẬT TRẠNG THÁI =============
-    async updateOrderStatus(orderId, newStatus, actionName = "cập nhật") {
+    async updateOrderStatus(orderId, newStatus, actionName = 'Cập nhật') {
         var self = this;
 
-        // ✅ THÊM VÀO ARRAY
+        // ✅ Thêm vào loading state
         if (!self.state.loadingOrders.includes(orderId)) {
             self.state.loadingOrders.push(orderId);
         }
 
         try {
-            console.log(`🔄 ${actionName} đơn hàng ${orderId} -> ${newStatus}`);
-
-            const result = await self.orm.call('pos.order', 'update_order_status', [orderId, newStatus]);
+            const result = await this.orm.call(
+                "pos.order",
+                "update_order_status",
+                [orderId, newStatus]
+            );
 
             if (result.success) {
-                console.log(`✅ ${actionName} thành công:`, result);
-                // Bus message sẽ tự động cập nhật UI, không cần reload ở đây
+                // ✅ Không xóa loading ngay - chờ bus message
+                // Loading state sẽ được xóa khi nhận bus message
             } else {
-                console.error(`❌ Lỗi ${actionName}:`, result.error);
-                alert(`Không thể ${actionName}: ${result.error}`);
+                // ❌ Lỗi - xóa loading ngay
+                const index = self.state.loadingOrders.indexOf(orderId);
+                if (index > -1) {
+                    self.state.loadingOrders.splice(index, 1);
+                }
+                console.error(`Lỗi ${actionName}:`, result.message);
             }
-
         } catch (error) {
-            console.error(`❌ Exception ${actionName}:`, error);
-            alert(`Lỗi khi ${actionName} đơn hàng`);
-        } finally {
-            // ✅ XÓA KHỎI ARRAY
+            // ❌ Lỗi - xóa loading ngay
             const index = self.state.loadingOrders.indexOf(orderId);
             if (index > -1) {
                 self.state.loadingOrders.splice(index, 1);
             }
+            console.error(`Lỗi ${actionName}:`, error);
         }
     }
 
     async updateOrderLineStatus(orderLineId, newStatus) {
-        var self = this;
+        try {
+            const result = await this.orm.call(
+                "pos.order.line",
+                "update_order_line_status",
+                [orderLineId, newStatus]
+            );
 
-        const result = await self.orm.call('pos.order.line', 'update_order_line_status', [orderLineId, newStatus]);
-
-        if (result.success) {
-            console.log(`✅ cập nhật thành công:`, result);
-            // Bus message sẽ tự động cập nhật UI, không cần reload ở đây
-        } else {
-            console.error(`❌ Lỗi cập nhật:`, result.error);
-            alert(`Không thể cập nhật: ${result.error}`);
+            if (!result.success) {
+                console.error('Lỗi cập nhật:', result.message);
+            }
+        } catch (error) {
+            console.error('Lỗi cập nhật:', error);
         }
     }
 
@@ -265,20 +267,14 @@ export class TrcfKitchenDashboard extends Component {
     async markOrderLineReady(orderLineId) {
         var self = this;
 
-        // Thêm vào loading state
+        // ✅ Thêm vào loading state
         if (!self.state.loadingOrderLines.includes(orderLineId)) {
             self.state.loadingOrderLines.push(orderLineId);
         }
 
-        try {
-            await this.updateOrderLineStatus(orderLineId, 'ready');
-        } finally {
-            // Xóa khỏi loading state
-            const index = self.state.loadingOrderLines.indexOf(orderLineId);
-            if (index > -1) {
-                self.state.loadingOrderLines.splice(index, 1);
-            }
-        }
+        // ✅ Gọi API - loading state sẽ được xóa khi nhận bus message
+        await this.updateOrderLineStatus(orderLineId, 'ready');
+        // Note: Loading state được xóa trong processPendingUpdates() khi nhận bus message
     }
 
     // Kiểm tra order line đang loading
@@ -296,6 +292,139 @@ export class TrcfKitchenDashboard extends Component {
         this.state.showRecipe = !this.state.showRecipe;
     }
 
+    // ✅ =============  INCREMENTAL UPDATE METHODS =============
+
+    /**
+     * THÊM ĐƠN MỚI VÀO STATE - KHÔNG RELOAD TOÀN BỘ
+     */
+    addNewOrderIncremental(orderData, orderLinesData) {
+        var self = this;
+
+        // ✅ KIỂM TRA ĐƠN ĐÃ TỒN TẠI CHƯA - TRÁNH DUPLICATE
+        const existingIndex = self.state.order_details.findIndex(
+            o => o.id === orderData.id
+        );
+
+        if (existingIndex === -1) {
+            // ✅ CHƯA TỒN TẠI → THÊM MỚI
+            self.state.order_details.push(orderData);
+
+            // ✅ FILTER ORDER LINES THEO SCREEN CATEGORY
+            const filteredLines = orderLinesData.filter(line => {
+                // Nếu screen không có category, không hiện món nào
+                if (!self.state.screen_category_ids || self.state.screen_category_ids.length === 0) {
+                    return false;
+                }
+
+                // Check nếu product có category nào match với screen
+                // product_id.pos_categ_ids là array of category IDs
+                const productCategories = line.product_id_pos_categ_ids || [];
+                return productCategories.some(catId =>
+                    self.state.screen_category_ids.includes(catId)
+                );
+            });
+
+            // ✅ THÊM CHỈ NHỮNG LINES ĐÃ FILTER
+            filteredLines.forEach(line => {
+                const lineExists = self.state.order_lines.some(
+                    l => l.id === line.id
+                );
+                if (!lineExists) {
+                    self.state.order_lines.push(line);
+                }
+            });
+
+            // ✅ CẬP NHẬT COUNTERS
+            self.updateCounters();
+        }
+    }
+
+    /**
+     * SCHEDULE UPDATE - DEBOUNCE NHIỀU UPDATES
+     */
+    scheduleUpdate() {
+        var self = this;
+
+        // Clear timer cũ
+        if (self.updateTimer) {
+            clearTimeout(self.updateTimer);
+        }
+
+        // Set timer mới - chỉ update 1 lần sau DEBOUNCE_DELAY
+        self.updateTimer = setTimeout(() => {
+            self.processPendingUpdates();
+        }, self.DEBOUNCE_DELAY);
+    }
+
+    /**
+     * XỬ LÝ TẤT CẢ PENDING UPDATES CÙNG LÚC
+     */
+    processPendingUpdates() {
+        var self = this;
+
+        // Xử lý order updates
+        if (self.pendingOrderUpdates.size > 0) {
+            self.pendingOrderUpdates.forEach(update => {
+                const orderIndex = self.state.order_details.findIndex(o => o.id === update.order_id);
+                if (orderIndex !== -1) {
+                    self.state.order_details[orderIndex].trcf_order_status = update.new_status;
+                }
+
+                // ✅ Xóa loading state
+                const loadingIndex = self.state.loadingOrders.indexOf(update.order_id);
+                if (loadingIndex > -1) {
+                    self.state.loadingOrders.splice(loadingIndex, 1);
+                }
+            });
+            self.pendingOrderUpdates.clear();
+        }
+
+        // Xử lý line updates
+        if (self.pendingLineUpdates.size > 0) {
+            self.pendingLineUpdates.forEach(update => {
+                const lineIndex = self.state.order_lines.findIndex(l => l.id === update.line_id);
+                if (lineIndex !== -1) {
+                    self.state.order_lines[lineIndex].trcf_order_status = update.new_status;
+                }
+
+                // ✅ Xóa loading state
+                const loadingIndex = self.state.loadingOrderLines.indexOf(update.line_id);
+                if (loadingIndex > -1) {
+                    self.state.loadingOrderLines.splice(loadingIndex, 1);
+                }
+            });
+            self.pendingLineUpdates.clear();
+        }
+
+        // Cập nhật counters
+        self.updateCounters();
+    }
+
+    /**
+     * CẬP NHẬT COUNTERS - CHỈ ĐẾM VISIBLE ORDERS
+     */
+    updateCounters() {
+        var self = this;
+
+        // ✅ CHỈ ĐẾM ORDERS CÓ MÓN (visible)
+        const visibleOrders = self.state.order_details.filter(order =>
+            self.hasVisibleLines(order.id)
+        );
+
+        self.state.draft_count = visibleOrders.filter(
+            order => order.trcf_order_status == 'draft'
+        ).length;
+
+        self.state.waiting_count = visibleOrders.filter(
+            order => order.trcf_order_status == 'waiting'
+        ).length;
+
+        self.state.ready_count = visibleOrders.filter(
+            order => order.trcf_order_status == 'done'
+        ).length;
+    }
+
+
     // =============  HELPER METHODS =============
     // Lấy orders theo trạng thái - KHÔNG CẦN FILTER config_id vì server đã filter theo screen
     getOrdersByStatus(status) {
@@ -309,6 +438,11 @@ export class TrcfKitchenDashboard extends Component {
         return this.state.order_lines.filter(line =>
             line.order_id && line.order_id[0] === orderId
         );
+    }
+
+    // ✅ Kiểm tra order có món nào visible không
+    hasVisibleLines(orderId) {
+        return this.getOrderLines(orderId).length > 0;
     }
 
     // Render HTML content (cho công thức)

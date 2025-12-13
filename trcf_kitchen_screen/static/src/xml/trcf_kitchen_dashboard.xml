@@ -70,7 +70,7 @@
                             <span class="text-3xl">🍳</span>
                         </div>
                         <h1 class="flex-1 text-center text-2xl font-bold leading-tight tracking-tight text-gray-800">
-                            Đơn Hàng Bếp
+                            <t t-esc="state.screen_name"/>
                         </h1>
                         <div class="flex items-center justify-end gap-4">
                             <!-- Toggle công thức -->
@@ -93,86 +93,89 @@
                     <!-- Orders Grid -->
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         <t t-foreach="getOrdersByStatus('draft')" t-as="order" t-key="order.id">
-                            <!-- Order Card -->
-                            <div t-att-class="'flex flex-col rounded-xl bg-white shadow-md ' + getOrderBorderClass(order)">
-                                <div class="flex grow flex-col">
-                                    <div class="flex grow flex-col gap-3 p-4">
-                                        <!-- Order Header -->
-                                        <div class="flex items-center justify-between gap-3">
-                                            <p class="text-3xl font-bold leading-tight tracking-tight text-gray-800">
-                                                <t t-if="order.table_id">
-                                                    <t t-esc="order.table_id[1]"/>
-                                                </t>
-                                                <t t-else="">
-                                                    Đơn #<t t-esc="order.id"/>
-                                                </t>
-                                            </p>
-                                            <p t-att-class="'text-lg font-medium leading-normal ' + getTimeClass(order)">
-                                                <t t-esc="getRelativeTime(order.date_order)"/>
-                                            </p>
-                                        </div>
-
-                                        <!-- Divider -->
-                                        <div class="-mx-4 border-t border-gray-200"></div>
-
-                                        <!-- Order Items -->
-                                        <div class="flex flex-col divide-y divide-gray-200">
-                                            <t t-foreach="getOrderLines(order.id)" t-as="line" t-key="line.id">
-                                                <div t-att-class="'relative py-3 ' + (line.trcf_order_status !== 'draft' ? 'line-completed' : '')">
-                                                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                                                        <div class="item-content flex-1">
-                                                            <p class="text-xl font-bold leading-normal text-gray-800">
-                                                                <t t-esc="line.qty"/>x <t t-esc="line.full_product_name"/>
-                                                            </p>
-                                                            <t t-if="line.note">
-                                                                <p class="item-note text-base text-orange-600 font-medium">
-                                                                    <t t-esc="line.note"/>
-                                                                </p>
-                                                            </t>
-                                                        </div>
-                                                        <button 
-                                                            t-on-click="() => this.markOrderLineReady(line.id)"
-                                                            t-att-disabled="isOrderLineLoading(line.id) or line.trcf_order_status !== 'draft'"
-                                                            t-att-class="'rounded-lg px-4 py-2 text-sm font-bold transition-colors disabled:cursor-not-allowed ' + (line.trcf_order_status !== 'draft' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300')">
-                                                            <t t-if="isOrderLineLoading(line.id)">
-                                                                ⏳ Đang xử lý...
-                                                            </t>
-                                                            <t t-elif="line.trcf_order_status !== 'draft'">
-                                                                ✓ Đã xong
-                                                            </t>
-                                                            <t t-else="">
-                                                                Xong
-                                                            </t>
-                                                        </button>
-                                                    </div>
-
-                                                    <t t-if="state.showRecipe and line.public_description">
-                                                        <div
-                                                            class="recipe-content mt-2 rounded-lg bg-blue-50 px-3 py-2 text-base text-blue-800">
-                                                            <t t-out="renderHtml(line.public_description)"/>
-                                                        </div>
+                            <!-- ✅ CHỈ HIỆN ĐƠN CÓ MÓN -->
+                            <t t-if="hasVisibleLines(order.id)">
+                                <!-- Order Card -->
+                                <div t-att-class="'flex flex-col rounded-xl bg-white shadow-md ' + getOrderBorderClass(order)">
+                                    <div class="flex grow flex-col">
+                                        <div class="flex grow flex-col gap-3 p-4">
+                                            <!-- Order Header -->
+                                            <div class="flex items-center justify-between gap-3">
+                                                <p class="text-3xl font-bold leading-tight tracking-tight text-gray-800">
+                                                    <t t-if="order.table_id">
+                                                        <t t-esc="order.table_id[1]"/>
                                                     </t>
-                                                </div>
-                                            </t>
+                                                    <t t-else="">
+                                                        Đơn #<t t-esc="order.id"/>
+                                                    </t>
+                                                </p>
+                                                <p t-att-class="'text-lg font-medium leading-normal ' + getTimeClass(order)">
+                                                    <t t-esc="getRelativeTime(order.date_order)"/>
+                                                </p>
+                                            </div>
+
+                                            <!-- Divider -->
+                                            <div class="-mx-4 border-t border-gray-200"></div>
+
+                                            <!-- Order Items -->
+                                            <div class="flex flex-col divide-y divide-gray-200">
+                                                <t t-foreach="getOrderLines(order.id)" t-as="line" t-key="line.id">
+                                                    <div t-att-class="'relative py-3 ' + (line.trcf_order_status !== 'draft' ? 'line-completed' : '')">
+                                                        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                                            <div class="item-content flex-1">
+                                                                <p class="text-xl font-bold leading-normal text-gray-800">
+                                                                    <t t-esc="line.qty"/>x <t t-esc="line.product_id[1]"/>
+                                                                </p>
+                                                                <t t-if="line.note">
+                                                                    <p class="item-note text-base text-orange-600 font-medium">
+                                                                        <t t-esc="line.note"/>
+                                                                    </p>
+                                                                </t>
+                                                            </div>
+                                                            <button 
+                                                                t-on-click="() => this.markOrderLineReady(line.id)"
+                                                                t-att-disabled="isOrderLineLoading(line.id) or line.trcf_order_status !== 'draft'"
+                                                                t-att-class="'rounded-lg px-4 py-2 text-sm font-bold transition-colors disabled:cursor-not-allowed ' + (line.trcf_order_status !== 'draft' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300')">
+                                                                <t t-if="isOrderLineLoading(line.id)">
+                                                                    ⏳ Đang xử lý...
+                                                                </t>
+                                                                <t t-elif="line.trcf_order_status !== 'draft'">
+                                                                    ✓ Đã xong
+                                                                </t>
+                                                                <t t-else="">
+                                                                    Xong
+                                                                </t>
+                                                            </button>
+                                                        </div>
+
+                                                        <t t-if="state.showRecipe and line.public_description">
+                                                            <div
+                                                                class="recipe-content mt-2 rounded-lg bg-blue-50 px-3 py-2 text-base text-blue-800">
+                                                                <t t-out="renderHtml(line.public_description)"/>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </t>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Complete Button -->
-                                <div class="border-t border-gray-200 p-3">
-                                    <button 
-                                        t-on-click="() => this.markAsDone(order.id)"
-                                        t-att-disabled="isOrderLoading(order.id)"
-                                        class="w-full rounded-lg bg-green-600 py-4 text-lg font-bold text-white transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <t t-if="isOrderLoading(order.id)">
-                                            ⏳ Đang xử lý...
-                                        </t>
-                                        <t t-else="">
-                                            ✓ Hoàn thành
-                                         </t>
-                                    </button>
+                                    <!-- Complete Button -->
+                                    <div class="border-t border-gray-200 p-3">
+                                        <button 
+                                            t-on-click="() => this.markAsDone(order.id)"
+                                            t-att-disabled="isOrderLoading(order.id)"
+                                            class="w-full rounded-lg bg-green-600 py-4 text-lg font-bold text-white transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <t t-if="isOrderLoading(order.id)">
+                                                ⏳ Đang xử lý...
+                                            </t>
+                                            <t t-else="">
+                                                ✓ Hoàn thành
+                                             </t>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </t>
                         </t>
 
                         <!-- Empty State -->
