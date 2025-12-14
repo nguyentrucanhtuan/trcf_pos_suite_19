@@ -83,12 +83,20 @@ class TrcfCheckInventoryController(http.Controller):
             
             products = []
             for line in template.line_ids.sorted('sequence'):
-                # Get system quantity from stock.quant
+                # Get system quantity from stock.quant (in product's default UoM)
                 quants = request.env['stock.quant'].sudo().search([
                     ('product_id', '=', line.product_id.id),
                     ('location_id', '=', template.location_id.id),
                 ])
-                system_qty = sum(quants.mapped('quantity'))
+                base_qty = sum(quants.mapped('quantity'))
+                
+                # Convert from product's default UoM to template line's UoM
+                base_uom = line.product_id.uom_id
+                target_uom = line.uom_id
+                if base_uom.id != target_uom.id:
+                    system_qty = base_uom._compute_quantity(base_qty, target_uom)
+                else:
+                    system_qty = base_qty
                 
                 products.append({
                     'product_id': line.product_id.id,
@@ -156,6 +164,15 @@ class TrcfCheckInventoryController(http.Controller):
                     
                     # Only adjust if there's a difference
                     if actual_qty != system_qty:
+                        # Convert actual_qty from template UoM to product's default UoM
+                        template_uom = request.env['uom.uom'].sudo().browse(uom_id)
+                        product_uom = product.uom_id
+                        
+                        if template_uom.id != product_uom.id:
+                            actual_qty_in_base_uom = template_uom._compute_quantity(actual_qty, product_uom)
+                        else:
+                            actual_qty_in_base_uom = actual_qty
+                        
                         # Find or create quant
                         quant = request.env['stock.quant'].sudo().search([
                             ('product_id', '=', product_id),
@@ -168,11 +185,11 @@ class TrcfCheckInventoryController(http.Controller):
                                 'location_id': template.location_id.id,
                             })
                         
-                        # Set inventory quantity with context
+                        # Set inventory quantity with context (in product's default UoM)
                         quant.sudo().with_context(
                             inventory_name=check.name
                         ).write({
-                            'inventory_quantity': actual_qty,
+                            'inventory_quantity': actual_qty_in_base_uom,
                             'inventory_quantity_set': True,
                         })
                         
