@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- ===== TREE VIEW ===== -->
+    <record id="trcf_work_shift_view_tree" model="ir.ui.view">
+        <field name="name">trcf.work.shift.tree</field>
+        <field name="model">trcf.work.shift</field>
+        <field name="arch" type="xml">
+            <list string="Danh sách Ca làm việc">
+                <field name="name" string="Tên ca" width="200px"/>
+                <field name="time_start" widget="float_time" string="Giờ bắt đầu" width="100px"/>
+                <field name="time_end" widget="float_time" string="Giờ kết thúc" width="100px"/>
+                <field name="standard_hours" widget="float_time" string="Số giờ công" width="100px"/>
+                <field name="min_employees" string="Số NV tối thiểu" width="120px"/>
+                <field name="max_employees" string="Số NV tối đa" width="120px"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== FORM VIEW ===== -->
+    <record id="trcf_work_shift_view_form" model="ir.ui.view">
+        <field name="name">trcf.work.shift.form</field>
+        <field name="model">trcf.work.shift</field>
+        <field name="arch" type="xml">
+            <form string="Ca làm việc">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nhập tên ca..."/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Thời gian">
+                            <field name="time_start" widget="float_time"/>
+                            <field name="time_end" widget="float_time"/>
+                            <field name="standard_hours" widget="float_time" readonly="1"/>
+                        </group>
+                        <group string="Số lượng nhân viên">
+                            <field name="min_employees"/>
+                            <field name="max_employees"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Thông tin khác">
+                        <field name="note" placeholder="Ghi chú thêm về ca làm việc..."/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== SEARCH VIEW ===== -->
+    <record id="trcf_work_shift_view_search" model="ir.ui.view">
+        <field name="name">trcf.work.shift.search</field>
+        <field name="model">trcf.work.shift</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm Ca làm việc">
+                <field name="name"/>
+                <filter string="Đang hoạt động" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Đã ẩn" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== ACTION ===== -->
+    <record id="trcf_work_shift_action" model="ir.actions.act_window">
+        <field name="name">Ca làm việc</field>
+        <field name="res_model">trcf.work.shift</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo ca làm việc đầu tiên!
+            </p>
+            <p>
+                Định nghĩa các ca làm việc với thời gian bắt đầu, kết thúc và số lượng nhân viên.
+            </p>
+        </field>
+    </record>
+
+    <!-- ===== MENU STRUCTURE ===== -->
+    <!-- Root Menu: TRCF Quản lý ca (sau TRCF Phiếu kiểm hàng có sequence=20) -->
+    <menuitem id="trcf_shift_management_menu_root"
+              name="TRCF Quản lý ca"
+              sequence="25"/>
+    
+    <!-- Sub Menu: ZKTeco Devices -->
+    <menuitem id="menu_attendance_zkteco_devices"
+              name="ZKTeco Devices"
+              parent="trcf_shift_management_menu_root"
+              action="action_trcf_zkteco_device"
+              sequence="10"
+              groups="hr.group_hr_user"/>
+    
+    <!-- Sub Menu: Ca làm việc -->
+    <menuitem id="trcf_work_shift_menu"
+              name="Ca làm việc"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_work_shift_action"
+              sequence="20"/>
+
+</odoo>

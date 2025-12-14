@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Template: Trang đăng ký ca làm việc -->
+    <template id="shift_registration_form" name="Đăng ký ca làm việc">
+        <t t-call="web.html_container">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+            <head>
+                <title>Đăng ký ca làm việc</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+                <link rel="stylesheet" t-att-href="'/trcf_zkteco_attendance_sync/static/src/css/shift_registration.css'"/>
+            </head>
+            <body class="shift-registration-body">
+            <div class="shift-registration-container">
+                <div class="shift-registration-header">
+                    <h1>Đăng ký ca làm việc</h1>
+                    <p>Xin chào, <strong t-esc="employee.name"/>!</p>
+                    <p class="text-muted">Chọn các ca bạn muốn đăng ký trong 2 tuần tới</p>
+                </div>
+                
+                <!-- Bảng đăng ký ca -->
+                <div class="shift-registration-table-wrapper">
+                    <table class="shift-registration-table">
+                        <thead>
+                            <tr>
+                                <th class="date-header">Ngày</th>
+                                <t t-foreach="shifts" t-as="shift">
+                                    <th class="shift-header">
+                                        <div class="shift-name" t-esc="shift.name"/>
+                                        <div class="shift-time">
+                                            <t t-esc="shift.get_time_display()"/>
+                                        </div>
+                                    </th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="dates" t-as="date_info">
+                                <tr t-attf-class="#{'weekend-row' if date_info['is_weekend'] else ''}">
+                                    <td class="date-cell">
+                                        <div class="date-weekday" t-esc="date_info['weekday']"/>
+                                        <div class="date-display" t-esc="date_info['display']"/>
+                                    </td>
+                                    <t t-foreach="shifts" t-as="shift">
+                                        <t t-set="cell_key" t-value="str(date_info['date_str']) + '_' + str(shift.id)"/>
+                                        <t t-set="is_registered" t-value="cell_key in registered_set"/>
+                                        <td t-attf-class="shift-cell #{'registered' if is_registered else ''}"
+                                            t-att-data-date="date_info['date_str']"
+                                            t-att-data-shift-id="shift.id"
+                                            t-att-data-registered="'true' if is_registered else 'false'">
+                                            <div class="shift-checkbox">
+                                                <t t-if="is_registered">
+                                                    <i class="fa fa-check-circle"></i>
+                                                </t>
+                                                <t t-else="">
+                                                    <i class="fa fa-circle-o"></i>
+                                                </t>
+                                            </div>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Nút lưu -->
+                <div class="shift-registration-actions">
+                    <button type="button" class="btn btn-primary btn-lg" id="btnSaveRegistration">
+                        <i class="fa fa-save"></i> Lưu đăng ký
+                    </button>
+                    <span class="selection-count">Đã chọn: <span id="selectedCount">0</span> ca</span>
+                </div>
+                
+                <!-- Chú thích -->
+                <div class="shift-registration-legend">
+                    <div class="legend-item">
+                        <span class="legend-box registered"></span>
+                        <span>Đã đăng ký</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box selected"></span>
+                        <span>Đang chọn</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-box"></span>
+                        <span>Chưa chọn</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- JavaScript -->
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    let newSelections = [];
+                    
+                    // Click vào ô ca
+                    document.querySelectorAll('.shift-cell').forEach(cell => {
+                        cell.addEventListener('click', function() {
+                            const date = this.dataset.date;
+                            const shiftId = this.dataset.shiftId;
+                            const isRegistered = this.dataset.registered === 'true';
+                            
+                            if (isRegistered) {
+                                // Nếu đã đăng ký, hỏi có muốn hủy không
+                                if (confirm('Bạn muốn hủy đăng ký ca này?')) {
+                                    removeRegistration(date, shiftId, this);
+                                }
+                            } else {
+                                // Toggle chọn
+                                this.classList.toggle('selected');
+                                
+                                const key = date + '_' + shiftId;
+                                const index = newSelections.findIndex(s => s.date === date &amp;&amp; s.shift_id === shiftId);
+                                
+                                if (index > -1) {
+                                    newSelections.splice(index, 1);
+                                } else {
+                                    newSelections.push({date: date, shift_id: shiftId});
+                                }
+                                
+                                updateIcon(this);
+                                updateCount();
+                            }
+                        });
+                    });
+                    
+                    function updateIcon(cell) {
+                        const icon = cell.querySelector('i');
+                        if (cell.classList.contains('selected')) {
+                            icon.className = 'fa fa-check-square';
+                        } else if (cell.dataset.registered === 'true') {
+                            icon.className = 'fa fa-check-circle';
+                        } else {
+                            icon.className = 'fa fa-circle-o';
+                        }
+                    }
+                    
+                    function updateCount() {
+                        document.getElementById('selectedCount').textContent = newSelections.length;
+                    }
+                    
+                    // Lưu đăng ký
+                    document.getElementById('btnSaveRegistration').addEventListener('click', function() {
+                        if (newSelections.length === 0) {
+                            alert('Vui lòng chọn ít nhất một ca!');
+                            return;
+                        }
+                        
+                        this.disabled = true;
+                        this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...';
+                        
+                        fetch('/shift-registration/save', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {selections: newSelections}
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.result &amp;&amp; data.result.success) {
+                                alert(data.result.message);
+                                location.reload();
+                            } else {
+                                alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                this.disabled = false;
+                                this.innerHTML = '<i class="fa fa-save"></i> Lưu đăng ký';
+                            }
+                        })
+                        .catch(error => {
+                            alert('Lỗi kết nối: ' + error);
+                            this.disabled = false;
+                            this.innerHTML = '<i class="fa fa-save"></i> Lưu đăng ký';
+                        });
+                    });
+                    
+                    // Hủy đăng ký
+                    function removeRegistration(date, shiftId, cell) {
+                        fetch('/shift-registration/remove', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {date: date, shift_id: shiftId}
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.result &amp;&amp; data.result.success) {
+                                cell.classList.remove('registered');
+                                cell.dataset.registered = 'false';
+                                cell.querySelector('i').className = 'fa fa-circle-o';
+                            } else {
+                                alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                            }
+                        });
+                    }
+                });
+            </script>
+            </body>
+        </t>
+    </template>
+    
+    <!-- Template: Không có thông tin nhân viên -->
+    <template id="shift_registration_no_employee" name="Không có nhân viên">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">Lỗi</t>
+            <div class="container mt-5">
+                <div class="alert alert-warning text-center">
+                    <h4><i class="fa fa-exclamation-triangle"></i> Không tìm thấy thông tin nhân viên</h4>
+                    <p>Tài khoản của bạn chưa được liên kết với nhân viên. Vui lòng liên hệ quản trị viên.</p>
+                    <a href="/" class="btn btn-primary">Về trang chủ</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,235 @@
+/* ===== Shift Registration Styles ===== */
+
+.shift-registration-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.shift-registration-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.shift-registration-header h1 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.shift-registration-header p {
+    color: #666;
+    margin: 5px 0;
+}
+
+/* Table Wrapper */
+.shift-registration-table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Table */
+.shift-registration-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.shift-registration-table th,
+.shift-registration-table td {
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Header */
+.date-header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px 10px;
+    min-width: 80px;
+    font-weight: 600;
+}
+
+.shift-header {
+    background: #34495e;
+    color: white;
+    padding: 12px 15px;
+    min-width: 120px;
+}
+
+.shift-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.shift-time {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* Date Cell */
+.date-cell {
+    background: #f8f9fa;
+    padding: 10px;
+    min-width: 80px;
+}
+
+.date-weekday {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.date-display {
+    color: #666;
+    font-size: 13px;
+}
+
+/* Weekend Row */
+.weekend-row .date-cell {
+    background: #fff3cd;
+}
+
+.weekend-row .date-weekday {
+    color: #856404;
+}
+
+/* Shift Cell */
+.shift-cell {
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.shift-cell:hover {
+    background: #e3f2fd;
+}
+
+.shift-cell .shift-checkbox {
+    font-size: 24px;
+    color: #ccc;
+}
+
+.shift-cell.selected {
+    background: #bbdefb;
+}
+
+.shift-cell.selected .shift-checkbox {
+    color: #1976d2;
+}
+
+.shift-cell.registered {
+    background: #c8e6c9;
+}
+
+.shift-cell.registered .shift-checkbox {
+    color: #388e3c;
+}
+
+/* Actions */
+.shift-registration-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 25px 0;
+}
+
+.shift-registration-actions .btn {
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.selection-count {
+    font-size: 16px;
+    color: #666;
+    background: #f0f0f0;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+#selectedCount {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+/* Legend */
+.shift-registration-legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.legend-box {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: white;
+}
+
+.legend-box.registered {
+    background: #c8e6c9;
+    border-color: #388e3c;
+}
+
+.legend-box.selected {
+    background: #bbdefb;
+    border-color: #1976d2;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .shift-registration-container {
+        padding: 10px;
+    }
+    
+    .shift-registration-header h1 {
+        font-size: 22px;
+    }
+    
+    .shift-header {
+        min-width: 90px;
+        padding: 10px 8px;
+    }
+    
+    .shift-name {
+        font-size: 12px;
+    }
+    
+    .shift-time {
+        font-size: 10px;
+    }
+    
+    .shift-cell {
+        padding: 10px;
+    }
+    
+    .shift-cell .shift-checkbox {
+        font-size: 20px;
+    }
+    
+    .shift-registration-legend {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}
