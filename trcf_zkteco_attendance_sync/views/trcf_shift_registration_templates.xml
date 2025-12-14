@@ -44,14 +44,21 @@
                                     </td>
                                     <t t-foreach="shifts" t-as="shift">
                                         <t t-set="cell_key" t-value="str(date_info['date_str']) + '_' + str(shift.id)"/>
-                                        <t t-set="is_registered" t-value="cell_key in registered_set"/>
-                                        <td t-attf-class="shift-cell #{'registered' if is_registered else ''}"
+                                        <t t-set="reg_state" t-value="registered_dict.get(cell_key, '')"/>
+                                        <t t-set="is_confirmed" t-value="reg_state == 'confirmed'"/>
+                                        <t t-set="is_draft" t-value="reg_state == 'draft'"/>
+                                        <td t-attf-class="shift-cell #{'confirmed' if is_confirmed else 'registered' if is_draft else ''} #{'disabled' if is_confirmed else ''}"
                                             t-att-data-date="date_info['date_str']"
                                             t-att-data-shift-id="shift.id"
-                                            t-att-data-registered="'true' if is_registered else 'false'">
+                                            t-att-data-registered="'true' if (is_confirmed or is_draft) else 'false'"
+                                            t-att-data-state="reg_state">
                                             <div class="shift-checkbox">
-                                                <t t-if="is_registered">
+                                                <t t-if="is_confirmed">
                                                     <i class="fa fa-check-circle"></i>
+                                                    <span class="confirmed-label">Đã duyệt</span>
+                                                </t>
+                                                <t t-elif="is_draft">
+                                                    <i class="fa fa-clock-o"></i>
                                                 </t>
                                                 <t t-else="">
                                                     <i class="fa fa-circle-o"></i>
@@ -76,8 +83,12 @@
                 <!-- Chú thích -->
                 <div class="shift-registration-legend">
                     <div class="legend-item">
+                        <span class="legend-box confirmed"></span>
+                        <span>Đã duyệt</span>
+                    </div>
+                    <div class="legend-item">
                         <span class="legend-box registered"></span>
-                        <span>Đã đăng ký</span>
+                        <span>Đã đăng ký (chờ duyệt)</span>
                     </div>
                     <div class="legend-item">
                         <span class="legend-box selected"></span>
@@ -101,27 +112,34 @@
                             const date = this.dataset.date;
                             const shiftId = this.dataset.shiftId;
                             const isRegistered = this.dataset.registered === 'true';
+                            const state = this.dataset.state;
                             
-                            if (isRegistered) {
-                                // Nếu đã đăng ký, hỏi có muốn hủy không
+                            // Không cho click vào ô đã duyệt
+                            if (state === 'confirmed') {
+                                return;
+                            }
+                            
+                            if (isRegistered &amp;&amp; state === 'draft') {
+                                // Nếu đã đăng ký (draft), hỏi có muốn hủy không
                                 if (confirm('Bạn muốn hủy đăng ký ca này?')) {
                                     removeRegistration(date, shiftId, this);
                                 }
-                            } else {
-                                // Toggle chọn
-                                this.classList.toggle('selected');
-                                
+                            } else if (!isRegistered) {
+                                // Nếu chưa đăng ký, toggle selection
                                 const key = date + '_' + shiftId;
                                 const index = newSelections.findIndex(s => s.date === date &amp;&amp; s.shift_id === shiftId);
                                 
                                 if (index > -1) {
+                                    // Đã chọn, bỏ chọn
                                     newSelections.splice(index, 1);
+                                    this.classList.remove('selected');
                                 } else {
+                                    // Chưa chọn, thêm vào
                                     newSelections.push({date: date, shift_id: shiftId});
+                                    this.classList.add('selected');
                                 }
                                 
-                                updateIcon(this);
-                                updateCount();
+                                updateSelectionCount();
                             }
                         });
                     });

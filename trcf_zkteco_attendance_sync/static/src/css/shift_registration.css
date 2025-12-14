@@ -125,11 +125,36 @@
 }
 
 .shift-cell.registered {
-    background: #c8e6c9;
+    background: #fff3cd;
 }
 
 .shift-cell.registered .shift-checkbox {
+    color: #f59e0b;
+}
+
+.shift-cell.confirmed {
+    background: #c8e6c9;
+}
+
+.shift-cell.confirmed .shift-checkbox {
     color: #388e3c;
+}
+
+.shift-cell.disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.shift-cell.disabled:hover {
+    background: #c8e6c9;
+}
+
+.confirmed-label {
+    display: block;
+    font-size: 11px;
+    margin-top: 4px;
+    color: #388e3c;
+    font-weight: 600;
 }
 
 /* Actions */
@@ -187,9 +212,14 @@
     background: white;
 }
 
-.legend-box.registered {
+.legend-box.confirmed {
     background: #c8e6c9;
     border-color: #388e3c;
+}
+
+.legend-box.registered {
+    background: #fff3cd;
+    border-color: #f59e0b;
 }
 
 .legend-box.selected {
@@ -202,32 +232,32 @@
     .shift-registration-container {
         padding: 10px;
     }
-    
+
     .shift-registration-header h1 {
         font-size: 22px;
     }
-    
+
     .shift-header {
         min-width: 90px;
         padding: 10px 8px;
     }
-    
+
     .shift-name {
         font-size: 12px;
     }
-    
+
     .shift-time {
         font-size: 10px;
     }
-    
+
     .shift-cell {
         padding: 10px;
     }
-    
+
     .shift-cell .shift-checkbox {
         font-size: 20px;
     }
-    
+
     .shift-registration-legend {
         flex-wrap: wrap;
         gap: 15px;

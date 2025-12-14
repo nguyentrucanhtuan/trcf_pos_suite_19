@@ -41,17 +41,17 @@ class TrcfShiftRegistrationController(http.Controller):
             ('date', '<=', today + timedelta(days=13)),
         ])
         
-        # Tạo set các đăng ký đã có (date_shift_id)
-        registered_set = set()
+        # Tạo dict các đăng ký đã có với state (date_shift_id: state)
+        registered_dict = {}
         for reg in registrations:
             key = f"{reg.date.strftime('%Y-%m-%d')}_{reg.shift_id.id}"
-            registered_set.add(key)
+            registered_dict[key] = reg.state
         
         return request.render('trcf_zkteco_attendance_sync.shift_registration_form', {
             'employee': employee,
             'shifts': shifts,
             'dates': dates,
-            'registered_set': registered_set,
+            'registered_dict': registered_dict,
         })
     
     @http.route('/shift-registration/save', type='json', auth='user', methods=['POST'])
