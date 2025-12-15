@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- ===== TREE VIEW ===== -->
+    <record id="trcf_shift_task_template_view_tree" model="ir.ui.view">
+        <field name="name">trcf.shift.task.template.tree</field>
+        <field name="model">trcf.shift.task.template</field>
+        <field name="arch" type="xml">
+            <list string="Mẫu công việc">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="frequency"/>
+                <field name="time_display" string="Khung giờ"/>
+                <field name="assignment_type"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== FORM VIEW ===== -->
+    <record id="trcf_shift_task_template_view_form" model="ir.ui.view">
+        <field name="name">trcf.shift.task.template.form</field>
+        <field name="model">trcf.shift.task.template</field>
+        <field name="arch" type="xml">
+            <form string="Mẫu công việc">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_create_task_today" type="object" 
+                                class="oe_stat_button" icon="fa-plus">
+                            <span>Tạo task hôm nay</span>
+                        </button>
+                    </div>
+                    
+                    <widget name="web_ribbon" title="Tắt" bg_color="text-bg-danger" invisible="active"/>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên công việc..."/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Chu kỳ áp dụng">
+                            <field name="frequency" widget="radio"/>
+                            
+                            <!-- Hiện khi chọn weekly -->
+                            <div invisible="frequency != 'weekly'" class="o_row">
+                                <label for="weekday_mon" string="Chọn thứ:"/>
+                            </div>
+                            <div invisible="frequency != 'weekly'" class="d-flex gap-3 flex-wrap">
+                                <field name="weekday_mon"/><label for="weekday_mon"/>
+                                <field name="weekday_tue"/><label for="weekday_tue"/>
+                                <field name="weekday_wed"/><label for="weekday_wed"/>
+                                <field name="weekday_thu"/><label for="weekday_thu"/>
+                                <field name="weekday_fri"/><label for="weekday_fri"/>
+                                <field name="weekday_sat"/><label for="weekday_sat"/>
+                                <field name="weekday_sun"/><label for="weekday_sun"/>
+                            </div>
+                            <field name="weekdays" invisible="1"/>
+                            
+                            <!-- Hiện khi chọn monthly -->
+                            <field name="day_of_month" invisible="frequency != 'monthly'"/>
+                        </group>
+                        
+                        <group string="Thời điểm hoàn thành">
+                            <field name="time_start" widget="float_time"/>
+                            <field name="time_end" widget="float_time"/>
+                            <field name="time_display" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Cách giao việc">
+                            <field name="assignment_type" widget="radio"/>
+                            
+                            <!-- Hiện khi chọn specific -->
+                            <field name="assigned_employee_ids" widget="many2many_tags" 
+                                   invisible="assignment_type != 'specific'"/>
+                            
+                            <!-- Hiện khi chọn position -->
+                            <field name="assigned_job_ids" widget="many2many_tags"
+                                   invisible="assignment_type != 'position'"/>
+                        </group>
+                        
+                        <group string="Trạng thái">
+                            <field name="active"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Mô tả công việc">
+                        <field name="description" nolabel="1" placeholder="Mô tả chi tiết các bước cần thực hiện..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== SEARCH VIEW ===== -->
+    <record id="trcf_shift_task_template_view_search" model="ir.ui.view">
+        <field name="name">trcf.shift.task.template.search</field>
+        <field name="model">trcf.shift.task.template</field>
+        <field name="arch" type="xml">
+            <search string="Tìm mẫu công việc">
+                <field name="name"/>
+                <filter string="Hàng ngày" name="daily" domain="[('frequency', '=', 'daily')]"/>
+                <filter string="Hàng tuần" name="weekly" domain="[('frequency', '=', 'weekly')]"/>
+                <filter string="Hàng tháng" name="monthly" domain="[('frequency', '=', 'monthly')]"/>
+                <separator/>
+                <filter string="Đang hoạt động" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Đã tắt" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== ACTION ===== -->
+    <record id="trcf_shift_task_template_action" model="ir.actions.act_window">
+        <field name="name">Mẫu công việc</field>
+        <field name="res_model">trcf.shift.task.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo mẫu công việc đầu tiên!
+            </p>
+            <p>
+                Định nghĩa các công việc lặp lại theo chu kỳ với cách gán nhân viên tự động.
+            </p>
+        </field>
+    </record>
+
+    <!-- ===== MENU ===== -->
+    <menuitem id="trcf_shift_task_template_menu"
+              name="Mẫu công việc"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_shift_task_template_action"
+              sequence="40"/>
+
+</odoo>

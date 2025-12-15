@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- ===== WIZARD FORM ===== -->
+    <record id="trcf_generate_week_tasks_wizard_form" model="ir.ui.view">
+        <field name="name">trcf.generate.week.tasks.wizard.form</field>
+        <field name="model">trcf.generate.week.tasks.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Tạo công việc tuần">
+                <group>
+                    <field name="start_date"/>
+                    <field name="end_date" readonly="1"/>
+                </group>
+                <footer>
+                    <button string="Tạo công việc" name="action_generate" type="object" class="btn-primary"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== ACTION ===== -->
+    <record id="trcf_generate_week_tasks_wizard_action" model="ir.actions.act_window">
+        <field name="name">Tạo công việc tuần</field>
+        <field name="res_model">trcf.generate.week.tasks.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ===== MENU ===== -->
+    <menuitem id="trcf_generate_week_tasks_menu"
+              name="Tạo công việc tuần"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_generate_week_tasks_wizard_action"
+              sequence="50"/>
+
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tạo external ID cho ir.model records -->
+    <record id="model_trcf_shift_task_template" model="ir.model">
+        <field name="model">trcf.shift.task.template</field>
+        <field name="name">Mẫu công việc ca làm việc</field>
+    </record>
+
+    <record id="model_trcf_shift_task" model="ir.model">
+        <field name="model">trcf.shift.task</field>
+        <field name="name">Công việc ca làm việc</field>
+    </record>
+</odoo>

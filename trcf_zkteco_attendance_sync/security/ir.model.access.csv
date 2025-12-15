@@ -9,3 +9,8 @@ access_trcf_work_shift_hr_manager,trcf.work.shift.hr.manager,model_trcf_work_shi
 access_trcf_shift_registration_user,trcf.shift.registration.user,model_trcf_shift_registration,base.group_user,1,1,1,1
 access_trcf_shift_registration_hr_officer,trcf.shift.registration.hr.officer,model_trcf_shift_registration,hr.group_hr_user,1,1,1,1
 access_trcf_shift_registration_hr_manager,trcf.shift.registration.hr.manager,model_trcf_shift_registration,hr.group_hr_manager,1,1,1,1
+access_trcf_shift_task_template_user,trcf.shift.task.template.user,model_trcf_shift_task_template,base.group_user,1,0,0,0
+access_trcf_shift_task_template_hr_officer,trcf.shift.task.template.hr.officer,model_trcf_shift_task_template,hr.group_hr_user,1,1,1,1
+access_trcf_shift_task_user,trcf.shift.task.user,model_trcf_shift_task,base.group_user,1,1,0,0
+access_trcf_shift_task_hr_officer,trcf.shift.task.hr.officer,model_trcf_shift_task,hr.group_hr_user,1,1,1,1
+access_trcf_generate_week_tasks_wizard,trcf.generate.week.tasks.wizard,model_trcf_generate_week_tasks_wizard,hr.group_hr_user,1,1,1,1

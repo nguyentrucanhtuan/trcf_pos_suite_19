@@ -102,9 +102,30 @@ class TrcfInventoryCheck(models.Model):
             
             for line in check.line_ids:
                 cost = line.product_cost or 0.0
-                line_system_val = line.system_qty * cost
-                line_actual_val = line.actual_qty * cost
-                line_diff_val = line.difference_qty * cost
+                
+                # Convert quantities from template UoM to product's base UoM
+                # because product_cost is based on product's base UoM
+                template_uom = line.uom_id
+                product_uom = line.product_id.uom_id
+                
+                if template_uom and product_uom and template_uom.id != product_uom.id:
+                    # Convert from template UoM to product UoM
+                    system_qty_in_product_uom = template_uom._compute_quantity(
+                        line.system_qty, product_uom)
+                    actual_qty_in_product_uom = template_uom._compute_quantity(
+                        line.actual_qty, product_uom)
+                    diff_qty_in_product_uom = template_uom._compute_quantity(
+                        line.difference_qty, product_uom)
+                else:
+                    # Same UoM, no conversion needed
+                    system_qty_in_product_uom = line.system_qty
+                    actual_qty_in_product_uom = line.actual_qty
+                    diff_qty_in_product_uom = line.difference_qty
+                
+                # Calculate values using converted quantities
+                line_system_val = system_qty_in_product_uom * cost
+                line_actual_val = actual_qty_in_product_uom * cost
+                line_diff_val = diff_qty_in_product_uom * cost
                 
                 total_system += line_system_val
                 total_actual += line_actual_val
@@ -197,9 +218,25 @@ class TrcfInventoryCheckLine(models.Model):
         help='Giá trị chênh lệch = Số lượng chênh lệch * Giá vốn'
     )
     
-    @api.depends('system_qty', 'actual_qty', 'product_cost')
+    @api.depends('system_qty', 'actual_qty', 'product_cost', 'uom_id', 'product_id')
     def _compute_difference(self):
         """Tính chênh lệch số lượng và giá trị"""
         for line in self:
+            # Calculate difference in template UoM
             line.difference_qty = line.actual_qty - line.system_qty
-            line.difference_value = line.difference_qty * (line.product_cost or 0.0)
+            
+            # Convert difference from template UoM to product's base UoM
+            # because product_cost is based on product's base UoM
+            template_uom = line.uom_id
+            product_uom = line.product_id.uom_id if line.product_id else None
+            
+            if template_uom and product_uom and template_uom.id != product_uom.id:
+                # Convert from template UoM to product UoM
+                diff_qty_in_product_uom = template_uom._compute_quantity(
+                    line.difference_qty, product_uom)
+            else:
+                # Same UoM or missing data, no conversion needed
+                diff_qty_in_product_uom = line.difference_qty
+            
+            # Calculate value using converted quantity
+            line.difference_value = diff_qty_in_product_uom * (line.product_cost or 0.0)
