@@ -43,8 +43,9 @@
         'views/trcf_shift_schedule_grid_action.xml',
         'views/trcf_shift_task_template_views.xml',
         'views/trcf_shift_task_views.xml',
+        'views/trcf_my_tasks_templates.xml',
+        'views/trcf_team_tasks_templates.xml',
         'wizard/trcf_generate_week_tasks_wizard_views.xml',
-        'data/trcf_ir_model_data.xml',
         'data/trcf_shift_task_cron.xml',
     ],
     'assets': {

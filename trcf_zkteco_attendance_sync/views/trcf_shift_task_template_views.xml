@@ -71,15 +71,18 @@
                     
                     <group>
                         <group string="Cách giao việc">
-                            <field name="assignment_type" widget="radio"/>
+                            <field name="assignment_scope" widget="radio"/>
+                            
+                            <!-- Chỉ hiện assignment_type khi scope = individual -->
+                            <field name="assignment_type" widget="radio" invisible="assignment_scope != 'individual'"/>
                             
                             <!-- Hiện khi chọn specific -->
                             <field name="assigned_employee_ids" widget="many2many_tags" 
-                                   invisible="assignment_type != 'specific'"/>
+                                   invisible="assignment_scope != 'individual' or assignment_type != 'specific'"/>
                             
                             <!-- Hiện khi chọn position -->
                             <field name="assigned_job_ids" widget="many2many_tags"
-                                   invisible="assignment_type != 'position'"/>
+                                   invisible="assignment_scope != 'individual' or assignment_type != 'position'"/>
                         </group>
                         
                         <group string="Trạng thái">

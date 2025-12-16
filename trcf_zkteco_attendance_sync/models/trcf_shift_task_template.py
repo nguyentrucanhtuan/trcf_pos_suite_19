@@ -68,7 +68,14 @@ class TrcfShiftTaskTemplate(models.Model):
         help='VD: 15.5 = 15:30'
     )
 
+
     # ===== CÁCH GIAO VIỆC =====
+    assignment_scope = fields.Selection([
+        ('individual', 'Cá nhân'),
+        ('team', 'Nhóm/Team'),
+    ], string='Phạm vi', default='individual', required=True,
+       help='Cá nhân: Gán cho 1 người. Team: Tất cả trong ca đều thấy')
+    
     assignment_type = fields.Selection([
         ('specific', 'Chỉ định nhân viên cụ thể'),
         ('position', 'Theo chức vụ'),
@@ -164,8 +171,10 @@ class TrcfShiftTaskTemplate(models.Model):
         if existing:
             return existing
         
-        # Xác định nhân viên
-        employee = self._get_assigned_employee(date)
+        # Xác định nhân viên (chỉ cho individual tasks)
+        employee = False
+        if self.assignment_scope == 'individual':
+            employee = self._get_assigned_employee(date)
         
         # Tạo task
         task = self.env['trcf.shift.task'].create({
