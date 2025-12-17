@@ -1,0 +1,26 @@
+# Compiled files
+*.pyc
+*.pyo
+__pycache__/
+*.so
+*.c
+*.cpp
+*.html
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
