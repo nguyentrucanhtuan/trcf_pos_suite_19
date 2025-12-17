@@ -342,6 +342,5 @@ rec.action_confirm()
 
 ## 📚 References
 
-- Naming: `docs/naming_conventions.md`
 - Examples: `trcf_kitchen_screen`, `trcf_payment_momo`
 - Odoo Docs: https://www.odoo.com/documentation/19.0/

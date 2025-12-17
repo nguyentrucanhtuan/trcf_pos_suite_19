@@ -14,20 +14,32 @@ class MoMoAPI:
     Handles signature generation and API calls to MoMo
     """
     
-    # Test environment
+    # API Endpoints - theo tài liệu MoMo: https://developers.momo.vn/v3/docs/payment/api/wallet/onetime
     TEST_ENDPOINT = "https://test-payment.momo.vn/v2/gateway/api/create"
     PROD_ENDPOINT = "https://payment.momo.vn/v2/gateway/api/create"
     
-    # Default test credentials (from MoMo official documentation)
-    # https://developers.momo.vn/v2/#/docs/en/aio
-    DEFAULT_PARTNER_CODE = "MOMO"
-    DEFAULT_ACCESS_KEY = "F8BBA842ECF85"
-    DEFAULT_SECRET_KEY = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
-    
-    def __init__(self, partner_code=None, access_key=None, secret_key=None, test_mode=True):
-        self.partner_code = partner_code or self.DEFAULT_PARTNER_CODE
-        self.access_key = access_key or self.DEFAULT_ACCESS_KEY
-        self.secret_key = secret_key or self.DEFAULT_SECRET_KEY
+    def __init__(self, partner_code, access_key, secret_key, test_mode=True):
+        """
+        Initialize MoMo API instance.
+        
+        Args:
+            partner_code: MoMo Partner Code từ tài khoản M4B (bắt buộc)
+            access_key: MoMo Access Key từ tài khoản M4B (bắt buộc)
+            secret_key: MoMo Secret Key từ tài khoản M4B (bắt buộc)
+            test_mode: True = sandbox, False = production
+        
+        Raises:
+            ValueError: Nếu thiếu thông tin credentials
+        """
+        if not partner_code or not access_key or not secret_key:
+            raise ValueError(
+                "MoMo credentials chưa được cấu hình. "
+                "Vui lòng vào POS > Payment Methods > MoMo để nhập Partner Code, Access Key và Secret Key."
+            )
+        
+        self.partner_code = partner_code
+        self.access_key = access_key
+        self.secret_key = secret_key
         self.test_mode = test_mode
         self.endpoint = self.TEST_ENDPOINT if test_mode else self.PROD_ENDPOINT
     
@@ -65,11 +77,16 @@ class MoMoAPI:
         """
         request_id = str(uuid.uuid4())
         
-        # Default URLs if not provided (required by MoMo API)
-        if not redirect_url:
-            redirect_url = "https://webhook.site/redirect"
+        # Validate required URLs - theo MoMo API docs, ipnUrl là bắt buộc
         if not ipn_url:
-            ipn_url = "https://webhook.site/ipn"
+            raise ValueError(
+                "ipn_url là bắt buộc để nhận thông báo thanh toán từ MoMo. "
+                "Vui lòng kiểm tra cấu hình web.base.url trong System Parameters."
+            )
+        
+        # redirectUrl không cần thiết cho POS (không có web redirect), dùng ipn_url làm fallback
+        if not redirect_url:
+            redirect_url = ipn_url
         
         # Ensure amount is integer and > 0
         amount = int(amount)

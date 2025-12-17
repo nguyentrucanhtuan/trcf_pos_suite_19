@@ -264,11 +264,21 @@ patch(PaymentScreen.prototype, {
                     }
                 );
 
-                if (response && response.success && response.qr_code_url) {
-                    // Generate QR from MoMo deeplink URL
-                    this.momoState.qrCode = generateQRCodeUrl(response.qr_code_url);
+                if (response && response.success) {
+                    // MoMo có thể trả về qr_code_url, pay_url, hoặc deeplink
+                    // Ưu tiên: qr_code_url > pay_url > deeplink
+                    const qrData = response.qr_code_url || response.pay_url || response.deeplink;
+                    if (qrData) {
+                        this.momoState.qrCode = generateQRCodeUrl(qrData);
+                    } else {
+                        // Fallback to static QR
+                        this.momoState.qrCode = paymentMethod.momo_qr_code
+                            ? `data:image/png;base64,${paymentMethod.momo_qr_code}`
+                            : DEFAULT_MOMO_QR;
+                    }
                 } else {
-                    // Fallback to static QR if available
+                    // API failed - Fallback to static QR if available
+                    console.warn('MoMo API failed:', response?.message);
                     this.momoState.qrCode = paymentMethod.momo_qr_code
                         ? `data:image/png;base64,${paymentMethod.momo_qr_code}`
                         : DEFAULT_MOMO_QR;

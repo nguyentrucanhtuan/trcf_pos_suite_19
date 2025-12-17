@@ -1,20 +1,31 @@
 {
-    "name": "TRCF AI Business Assistant (Gemini)",
-    "version": "1.0",
-    "summary": "Trợ lý kinh doanh sử dụng Google Gemini để phân tích dữ liệu Odoo",
+    "name": "TRCF AI Business Assistant",
+    "version": "2.0",
+    "summary": "Multi-Agent AI Assistant với Trợ lý Sáng tạo Thức uống và Trợ lý Kinh doanh",
     "description": """
-            Tích hợp Google Gemini vào Odoo để tạo Trợ lý Kinh Doanh thông minh.
-            Hỗ trợ tự động phân tích lợi nhuận, chi phí và hiệu suất nhân viên.
+        Tích hợp Google Gemini vào Odoo với kiến trúc Multi-Agent.
+        
+        AGENTS:
+        - Trợ lý Sáng tạo Thức uống: Tìm trend, tra công thức, gợi ý món mới
+        - Trợ lý Kinh doanh: Phân tích doanh thu, đơn hàng
+        
+        TÍNH NĂNG:
+        - Auto-routing tin nhắn đến agent phù hợp
+        - Quy tắc pha chế configurable trong Settings
+        - Hỗ trợ Cython compilation cho business logic
     """,
     "author": "Tuấn Rang Cà Phê",
     "website": "https://coffeetree.vn",
     "category": "AI",
-    "depends": ["base", "mail"],
-    'external_dependencies': {
-        'python': ['google-generativeai'],
+    "depends": ["base", "mail", "point_of_sale", "mrp"],
+    "external_dependencies": {
+        "python": ["google-adk"],
     },
-    "data": [],
+    "data": [
+        "data/bot_data.xml",
+        "views/res_config_settings_views.xml",
+    ],
     "license": "LGPL-3",
     "installable": True,
-    'application': True,
+    "application": True,
 }

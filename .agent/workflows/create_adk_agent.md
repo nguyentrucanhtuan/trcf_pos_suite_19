@@ -319,33 +319,70 @@ print(result)
 
 ## 🔐 Cython Compilation Strategy
 
-Khi cần bảo vệ code:
+### **Files cần compile:**
 
-**COMPILE:**
+1. **Business Logic** - Data processing
 ```bash
-cd custom_addons/trcf_my_agent
 cythonize -i models/business_logic.py
 ```
 
-**KHÔNG COMPILE:**
+2. **Prompt Config** - Agent instructions
+```bash
+cythonize -i models/prompt_config.py
+```
+
+3. **Tool Logic** - Tool algorithms & rules ⭐
+```bash
+cythonize -i models/tool_logic.py
+```
+
+### **Files KHÔNG compile:**
 - `__init__.py`, `__manifest__.py`
-- `models/agent_wrapper.py` (chứa Agent class)
+- `models/agent_wrapper.py` (Agent initialization)
 - `controllers/agent_controller.py` (HTTP routing)
+
+### **Bảo vệ Prompts:**
+
+Để che giấu logic prompt, tạo file riêng:
+
+**`models/prompt_config.py`** (SẼ COMPILE):
+```python
+def get_agent_instruction():
+    """Prompt sẽ được compile để bảo vệ"""
+    return """
+    Bạn là trợ lý kinh doanh...
+    [Business logic, quy trình, rules...]
+    """
+```
+
+**Update `agent_wrapper.py`**:
+```python
+from .prompt_config import get_agent_instruction
+
+def create_agent(self):
+    instruction = get_agent_instruction()  # Từ compiled file
+    agent = Agent(..., instruction=instruction)
+```
+
+**Chi tiết:** Xem `docs/protect_agent_prompts.md`
 
 ## ✅ Checklist
 
 - [ ] Module structure đã tạo
 - [ ] Business logic tách riêng trong `business_logic.py`
+- [ ] Prompts tách riêng trong `prompt_config.py` (để compile)
 - [ ] Agent wrapper đơn giản trong `agent_wrapper.py`
 - [ ] Tools có docstring rõ ràng
 - [ ] Controller có error handling
 - [ ] Security access rights đã set
 - [ ] Module install thành công
 - [ ] Test agent query hoạt động
-- [ ] (Optional) Compile business logic với Cython
+- [ ] (Optional) Compile business logic + prompts với Cython
 
 ## 📚 Tham khảo
 
-- Google ADK Reference: `custom_addons/.agent/docs/google_adk_reference.md`
-- Cython Guide: `custom_addons/.agent/docs/cython_compilation.md`
-- Example modules: `trcf_ai_business_assistant`
+- Google ADK Reference: `docs/google_adk_reference.md`
+- Cython Guide: `docs/cython_compilation.md`
+- **Protect Prompts**: `docs/protect_agent_prompts.md` ⭐
+- **Compile Tools**: `docs/compile_tool_logic.md` ⭐
+- Example: `trcf_ai_business_assistant`

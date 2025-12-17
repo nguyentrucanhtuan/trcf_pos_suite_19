@@ -43,3 +43,6 @@ odoo.pid
 # Ignore system files
 .DS_Store
 Thumbs.db
+
+# AI agent documentation (local only)
+#.agent/

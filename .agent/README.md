@@ -10,12 +10,11 @@ custom_addons/.agent/
 ├── docs/                        # Tài liệu tham khảo
 │   ├── google_adk_llms.txt     # Google ADK documentation (gốc)
 │   ├── google_adk_reference.md # ADK reference (đã xử lý)
-│   ├── architecture.md         # Kiến trúc tổng thể
-│   ├── naming_conventions.md   # Quy tắc đặt tên
-│   ├── module_structure.md     # Cấu trúc module chuẩn
-│   ├── coding_standards.md     # Chuẩn code Python/JS/XML
+│   ├── protect_agent_prompts.md # Bảo vệ agent prompts
+│   ├── compile_tool_logic.md   # Compile tool logic
 │   ├── cython_compilation.md   # Chiến lược compile
-│   └── odoo_patterns.md        # Patterns thường dùng
+│   ├── ai_context_checklist.md # AI context guide
+│   └── architecture.md         # Kiến trúc tổng thể (future)
 ├── workflows/                   # Quy trình làm việc
 │   ├── create_new_module.md    # Tạo module mới
 │   ├── create_adk_agent.md     # Tạo ADK agent

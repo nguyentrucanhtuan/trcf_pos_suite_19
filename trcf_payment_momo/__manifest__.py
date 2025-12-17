@@ -1,6 +1,6 @@
 {
     'name': "TRCF Payment MoMo",
-    'version': '1.1',
+    'version': '1.2',
     'category': 'Point of Sale',
     'summary': "Tích hợp thanh toán MoMo qua QR code cho POS",
     'author': "Tuấn Rang Cà Phê",
@@ -21,7 +21,7 @@
     'description': """
         Module thanh toán MoMo cho hệ thống POS.
         Khi chọn MoMo, hiển thị mã QR để khách hàng quét thanh toán.
-        Xác nhận thanh toán thủ công.
+        Xác nhận thanh toán tự động qua webhook IPN.
         Tác giả: Tuấn Rang Cà Phê
     """,
 }

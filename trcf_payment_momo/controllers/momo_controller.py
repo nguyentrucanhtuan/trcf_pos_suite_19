@@ -39,21 +39,38 @@ class MoMoController(http.Controller):
             base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
             ipn_url = f"{base_url}/momo/ipn"
             
-            # Get MoMo config
+            # Get MoMo config - credentials are required
             PaymentMethod = request.env['pos.payment.method'].sudo()
             payment_method = PaymentMethod.search([
                 ('use_payment_terminal', '=', 'trcf_momo')
             ], limit=1)
             
-            if payment_method and payment_method.momo_partner_code:
+            if not payment_method or not payment_method.momo_partner_code:
+                return {
+                    'success': False,
+                    'qr_code_url': '',
+                    'pay_url': '',
+                    'deeplink': '',
+                    'message': 'MoMo chưa được cấu hình. Vui lòng vào POS > Payment Methods > MoMo để nhập credentials.',
+                    'result_code': -1
+                }
+            
+            try:
                 momo_api = MoMoAPI(
                     partner_code=payment_method.momo_partner_code,
                     access_key=payment_method.momo_access_key,
                     secret_key=payment_method.momo_secret_key,
                     test_mode=payment_method.momo_test_mode
                 )
-            else:
-                momo_api = MoMoAPI(test_mode=True)
+            except ValueError as e:
+                return {
+                    'success': False,
+                    'qr_code_url': '',
+                    'pay_url': '',
+                    'deeplink': '',
+                    'message': str(e),
+                    'result_code': -1
+                }
             
             # Create payment
             result = momo_api.create_payment(
@@ -138,19 +155,31 @@ class MoMoController(http.Controller):
     def _verify_ipn_signature(self, data):
         """
         Verify the IPN signature from MoMo
+        Theo tài liệu: https://developers.momo.vn/v3/docs/payment/api/wallet/onetime#processing-payment-result
+        
+        Signature format:
+        accessKey=$accessKey&amount=$amount&extraData=$extraData
+        &message=$message&orderId=$orderId&orderInfo=$orderInfo
+        &orderType=$orderType&partnerCode=$partnerCode&payType=$payType
+        &requestId=$requestId&responseTime=$responseTime&resultCode=$resultCode&transId=$transId
         """
         try:
-            # Get secret key
+            # Get credentials from payment method configuration
             PaymentMethod = request.env['pos.payment.method'].sudo()
             payment_method = PaymentMethod.search([
                 ('use_payment_terminal', '=', 'trcf_momo')
             ], limit=1)
             
-            secret_key = payment_method.momo_secret_key if payment_method else MoMoAPI.DEFAULT_SECRET_KEY
+            if not payment_method or not payment_method.momo_secret_key or not payment_method.momo_access_key:
+                _logger.warning("MoMo IPN: Credentials chưa được cấu hình, không thể verify signature")
+                return False
             
-            # Build signature raw data (alphabetical order)
+            secret_key = payment_method.momo_secret_key
+            access_key = payment_method.momo_access_key
+            
+            # Build signature raw data - theo MoMo API v3 docs (alphabetical order)
             raw_signature = (
-                f"accessKey={MoMoAPI.DEFAULT_ACCESS_KEY}"
+                f"accessKey={access_key}"
                 f"&amount={data.get('amount', '')}"
                 f"&extraData={data.get('extraData', '')}"
                 f"&message={data.get('message', '')}"
@@ -165,7 +194,7 @@ class MoMoController(http.Controller):
                 f"&transId={data.get('transId', '')}"
             )
             
-            # Generate signature
+            # Generate signature using HMAC_SHA256
             h = hmac.new(
                 secret_key.encode('utf-8'),
                 raw_signature.encode('utf-8'),
@@ -173,7 +202,11 @@ class MoMoController(http.Controller):
             )
             computed_signature = h.hexdigest()
             
-            return computed_signature == data.get('signature', '')
+            is_valid = computed_signature == data.get('signature', '')
+            if not is_valid:
+                _logger.warning(f"MoMo IPN: Signature mismatch. Expected: {computed_signature}, Got: {data.get('signature', '')}")
+            
+            return is_valid
             
         except Exception as e:
             _logger.error(f"Signature verification error: {str(e)}")

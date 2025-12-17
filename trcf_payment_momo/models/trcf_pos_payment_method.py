@@ -83,17 +83,33 @@ class TrcfPosPaymentMethod(models.Model):
             ('use_payment_terminal', '=', 'trcf_momo')
         ], limit=1)
         
-        # Build API instance
-        if payment_method and payment_method.momo_partner_code:
+        # Build API instance - credentials are required
+        if not payment_method or not payment_method.momo_partner_code:
+            return {
+                'success': False,
+                'qr_code_url': '',
+                'pay_url': '',
+                'deeplink': '',
+                'message': 'MoMo chưa được cấu hình. Vui lòng vào POS > Payment Methods > MoMo để nhập Partner Code, Access Key và Secret Key.',
+                'result_code': -1
+            }
+        
+        try:
             momo_api = MoMoAPI(
                 partner_code=payment_method.momo_partner_code,
                 access_key=payment_method.momo_access_key,
                 secret_key=payment_method.momo_secret_key,
                 test_mode=payment_method.momo_test_mode
             )
-        else:
-            # Use default test credentials
-            momo_api = MoMoAPI(test_mode=True)
+        except ValueError as e:
+            return {
+                'success': False,
+                'qr_code_url': '',
+                'pay_url': '',
+                'deeplink': '',
+                'message': str(e),
+                'result_code': -1
+            }
         
         # Create payment
         if not order_info:
