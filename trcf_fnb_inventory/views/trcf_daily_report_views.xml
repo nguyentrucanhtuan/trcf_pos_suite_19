@@ -486,6 +486,19 @@
                                                 </div>
                                                 
                                                 
+                                                <!-- Split Payment Warning -->
+                                                <t t-if="session.get('split_payment_count', 0) > 0">
+                                                    <div class="bg-yellow-50 dark:bg-yellow-900/20 p-2 md:p-3 border-b border-yellow-200 dark:border-yellow-800">
+                                                        <div class="flex items-start gap-2">
+                                                            <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-sm flex-shrink-0">info</span>
+                                                            <p class="text-xs text-yellow-800 dark:text-yellow-300">
+                                                                <strong>Lưu ý:</strong> Có <strong t-esc="session['split_payment_count']"/> đơn thanh toán kết hợp. 
+                                                                Tổng số đơn theo phương thức thanh toán có thể lớn hơn số đơn thực tế.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                                
                                                 <!-- Payment Methods Table -->
                                                 <div class="table-scroll-wrapper">
                                                     <table class="w-full text-left mobile-table min-w-[600px]">
@@ -590,6 +603,19 @@
                                                     </div>
                                                 </div>
                                                 
+                                                
+                                                <!-- Split Payment Warning -->
+                                                <t t-if="session.get('split_payment_count', 0) > 0">
+                                                    <div class="bg-yellow-50 dark:bg-yellow-900/20 p-2 md:p-3 border-b border-yellow-200 dark:border-yellow-800">
+                                                        <div class="flex items-start gap-2">
+                                                            <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-sm flex-shrink-0">info</span>
+                                                            <p class="text-xs text-yellow-800 dark:text-yellow-300">
+                                                                <strong>Lưu ý:</strong> Có <strong t-esc="session['split_payment_count']"/> đơn thanh toán kết hợp. 
+                                                                Tổng số đơn theo phương thức thanh toán có thể lớn hơn số đơn thực tế.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </t>
                                                 
                                                 <!-- Payment Methods Table -->
                                                 <div class="table-scroll-wrapper">

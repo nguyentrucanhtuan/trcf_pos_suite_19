@@ -807,7 +807,7 @@ class TrcfReportController(http.Controller):
                 'current_time': current_time_local,
                 'total_revenue': total_revenue,
                 'total_revenue_formatted': currency.format(total_revenue),
-                'order_count': total_orders,
+                'order_count': len(orders),  # Số đơn đã thanh toán (paid/done/invoiced)
                 'total_qty': int(total_qty),
                 'payment_methods': payment_method_data,
                 'split_payment_count': len(split_payment_orders),
@@ -951,7 +951,7 @@ class TrcfReportController(http.Controller):
                 'stop_at': stop_at_local.strftime('%H:%M') if stop_at_local else 'N/A',
                 'total_revenue': total_revenue,
                 'total_revenue_formatted': currency.format(total_revenue),
-                'order_count': session.order_count,
+                'order_count': len(paid_orders),  # Số đơn đã thanh toán (paid/done/invoiced)
                 'total_qty': int(total_qty),
                 'payment_methods': payment_method_data,
                 'split_payment_count': len(split_payment_orders),
