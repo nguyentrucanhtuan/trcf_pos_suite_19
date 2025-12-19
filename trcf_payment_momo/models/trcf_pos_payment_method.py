@@ -117,15 +117,8 @@ class TrcfPosPaymentMethod(models.Model):
         
         # Store pending transaction for webhook matching
         Transaction = self.env['trcf.momo.transaction'].sudo()
-        Transaction.create_pending_transaction(
-            pos_order_ref=str(order_id),
-            momo_order_id=momo_order_id,
-            amount=float(amount),
-            request_id=None,
-            session_id=session_id,
-            config_id=config_id
-        )
-            
+        
+        # Create payment first to get request_id
         result = momo_api.create_payment(
             order_id=momo_order_id,
             amount=int(amount),
@@ -133,4 +126,117 @@ class TrcfPosPaymentMethod(models.Model):
             ipn_url=ipn_url
         )
         
+        # Create transaction with request_id
+        Transaction.create_pending_transaction(
+            pos_order_ref=str(order_id),
+            momo_order_id=momo_order_id,
+            amount=float(amount),
+            request_id=result.get('request_id'),
+            session_id=session_id,
+            config_id=config_id
+        )
+        
+        # Add momo_order_id to result for polling
+        if result.get('success'):
+            result['momo_order_id'] = momo_order_id
+        
         return result
+    
+    @api.model
+    def check_momo_payment_status_rpc(self, momo_order_id):
+        """
+        RPC method to check MoMo payment status from POS
+        
+        Args:
+            momo_order_id: MoMo order ID to check
+            
+        Returns:
+            dict with success, status, result_code, message, trans_id
+        """
+        try:
+            Transaction = self.env['trcf.momo.transaction'].sudo()
+            transaction = Transaction.search([('momo_order_id', '=', momo_order_id)], limit=1)
+            
+            if not transaction:
+                return {
+                    'success': False,
+                    'status': 'not_found',
+                    'message': 'Transaction not found'
+                }
+            
+            # If already success or failed, return cached status
+            if transaction.status in ['success', 'failed']:
+                return {
+                    'success': transaction.status == 'success',
+                    'status': transaction.status,
+                    'result_code': transaction.result_code,
+                    'message': transaction.message or '',
+                    'trans_id': transaction.trans_id or ''
+                }
+            
+            # Query MoMo API for current status
+            payment_method = self.search([
+                ('use_payment_terminal', '=', 'trcf_momo')
+            ], limit=1)
+            
+            if not payment_method or not payment_method.momo_partner_code:
+                return {
+                    'success': False,
+                    'status': 'error',
+                    'message': 'MoMo not configured'
+                }
+            
+            try:
+                momo_api = MoMoAPI(
+                    partner_code=payment_method.momo_partner_code,
+                    access_key=payment_method.momo_access_key,
+                    secret_key=payment_method.momo_secret_key,
+                    test_mode=payment_method.momo_test_mode
+                )
+            except ValueError as e:
+                return {
+                    'success': False,
+                    'status': 'error',
+                    'message': str(e)
+                }
+            
+            # Query payment status
+            result = momo_api.query_payment_status(
+                order_id=momo_order_id,
+                request_id=transaction.momo_request_id or ''
+            )
+            
+            # Update transaction if status changed
+            if result['result_code'] == 0:  # Success
+                transaction.write({
+                    'status': 'success',
+                    'result_code': result['result_code'],
+                    'message': result['message'],
+                    'trans_id': result['trans_id'],
+                    'payment_time': fields.Datetime.now(),
+                })
+                # Send bus notification
+                transaction._notify_pos_payment_success(transaction)
+                
+            elif result['result_code'] not in [1000, 9000]:  # Not pending
+                transaction.write({
+                    'status': 'failed',
+                    'result_code': result['result_code'],
+                    'message': result['message'],
+                })
+            
+            return {
+                'success': result['success'],
+                'status': 'success' if result['success'] else ('pending' if result['result_code'] in [1000, 9000] else 'failed'),
+                'result_code': result['result_code'],
+                'message': result['message'],
+                'trans_id': result.get('trans_id', '')
+            }
+            
+        except Exception as e:
+            _logger.error(f"Error checking MoMo payment status: {str(e)}")
+            return {
+                'success': False,
+                'status': 'error',
+                'message': str(e)
+            }

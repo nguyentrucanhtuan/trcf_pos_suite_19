@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import http, fields
 from odoo.http import request
 import json
 import uuid
@@ -105,6 +105,103 @@ class MoMoController(http.Controller):
                 'message': str(e),
                 'result_code': -1
             }
+    
+    @http.route('/pos/momo/check_payment_status', type='jsonrpc', auth='user', methods=['POST'])
+    def check_momo_payment_status(self, momo_order_id, **kwargs):
+        """
+        Check payment status from MoMo API (for polling)
+        Returns the current status of a payment transaction
+        """
+        try:
+            # Get transaction record
+            Transaction = request.env['trcf.momo.transaction'].sudo()
+            transaction = Transaction.search([('momo_order_id', '=', momo_order_id)], limit=1)
+            
+            if not transaction:
+                return {
+                    'success': False,
+                    'status': 'not_found',
+                    'message': 'Transaction not found'
+                }
+            
+            # If already success or failed, return cached status
+            if transaction.status in ['success', 'failed']:
+                return {
+                    'success': transaction.status == 'success',
+                    'status': transaction.status,
+                    'result_code': transaction.result_code,
+                    'message': transaction.message or '',
+                    'trans_id': transaction.trans_id or ''
+                }
+            
+            # Query MoMo API for current status
+            PaymentMethod = request.env['pos.payment.method'].sudo()
+            payment_method = PaymentMethod.search([
+                ('use_payment_terminal', '=', 'trcf_momo')
+            ], limit=1)
+            
+            if not payment_method or not payment_method.momo_partner_code:
+                return {
+                    'success': False,
+                    'status': 'error',
+                    'message': 'MoMo not configured'
+                }
+            
+            try:
+                momo_api = MoMoAPI(
+                    partner_code=payment_method.momo_partner_code,
+                    access_key=payment_method.momo_access_key,
+                    secret_key=payment_method.momo_secret_key,
+                    test_mode=payment_method.momo_test_mode
+                )
+            except ValueError as e:
+                return {
+                    'success': False,
+                    'status': 'error',
+                    'message': str(e)
+                }
+            
+            # Query payment status
+            result = momo_api.query_payment_status(
+                order_id=momo_order_id,
+                request_id=transaction.momo_request_id or ''
+            )
+            
+            # Update transaction if status changed
+            if result['result_code'] == 0:  # Success
+                transaction.write({
+                    'status': 'success',
+                    'result_code': result['result_code'],
+                    'message': result['message'],
+                    'trans_id': result['trans_id'],
+                    'payment_time': fields.Datetime.now(),
+                })
+                # Send bus notification
+                transaction._notify_pos_payment_success(transaction)
+                
+            elif result['result_code'] not in [1000, 9000]:  # Not pending
+                transaction.write({
+                    'status': 'failed',
+                    'result_code': result['result_code'],
+                    'message': result['message'],
+                })
+            
+            return {
+                'success': result['success'],
+                'status': 'success' if result['success'] else ('pending' if result['result_code'] in [1000, 9000] else 'failed'),
+                'result_code': result['result_code'],
+                'message': result['message'],
+                'trans_id': result.get('trans_id', '')
+            }
+            
+        except Exception as e:
+            _logger.error(f"Error checking MoMo payment status: {str(e)}")
+            return {
+                'success': False,
+                'status': 'error',
+                'message': str(e)
+            }
+    
     
     @http.route('/momo/ipn', type='http', auth='public', methods=['POST'], csrf=False)
     def momo_ipn(self, **kwargs):

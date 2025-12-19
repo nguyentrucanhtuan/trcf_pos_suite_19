@@ -1,6 +1,6 @@
 {
     'name': "TRCF Payment MoMo",
-    'version': '1.2',
+    'version': '1.3',
     'category': 'Point of Sale',
     'summary': "Tích hợp thanh toán MoMo qua QR code cho POS",
     'author': "Tuấn Rang Cà Phê",

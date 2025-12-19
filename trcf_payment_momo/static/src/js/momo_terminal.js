@@ -133,6 +133,8 @@ patch(PaymentScreen.prototype, {
             qrCode: DEFAULT_MOMO_QR,
             loading: false,
             pendingOrderId: null,
+            momoOrderId: null,  // Store MoMo order ID for polling
+            pollingInterval: null,  // Polling timer
         });
 
         // Subscribe to webhook notifications
@@ -160,7 +162,68 @@ patch(PaymentScreen.prototype, {
     },
 
     _cleanupMomoPaymentListener() {
-        // Cleanup handled by OWL lifecycle
+        // Stop polling if active
+        this._stopMomoPolling();
+    },
+
+    /**
+     * Start polling MoMo payment status
+     * Checks every 3 seconds for payment confirmation
+     * Stops after 5 minutes or when payment is confirmed
+     */
+    _startMomoPolling(momoOrderId) {
+        // Stop any existing polling
+        this._stopMomoPolling();
+
+        let pollCount = 0;
+        const maxPolls = 100; // 100 * 3s = 5 minutes max
+
+        this.momoState.pollingInterval = setInterval(async () => {
+            pollCount++;
+
+            // Stop after max attempts
+            if (pollCount >= maxPolls) {
+                this._stopMomoPolling();
+                return;
+            }
+
+            try {
+                const result = await this.pos.data.call(
+                    "pos.payment.method",
+                    "check_momo_payment_status_rpc",
+                    [],
+                    { momo_order_id: momoOrderId }
+                );
+
+                if (result && result.status === 'success') {
+                    // Payment confirmed!
+                    this._stopMomoPolling();
+                    // The notification will be sent via bus, but we can also handle it here
+                    this._handleMomoPaymentSuccess({
+                        pos_order_ref: this.momoState.pendingOrderId,
+                        momo_order_id: momoOrderId,
+                        amount: 0,
+                        trans_id: result.trans_id || ''
+                    });
+                } else if (result && result.status === 'failed') {
+                    // Payment failed
+                    this._stopMomoPolling();
+                }
+                // If pending, continue polling
+            } catch (error) {
+                console.error('MoMo polling error:', error);
+            }
+        }, 3000); // Poll every 3 seconds
+    },
+
+    /**
+     * Stop polling MoMo payment status
+     */
+    _stopMomoPolling() {
+        if (this.momoState.pollingInterval) {
+            clearInterval(this.momoState.pollingInterval);
+            this.momoState.pollingInterval = null;
+        }
     },
 
     /**
@@ -265,6 +328,12 @@ patch(PaymentScreen.prototype, {
                 );
 
                 if (response && response.success) {
+                    // Store MoMo order ID for polling
+                    this.momoState.momoOrderId = response.momo_order_id;
+
+                    // Start polling for payment status (fallback if IPN doesn't work)
+                    this._startMomoPolling(response.momo_order_id);
+
                     // MoMo có thể trả về qr_code_url, pay_url, hoặc deeplink
                     // Ưu tiên: qr_code_url > pay_url > deeplink
                     //const qrData = response.qr_code_url || response.pay_url || response.deeplink;
@@ -305,9 +374,11 @@ patch(PaymentScreen.prototype, {
     deletePaymentLine(uuid) {
         const line = this.paymentLines.find((l) => l.uuid === uuid);
         if (line?.payment_method_id?.use_payment_terminal === 'trcf_momo') {
+            this._stopMomoPolling();
             this.momoState.showQr = false;
             this.momoState.qrCode = DEFAULT_MOMO_QR;
             this.momoState.pendingOrderId = null;
+            this.momoState.momoOrderId = null;
         }
         return super.deletePaymentLine(...arguments);
     },

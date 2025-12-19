@@ -17,6 +17,8 @@ class MoMoAPI:
     # API Endpoints - theo tài liệu MoMo: https://developers.momo.vn/v3/docs/payment/api/wallet/onetime
     TEST_ENDPOINT = "https://test-payment.momo.vn/v2/gateway/api/create"
     PROD_ENDPOINT = "https://payment.momo.vn/v2/gateway/api/create"
+    TEST_QUERY_ENDPOINT = "https://test-payment.momo.vn/v2/gateway/api/query"
+    PROD_QUERY_ENDPOINT = "https://payment.momo.vn/v2/gateway/api/query"
     
     def __init__(self, partner_code, access_key, secret_key, test_mode=True):
         """
@@ -42,6 +44,7 @@ class MoMoAPI:
         self.secret_key = secret_key
         self.test_mode = test_mode
         self.endpoint = self.TEST_ENDPOINT if test_mode else self.PROD_ENDPOINT
+        self.query_endpoint = self.TEST_QUERY_ENDPOINT if test_mode else self.PROD_QUERY_ENDPOINT
     
     def _generate_signature(self, raw_data):
         """
@@ -173,4 +176,71 @@ class MoMoAPI:
                 'message': f"Connection error: {str(e)}",
                 'result_code': -1,
                 'request_id': request_id
+            }
+    
+    def query_payment_status(self, order_id, request_id):
+        """
+        Query payment status from MoMo
+        
+        Args:
+            order_id: Order ID used in create_payment
+            request_id: Request ID from create_payment response
+            
+        Returns:
+            dict: {
+                'success': bool,
+                'result_code': int,  # 0 = success, 1000 = pending, other = failed
+                'message': str,
+                'trans_id': str
+            }
+        """
+        query_request_id = str(uuid.uuid4())
+        
+        # Build raw signature for query - theo MoMo docs
+        raw_signature = (
+            f"accessKey={self.access_key}"
+            f"&orderId={order_id}"
+            f"&partnerCode={self.partner_code}"
+            f"&requestId={query_request_id}"
+        )
+        
+        signature = self._generate_signature(raw_signature)
+        
+        payload = {
+            "partnerCode": self.partner_code,
+            "accessKey": self.access_key,
+            "requestId": query_request_id,
+            "orderId": str(order_id),
+            "signature": signature,
+            "lang": "vi"
+        }
+        
+        _logger.info(f"MoMo Query Request: {json.dumps(payload, indent=2)}")
+        
+        try:
+            response = requests.post(
+                self.query_endpoint,
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            result = response.json()
+            _logger.info(f"MoMo Query Response: {json.dumps(result, indent=2)}")
+            
+            return {
+                'success': result.get('resultCode') == 0,
+                'result_code': result.get('resultCode', -1),
+                'message': result.get('message', ''),
+                'trans_id': result.get('transId', ''),
+                'amount': result.get('amount', 0)
+            }
+            
+        except requests.exceptions.RequestException as e:
+            _logger.error(f"MoMo Query Error: {str(e)}")
+            return {
+                'success': False,
+                'result_code': -1,
+                'message': f"Connection error: {str(e)}",
+                'trans_id': ''
             }
