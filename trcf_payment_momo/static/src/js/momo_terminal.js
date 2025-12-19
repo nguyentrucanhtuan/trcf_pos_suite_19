@@ -313,6 +313,17 @@ patch(PaymentScreen.prototype, {
                 return result;
             }
 
+            // DEBUG: Log order object structure to find correct amount property
+            console.log('MoMo Debug - order object:', order);
+            console.log('MoMo Debug - order keys:', Object.keys(order));
+            console.log('MoMo Debug - getTotalDue:', typeof order.getTotalDue);
+            console.log('MoMo Debug - getDue:', typeof order.getDue);
+            console.log('MoMo Debug - getTotal:', typeof order.getTotal);
+            console.log('MoMo Debug - taxTotals:', order.taxTotals);
+            console.log('MoMo Debug - amount_total:', order.amount_total);
+            console.log('MoMo Debug - total:', order.total);
+            console.log('MoMo Debug - lines:', order.lines);
+
             let orderId = order.tracking_number || order.sequence_number || order.name;
             if (!orderId || orderId === '/' || orderId === 'Order') {
                 orderId = (order.uid || order.uuid || '').split('-').pop() || `${Date.now()}`;
@@ -325,17 +336,23 @@ patch(PaymentScreen.prototype, {
                     amount = Math.round(order.getTotalDue());
                 } else if (typeof order.getDue === 'function') {
                     amount = Math.round(order.getDue());
+                } else if (typeof order.getTotal === 'function') {
+                    amount = Math.round(order.getTotal());
                 } else if (order.taxTotals?.order_total) {
                     amount = Math.round((order.taxTotals.order_sign || 1) * order.taxTotals.order_total);
                 } else if (order.amount_total) {
                     amount = Math.round(order.amount_total);
+                } else if (order.total) {
+                    amount = Math.round(order.total);
                 }
             } catch (e) {
                 console.error('MoMo: Error getting order total:', e);
             }
 
+            console.log('MoMo Debug - calculated amount:', amount);
+
             if (!amount || amount <= 0) {
-                console.error('MoMo: Invalid amount:', amount);
+                console.error('MoMo: Invalid amount:', amount, '- Order:', order);
                 this.momoState.loading = false;
                 this.momoState.qrCode = DEFAULT_MOMO_QR;
                 return result;
