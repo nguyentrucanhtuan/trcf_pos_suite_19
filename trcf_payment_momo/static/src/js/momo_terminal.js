@@ -304,11 +304,42 @@ patch(PaymentScreen.prototype, {
 
             // Prepare order data for MoMo API
             const order = this.currentOrder;
+
+            // Guard: ensure order exists
+            if (!order) {
+                console.error('MoMo: No current order found');
+                this.momoState.loading = false;
+                this.momoState.qrCode = DEFAULT_MOMO_QR;
+                return result;
+            }
+
             let orderId = order.tracking_number || order.sequence_number || order.name;
             if (!orderId || orderId === '/' || orderId === 'Order') {
-                orderId = (order.uid || '').split('-').pop() || `${Date.now()}`;
+                orderId = (order.uid || order.uuid || '').split('-').pop() || `${Date.now()}`;
             }
-            const amount = Math.round(order.getTotalDue());
+
+            // Get amount - with fallbacks for different Odoo versions/states
+            let amount = 0;
+            try {
+                if (typeof order.getTotalDue === 'function') {
+                    amount = Math.round(order.getTotalDue());
+                } else if (typeof order.getDue === 'function') {
+                    amount = Math.round(order.getDue());
+                } else if (order.taxTotals?.order_total) {
+                    amount = Math.round((order.taxTotals.order_sign || 1) * order.taxTotals.order_total);
+                } else if (order.amount_total) {
+                    amount = Math.round(order.amount_total);
+                }
+            } catch (e) {
+                console.error('MoMo: Error getting order total:', e);
+            }
+
+            if (!amount || amount <= 0) {
+                console.error('MoMo: Invalid amount:', amount);
+                this.momoState.loading = false;
+                this.momoState.qrCode = DEFAULT_MOMO_QR;
+                return result;
+            }
             const orderInfo = `CFT${orderId}`;
             this.momoState.pendingOrderId = orderId;
 
