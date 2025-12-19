@@ -7,7 +7,7 @@ import json
 
 class TrcfShiftRegistrationController(http.Controller):
     
-    @http.route('/shift-registration', type='http', auth='user', website=True)
+    @http.route('/dang-ky-ca', type='http', auth='user', website=True)
     def shift_registration_page(self, **kwargs):
         """Trang đăng ký ca làm việc cho nhân viên"""
         
@@ -21,11 +21,19 @@ class TrcfShiftRegistrationController(http.Controller):
             ('active', '=', True)
         ], order='time_start')
         
-        # Tạo danh sách 14 ngày tiếp theo (2 tuần)
+        # Tính ngày thứ 2 tuần kế tiếp
         today = datetime.now().date()
+        # weekday(): 0=Monday, 1=Tuesday, ..., 6=Sunday
+        days_until_next_monday = (7 - today.weekday()) % 7
+        if days_until_next_monday == 0:  # Nếu hôm nay là thứ 2
+            days_until_next_monday = 7  # Lấy thứ 2 tuần sau
+        
+        start_date = today + timedelta(days=days_until_next_monday)
+        
+        # Tạo danh sách 14 ngày kể từ thứ 2 tuần kế tiếp
         dates = []
         for i in range(14):
-            current_date = today + timedelta(days=i)
+            current_date = start_date + timedelta(days=i)
             dates.append({
                 'date': current_date,
                 'date_str': current_date.strftime('%Y-%m-%d'),
@@ -34,11 +42,12 @@ class TrcfShiftRegistrationController(http.Controller):
                 'is_weekend': current_date.weekday() >= 5,
             })
         
-        # Lấy các đăng ký hiện tại của nhân viên
+        # Lấy các đăng ký hiện tại của nhân viên trong khoảng thời gian hiển thị
+        end_date = start_date + timedelta(days=13)
         registrations = request.env['trcf.shift.registration'].sudo().search([
             ('employee_id', '=', employee.id),
-            ('date', '>=', today),
-            ('date', '<=', today + timedelta(days=13)),
+            ('date', '>=', start_date),
+            ('date', '<=', end_date),
         ])
         
         # Tạo dict các đăng ký đã có với state (date_shift_id: state)
@@ -54,7 +63,7 @@ class TrcfShiftRegistrationController(http.Controller):
             'registered_dict': registered_dict,
         })
     
-    @http.route('/shift-registration/save', type='json', auth='user', methods=['POST'])
+    @http.route('/dang-ky-ca/save', type='json', auth='user', methods=['POST'])
     def save_shift_registration(self, **kwargs):
         """API lưu đăng ký ca"""
         try:
@@ -97,7 +106,7 @@ class TrcfShiftRegistrationController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
-    @http.route('/shift-registration/remove', type='json', auth='user', methods=['POST'])
+    @http.route('/dang-ky-ca/remove', type='json', auth='user', methods=['POST'])
     def remove_shift_registration(self, **kwargs):
         """API hủy đăng ký ca"""
         try:

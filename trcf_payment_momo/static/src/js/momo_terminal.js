@@ -267,7 +267,8 @@ patch(PaymentScreen.prototype, {
                 if (response && response.success) {
                     // MoMo có thể trả về qr_code_url, pay_url, hoặc deeplink
                     // Ưu tiên: qr_code_url > pay_url > deeplink
-                    const qrData = response.qr_code_url || response.pay_url || response.deeplink;
+                    //const qrData = response.qr_code_url || response.pay_url || response.deeplink;
+                    const qrData = response.qr_code_url
                     if (qrData) {
                         this.momoState.qrCode = generateQRCodeUrl(qrData);
                     } else {

@@ -169,7 +169,7 @@
                         this.disabled = true;
                         this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...';
                         
-                        fetch('/shift-registration/save', {
+                        fetch('/dang-ky-ca/save', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -200,7 +200,7 @@
                     
                     // Hủy đăng ký
                     function removeRegistration(date, shiftId, cell) {
-                        fetch('/shift-registration/remove', {
+                        fetch('/dang-ky-ca/remove', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
