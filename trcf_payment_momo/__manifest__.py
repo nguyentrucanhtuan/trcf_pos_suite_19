@@ -17,7 +17,7 @@
     },
     'license': 'LGPL-3',
     'installable': True,
-    'application': False,
+    'application': True,
     'description': """
         Module thanh toán MoMo cho hệ thống POS.
         Khi chọn MoMo, hiển thị mã QR để khách hàng quét thanh toán.

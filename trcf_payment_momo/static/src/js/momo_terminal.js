@@ -313,43 +313,82 @@ patch(PaymentScreen.prototype, {
                 return result;
             }
 
-            // DEBUG: Log order object structure to find correct amount property
-            console.log('MoMo Debug - order object:', order);
-            console.log('MoMo Debug - order keys:', Object.keys(order));
-            console.log('MoMo Debug - getTotalDue:', typeof order.getTotalDue);
-            console.log('MoMo Debug - getDue:', typeof order.getDue);
-            console.log('MoMo Debug - getTotal:', typeof order.getTotal);
-            console.log('MoMo Debug - taxTotals:', order.taxTotals);
-            console.log('MoMo Debug - amount_total:', order.amount_total);
-            console.log('MoMo Debug - total:', order.total);
-            console.log('MoMo Debug - lines:', order.lines);
-
             let orderId = order.tracking_number || order.sequence_number || order.name;
             if (!orderId || orderId === '/' || orderId === 'Order') {
                 orderId = (order.uid || order.uuid || '').split('-').pop() || `${Date.now()}`;
             }
 
-            // Get amount - with fallbacks for different Odoo versions/states
+            // Get amount - robust calculation for Odoo 19 reactive proxy system
+            // In Odoo 19, order is a Proxy object and methods may not appear in Object.keys()
+            // We need to call methods directly with try-catch as they may fail if data not loaded
             let amount = 0;
             try {
-                if (typeof order.getTotalDue === 'function') {
-                    amount = Math.round(order.getTotalDue());
-                } else if (typeof order.getDue === 'function') {
-                    amount = Math.round(order.getDue());
-                } else if (typeof order.getTotal === 'function') {
-                    amount = Math.round(order.getTotal());
-                } else if (order.taxTotals?.order_total) {
-                    amount = Math.round((order.taxTotals.order_sign || 1) * order.taxTotals.order_total);
-                } else if (order.amount_total) {
-                    amount = Math.round(order.amount_total);
-                } else if (order.total) {
-                    amount = Math.round(order.total);
+                // Method 1: Use getTotalDue() - this depends on taxTotals being computed
+                if (order.getTotalDue) {
+                    const totalDue = order.getTotalDue();
+                    if (totalDue && !isNaN(totalDue)) {
+                        amount = Math.round(totalDue);
+                    }
                 }
             } catch (e) {
-                console.error('MoMo: Error getting order total:', e);
+                // getTotalDue failed, try other methods
             }
 
-            console.log('MoMo Debug - calculated amount:', amount);
+            if (!amount || amount <= 0) {
+                try {
+                    // Method 2: Direct access to taxTotals (Odoo 19 standard way)
+                    if (order.taxTotals && order.taxTotals.order_total) {
+                        const sign = order.taxTotals.order_sign || 1;
+                        amount = Math.round(sign * order.taxTotals.order_total);
+                    }
+                } catch (e) {
+                    // taxTotals access failed
+                }
+            }
+
+            if (!amount || amount <= 0) {
+                try {
+                    // Method 3: Use amount_total property
+                    if (order.amount_total && !isNaN(order.amount_total)) {
+                        amount = Math.round(order.amount_total);
+                    }
+                } catch (e) {
+                    // amount_total access failed
+                }
+            }
+
+            if (!amount || amount <= 0) {
+                try {
+                    // Method 4: Calculate from order lines (most reliable fallback)
+                    // This works even when reactive state hasn't fully loaded
+                    const lines = order.lines || order.orderlines || [];
+                    if (lines && lines.length > 0) {
+                        let lineTotal = 0;
+                        for (const line of lines) {
+                            try {
+                                // Try getPriceWithTax() method first
+                                if (line.getPriceWithTax) {
+                                    lineTotal += line.getPriceWithTax();
+                                } else if (line.price_subtotal_incl !== undefined) {
+                                    lineTotal += line.price_subtotal_incl;
+                                } else if (line.price_unit !== undefined && line.qty !== undefined) {
+                                    // Fallback: calculate manually
+                                    lineTotal += (line.price_unit || 0) * (line.qty || 1);
+                                }
+                            } catch (lineError) {
+                                // Skip problematic line
+                            }
+                        }
+                        if (lineTotal > 0) {
+                            amount = Math.round(lineTotal);
+                        }
+                    }
+                } catch (e) {
+                    console.error('MoMo: Error calculating from lines:', e);
+                }
+            }
+
+            console.log('MoMo: Calculated payment amount:', amount);
 
             if (!amount || amount <= 0) {
                 console.error('MoMo: Invalid amount:', amount, '- Order:', order);
