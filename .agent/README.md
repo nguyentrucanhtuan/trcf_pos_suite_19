@@ -13,6 +13,7 @@ custom_addons/.agent/
 ├── context_adk_agent/          # Google ADK Documentation
 │   ├── core-concepts.md        # Khái niệm ADK
 │   ├── odoo-integration.md     # Tích hợp Odoo
+│   ├── google-search-tool.md   # 🆕 Google Search Tool
 │   ├── best-practices.md       # Best practices
 │   └── troubleshooting.md      # Xử lý lỗi
 ├── context_general/            # Coding Style, Git, Naming Conventions

@@ -11,8 +11,8 @@ AGENTS = {
     'drink_creative': {
         'name': 'Trợ lý Sáng tạo Thức uống',
         'keywords': [
-            'thức uống', 'món', 'công thức', 'trend', 'sáng tạo', 
-            'pha chế', 'hot', 'bán chạy', 'nguyên liệu', 'recipe',
+            'sáng tạo', 'công thức', 'pha chế', 'nguyên liệu', 'recipe',
+            'giá vốn', 'bom', 'quy tắc', 'món mới', 'xu hướng', 'trend',
             'matcha', 'latte', 'cà phê', 'trà', 'sinh tố', 'smoothie'
         ],
         'module_path': 'odoo.addons.trcf_ai_business_assistant.models.agents.drink_creative.agent',

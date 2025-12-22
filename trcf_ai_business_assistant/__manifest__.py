@@ -17,9 +17,9 @@
     "author": "Tuấn Rang Cà Phê",
     "website": "https://coffeetree.vn",
     "category": "AI",
-    "depends": ["base", "mail", "point_of_sale", "mrp"],
+    "depends": ["base", "mail", "point_of_sale", "mrp", "product"],
     "external_dependencies": {
-        "python": ["google-adk"],
+        "python": ["google-adk", "google-genai"],
     },
     "data": [
         "data/bot_data.xml",

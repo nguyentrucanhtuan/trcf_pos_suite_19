@@ -30,7 +30,7 @@ class BusinessAgent:
     
     def __init__(self, env):
         self.env = env
-        self.model_name = "gemini-2.5-flash-lite"
+        self.model_name = "gemini-2.0-flash-lite"
     
     def _get_date_context(self):
         """Lấy context ngày tháng"""

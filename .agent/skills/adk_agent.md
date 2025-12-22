@@ -21,6 +21,7 @@ Kỹ năng này hướng dẫn Antigravity cách thiết kế và triển khai A
     - Tool làm gì?
     - Khi nào Agent nên gọi Tool này?
     - Ý nghĩa của từng tham số (`Args`).
+- **Google Search Tool Limitation**: Lưu ý công cụ `google_search` chính chủ chỉ được dùng **duy nhất 1 mình** trong 1 Agent. Cần dùng mô hình Team (Multi-Agent) để kết hợp với các công cụ khác.
 - **Idempotency**: Tool tra cứu dữ liệu không được làm thay đổi trạng thái hệ thống. Tool ghi dữ liệu phải có xác nhận hoặc kiểm tra điều kiện.
 
 ## 🚀 Thực thi ADK (Pattern chuẩn)
@@ -28,6 +29,7 @@ Kỹ năng này hướng dẫn Antigravity cách thiết kế và triển khai A
     - `from google.adk.agents import Agent`
     - `from google.adk.runners import Runner`
     - `from google.adk.sessions import InMemorySessionService`
+    - `from google.adk.tools import google_search` (🆕 Cho tìm kiếm web)
     - `from google.genai import types`
 - **Async Handling**: Luôn dùng `asyncio.run()` trong Odoo để bọc hàm `_run_async` của ADK.
 - **Quota & Error**: Luôn bọc logic gọi AI trong `try...except` để xử lý lỗi Quota (429) hoặc lỗi kết nối.
