@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="{{MODULE_NAME}}.{{COMPONENT_NAME}}">
+        <div class="o_{{MODULE_NAME}}_dashboard p-3">
+            <h1>{{COMPONENT_TITLE}}</h1>
+            <button class="btn btn-primary" t-on-click="loadData">Tải dữ liệu</button>
+            <ul class="mt-3">
+                <t t-foreach="state.records" t-as="record" t-key="record.id">
+                    <li t-esc="record.name"/>
+                </t>
+            </ul>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,129 @@
+# -*- coding: utf-8 -*-
+# Template: ADK Agent Core Implementation (❌ KHÔNG compile)
+# Variables: {{AGENT_CLASS}}, {{AGENT_NAME}}, {{APP_NAME}}
+
+import os
+import asyncio
+import logging
+
+# ⚠️ IMPORT CHÍNH XÁC THEO GOOGLE ADK DOCS
+from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+
+# Import logic và prompts từ folder cục bộ
+from . import business_logic, prompts
+
+_logger = logging.getLogger(__name__)
+
+APP_NAME = "{{APP_NAME}}"
+
+class {{AGENT_CLASS}}:
+    def __init__(self, env):
+        self.env = env
+        self.model_name = "gemini-2.0-flash"  # Sử dụng model mới nhất
+    
+    def _create_tools(self):
+        """
+        Định nghĩa các công cụ (tools) cho Agent.
+        Các hàm tool PHẢI trả về dict (không phải string).
+        """
+        env = self.env
+        
+        def get_system_info(query: str = "") -> dict:
+            """
+            Lấy thông tin từ hệ thống công ty.
+            
+            Args:
+                query (str): Từ khóa hoặc nội dung cần tra cứu.
+                
+            Returns:
+                dict: Trang thái và kết quả dữ liệu trả về.
+            """
+            try:
+                data = business_logic.get_system_info(env, query)
+                return business_logic.format_info_output(data)
+            except Exception as e:
+                return {"status": "error", "error_message": str(e)}
+        
+        return [get_system_info]
+    
+    def create_agent(self):
+        """
+        Khởi tạo Agent instance.
+        """
+        api_key = self.env['ir.config_parameter'].sudo().get_param('trcf.gemini_api_key', '')
+        if not api_key:
+            raise ValueError("Chưa cấu hình Google API Key (trcf.gemini_api_key)")
+        os.environ['GOOGLE_API_KEY'] = api_key
+        
+        from odoo import fields
+        today = fields.Date.today().strftime('%d-%m-%Y')
+        
+        return Agent(
+            name="{{AGENT_NAME}}",
+            model=self.model_name,
+            description="Agent hỗ trợ nghiệp vụ doanh nghiệp",
+            instruction=prompts.get_system_instruction(today),
+            tools=self._create_tools(),
+        )
+    
+    async def _run_async(self, agent, message):
+        """
+        Luồng xử lý bất đồng bộ (Async Flow) theo Google ADK patterns.
+        """
+        session_service = InMemorySessionService()
+        user_id = "odoo_backend_user"
+        session_id = f"session_{id(message)}"
+        
+        # 1. Tạo session
+        await session_service.create_session(
+            app_name=APP_NAME, 
+            user_id=user_id, 
+            session_id=session_id
+        )
+        
+        # 2. Khởi tạo runner
+        runner = Runner(
+            agent=agent, 
+            app_name=APP_NAME, 
+            session_service=session_service
+        )
+        
+        # 3. Chuẩn bị nội dung gửi đi (GenAI types)
+        content = types.Content(
+            role='user', 
+            parts=[types.Part(text=message)]
+        )
+        
+        # 4. Chạy và thu thập kết quả
+        response_text = ""
+        try:
+            async for event in runner.run_async(
+                user_id=user_id, 
+                session_id=session_id,
+                new_message=content
+            ):
+                if event.is_final_response():
+                    if event.content and event.content.parts:
+                        response_text = event.content.parts[0].text
+                    break
+        except Exception as e:
+            _logger.error(f"Error in run_async: {e}")
+            return f"⚠️ Lỗi kết nối AI: {str(e)}"
+            
+        return response_text or "⚠️ Agent không phản hồi kết quả."
+
+    def query(self, message):
+        """
+        Hàm giao tiếp chính được gọi từ Odoo (Synchronous wrapper).
+        """
+        try:
+            # Chạy event loop cho async task
+            return asyncio.run(self._run_async(self.create_agent(), message))
+        except Exception as e:
+            if "429" in str(e) or "quota" in str(e).lower():
+                return "⚠️ Quota API Gemini đã hết. Vui lòng thử lại sau vài phút."
+            _logger.error(f"ADK Agent Error: {e}", exc_info=True)
+            return f"⚠️ Đã có lỗi xảy ra: {str(e)[:150]}..."

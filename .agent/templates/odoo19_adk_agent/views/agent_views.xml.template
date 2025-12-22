@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template View cho Agent -->
+    <record id="{{MODEL_NAME_UNDERSCORE}}_view_form" model="ir.ui.view">
+        <field name="name">{{MODEL_NAME}}.view.form</field>
+        <field name="model">{{MODEL_NAME}}</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- Nút bấm test nhanh -->
+                    <button name="query" string="Thử Agent" type="object" class="oe_highlight" context="{'default_message': 'Xin chào'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <p class="text-muted">
+                            Đây là model wrapper cho AI Agent. Bạn có thể gọi service từ các model khác 
+                            hoặc tạo giao diện tương tác (Chatbot) bằng cách sử dụng model này.
+                        </p>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="{{MODEL_NAME_UNDERSCORE}}_view_list" model="ir.ui.view">
+        <field name="name">{{MODEL_NAME}}.view.list</field>
+        <field name="model">{{MODEL_NAME}}</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="{{MODEL_NAME_UNDERSCORE}}_action" model="ir.actions.act_window">
+        <field name="name">{{MODULE_TITLE}}</field>
+        <field name="res_model">{{MODEL_NAME}}</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

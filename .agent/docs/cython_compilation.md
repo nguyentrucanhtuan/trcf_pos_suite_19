@@ -100,7 +100,9 @@ class MyController(http.Controller):
 **Agent Wrappers:**
 ```python
 # models/agent_wrapper.py - KHÔNG COMPILE
-from google.adk.agents import Agent
+from google.adk.agents import Agent  # External library
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
 
 agent = Agent(...)  # External library, không nên compile
 ```

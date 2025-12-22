@@ -1,82 +1,55 @@
 # Agent Development Documentation
 
-Tài liệu hướng dẫn phát triển modules cho Odoo với Google ADK Agent.
+Tài liệu phát triển modules Odoo 19 với Google ADK Agent.
 
-## 📁 Cấu trúc thư mục
+## 📁 Cấu trúc
 
 ```
 custom_addons/.agent/
-├── README.md                    # File này - Tổng quan
-├── docs/                        # Tài liệu tham khảo
-│   ├── google_adk_llms.txt     # Google ADK documentation (gốc)
-│   ├── google_adk_reference.md # ADK reference (đã xử lý)
-│   ├── protect_agent_prompts.md # Bảo vệ agent prompts
-│   ├── compile_tool_logic.md   # Compile tool logic
-│   ├── cython_compilation.md   # Chiến lược compile
-│   ├── ai_context_checklist.md # AI context guide
-│   └── architecture.md         # Kiến trúc tổng thể (future)
-├── workflows/                   # Quy trình làm việc
-│   ├── create_new_module.md    # Tạo module mới
-│   ├── create_adk_agent.md     # Tạo ADK agent
-│   └── compile_module.md       # Compile với Cython
-├── templates/                   # Templates code
-│   └── module_template/        # Template module đầy đủ
-└── scripts/                     # Scripts tự động hóa
-    └── create_module.py        # Script tạo module
+├── context_odoo19/             # Odoo 19 Documentation
+│   ├── orm-reference.md        # ORM API, Fields
+│   ├── views-reference.md      # Views (<list> không <tree>)
+│   └── owl-components.md       # OWL Components
+├── context_adk_agent/          # Google ADK Documentation
+│   ├── core-concepts.md        # Khái niệm ADK
+│   ├── odoo-integration.md     # Tích hợp Odoo
+│   ├── best-practices.md       # Best practices
+│   └── troubleshooting.md      # Xử lý lỗi
+├── context_general/            # Coding Style, Git, Naming Conventions
+├── docs/                       # Bảo mật Code (Cython) & Deployment
+│   ├── protect_agent_prompts.md
+│   ├── compile_tool_logic.md
+│   └── cython_compilation.md
+├── templates/                  # Module Templates
+│   ├── odoo19_standard/        # 🆕 Standard Odoo 19 (CRUD, Business)
+│   └── odoo19_adk_agent/       # ⏳ ADK Agent (AI Integration)
+├── skills/                     # 🧠 AI Skills (Kỹ năng & Tư duy)
+│   ├── odoo19_standard.md      # Skill viết code Odoo 19 chuẩn
+│   └── adk_agent.md            # 🆕 Skill phát triển AI Agent (ADK)
+└── workflows/                  # Quy trình làm việc & /slash commands
+    ├── trcf_module_create.md   # /trcf_module_create - Tạo module
+    ├── trcf_module_optimize.md # /trcf_module_optimize - Tối ưu/Nâng cấp
+    └── trcf_adk_agent_create.md# /trcf_adk_agent_create - Tạo AI Agent
 ```
 
-## 🎯 Mục đích
+## 🚀 Workflows
 
-Repository này chứa:
+| Command | Mô tả |
+|---------|-------|
+| `/trcf_module_create` | Tạo module Odoo 19 mới |
+| `/trcf_module_optimize` | Tối ưu + Nâng cấp module |
+| `/trcf_adk_agent_create` | Tạo module với Google ADK Agent |
 
-1. **Documentation** - Tài liệu về patterns, conventions, best practices
-2. **Workflows** - Quy trình từng bước để thực hiện các tác vụ phổ biến
-3. **Templates** - Code templates để bắt đầu nhanh
-4. **Scripts** - Automation scripts để tăng tốc development
+## 📚 Tham khảo
 
-## 🚀 Quick Start
+- **Odoo 19**: `context_odoo19/` (ORM, Views, OWL)
+- **Google ADK**: `context_adk_agent/` (Agent, Tools, Runner)
+- **Bảo mật**: `docs/` (Cython compilation)
+- **Chuẩn chung**: `context_general/`
 
-### Tạo module mới
-```bash
-# Xem workflow
-cat custom_addons/.agent/workflows/create_new_module.md
+## 🏗️ Conventions
 
-# Hoặc dùng script (coming soon)
-python custom_addons/.agent/scripts/create_module.py --name trcf_my_module
-```
-
-### Tạo ADK Agent module
-```bash
-# Xem workflow
-cat custom_addons/.agent/workflows/create_adk_agent.md
-```
-
-## 📚 Tài liệu quan trọng
-
-- **Google ADK**: `custom_addons/.agent/docs/google_adk_reference.md`
-- **Odoo Patterns**: `custom_addons/.agent/docs/odoo_patterns.md`
-- **Cython Strategy**: `custom_addons/.agent/docs/cython_compilation.md`
-
-## 🏗️ Module Conventions
-
-Tất cả modules trong `custom_addons/` follow:
-
-- **Prefix**: `trcf_` (Tuấn Rang Cà Phê)
-- **Structure**: Standard Odoo module structure
-- **License**: LGPL-3
+- **Prefix**: `trcf_`
 - **Author**: Tuấn Rang Cà Phê
-- **Website**: https://coffeetree.vn
-
-## 📝 Notes
-
-- File `google_adk_llms.txt` là bản gốc từ Google, không nên chỉnh sửa
-- Các file `.md` khác có thể cập nhật theo dự án
-- Workflows được thiết kế để AI agent (Antigravity) đọc và thực thi
-
-## 🤖 Sử dụng với Antigravity
-
-Khi làm việc với Antigravity AI agent, bạn có thể:
-
-1. **Reference workflows**: "Hãy follow workflow trong `.agent/workflows/create_adk_agent.md`"
-2. **Reference docs**: "Hãy đọc `.agent/docs/google_adk_reference.md` để hiểu ADK"
-3. **Use templates**: "Dùng template trong `.agent/templates/module_template/`"
+- **License**: LGPL-3
+- **Odoo 19**: Dùng `<list>` thay `<tree>`

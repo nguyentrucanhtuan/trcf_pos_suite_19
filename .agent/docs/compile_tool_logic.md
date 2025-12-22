@@ -1,6 +1,10 @@
 # Compile Tool Logic - Bảo vệ Business Rules
 
-Hướng dẫn compile logic của ADK Agent tools để bảo vệ thuật toán và business rules.
+> **Last Updated**: 2025-12-22
+>
+> **Mục đích**: Compile logic của ADK Agent tools để bảo vệ thuật toán và business rules.
+
+---
 
 ## 🎯 Vấn đề
 
@@ -12,28 +16,34 @@ Tools chứa:
 
 ➡️ **Cần compile** để bảo vệ IP
 
+---
+
 ## 💡 Architecture
 
 ```
-models/
-├── business_logic.py       # ✅ COMPILE - Odoo data access
-├── prompt_config.py        # ✅ COMPILE - Agent prompts
-├── tool_logic.py           # ✅ COMPILE - Tool algorithms ⭐
-└── agent_wrapper.py        # ❌ NO COMPILE - Thin wrappers
+models/agents/my_agent/
+├── __init__.py         # ❌ KHÔNG compile
+├── agent.py            # ❌ KHÔNG compile - Thin wrappers
+├── prompts.py          # ✅ COMPILE - Agent prompts
+└── business_logic.py   # ✅ COMPILE - Tool algorithms ⭐
 ```
+
+---
 
 ## 📝 Implementation
 
-### 1. Tạo `tool_logic.py` (COMPILE)
+### 1. `business_logic.py` (✅ COMPILE)
 
 ```python
 # -*- coding: utf-8 -*-
 """
-Tool Logic - SẼ ĐƯỢC COMPILE
-Chứa tất cả business logic của tools
+Business Logic - SẼ ĐƯỢC COMPILE
+Chứa tất cả thuật toán proprietary
 """
+import logging
+_logger = logging.getLogger(__name__)
 
-def analyze_best_sellers_logic(sales_data):
+def analyze_best_sellers(sales_data):
     """
     Phân tích món bán chạy - Proprietary algorithm.
     """
@@ -51,28 +61,37 @@ def analyze_best_sellers_logic(sales_data):
     return analyzed[:5]
 
 def calculate_popularity_score(item):
-    """Thuật toán scoring - Bảo vệ công thức"""
+    """Thuật toán scoring - Bảo vệ công thức."""
     base = item['quantity'] * item['price']
-    time_factor = get_time_decay(item['date'])
-    margin_bonus = item['margin'] * 1.5
+    time_factor = get_time_decay(item.get('date'))
+    margin_bonus = item.get('margin', 0) * 1.5
     
     # Proprietary formula
     score = base * time_factor + margin_bonus
     return score
 
-def validate_mixing_rules_logic(ingredients, rules):
+def get_time_decay(date):
+    """Time decay factor."""
+    # Proprietary logic
+    return 0.9
+
+def detect_trend(item):
+    """Detect trend - Proprietary."""
+    return "stable"
+
+def validate_mixing_rules(ingredients, rules):
     """
     Validate công thức - Business rules.
     """
     violations = []
     
     # Check forbidden combinations
-    for combo in rules['forbidden']:
+    for combo in rules.get('forbidden', []):
         if all(i in ingredients for i in combo):
             violations.append(f"Không kết hợp {combo}")
     
     # Check limits
-    if len(ingredients) > rules['max_ingredients']:
+    if len(ingredients) > rules.get('max_ingredients', 5):
         violations.append("Quá nhiều nguyên liệu")
     
     return {
@@ -80,8 +99,8 @@ def validate_mixing_rules_logic(ingredients, rules):
         'violations': violations
     }
 
-def calculate_cost_logic(ingredients, prices):
-    """Tính cost - Proprietary pricing"""
+def calculate_cost(ingredients, prices):
+    """Tính cost - Proprietary pricing."""
     total = sum(prices.get(i, 0) for i in ingredients)
     
     # Secret markup formula
@@ -91,182 +110,184 @@ def calculate_cost_logic(ingredients, prices):
     return {
         'cost': total,
         'price': suggested_price,
-        'margin': markup / suggested_price
+        'margin': markup / suggested_price if suggested_price > 0 else 0
     }
 ```
 
-### 2. Update `agent_wrapper.py` (KHÔNG COMPILE)
+### 2. `agent.py` (❌ KHÔNG COMPILE)
 
 ```python
 # -*- coding: utf-8 -*-
-from google.adk.agents import Agent
-from odoo import models, fields
-from .business_logic import get_odoo_data_internal
-from .prompt_config import get_agent_instruction
-from .tool_logic import (  # Import compiled logic
-    analyze_best_sellers_logic,
-    validate_mixing_rules_logic,
-    calculate_cost_logic
-)
+"""Agent Wrapper - KHÔNG COMPILE"""
+import os
+import asyncio
 
-class TrcfAgentWrapper(models.Model):
-    _name = 'trcf.agent.wrapper'
+from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+
+# Import TỪ COMPILED modules
+from . import prompts
+from . import business_logic
+
+class MyAgent:
+    def __init__(self, env):
+        self.env = env
     
     def _create_tools(self):
-        """Thin wrappers - Không chứa logic"""
+        """Thin wrappers - Không chứa logic."""
         env = self.env
         
-        def get_best_sellers() -> str:
-            """Get top selling products"""
-            # Get data
-            data = get_odoo_data_internal(env, 'pos.order.line', ...)
-            
-            # Analyze với compiled logic
-            result = analyze_best_sellers_logic(data)
-            
-            # Format
-            return format_results(result)
+        # ⚠️ Tools TRẢ VỀ DICT (theo Google ADK docs)
+        def get_best_sellers() -> dict:
+            """Get top selling products."""
+            try:
+                # Get data từ Odoo
+                lines = env['pos.order.line'].sudo().search([], limit=50)
+                data = [{'name': l.product_id.name, 'quantity': l.qty, 'price': l.price_subtotal} for l in lines]
+                
+                # Analyze VỚI COMPILED logic
+                result = business_logic.analyze_best_sellers(data)
+                
+                return {
+                    "status": "success",
+                    "report": f"Top 5 best sellers: {result}"
+                }
+            except Exception as e:
+                return {"status": "error", "error_message": str(e)}
         
-        def validate_recipe(recipe: str) -> str:
-            """Validate recipe rules"""
-            ingredients = parse_recipe(recipe)
-            rules = get_rules()
-            
-            # Validate với compiled logic
-            validation = validate_mixing_rules_logic(ingredients, rules)
-            
-            return format_validation(validation)
+        def validate_recipe(ingredients: str) -> dict:
+            """Validate recipe rules."""
+            try:
+                items = [i.strip() for i in ingredients.split(',')]
+                rules = prompts.get_business_rules()
+                
+                # Validate VỚI COMPILED logic
+                validation = business_logic.validate_mixing_rules(items, rules)
+                
+                if validation['valid']:
+                    return {"status": "success", "report": "Công thức hợp lệ ✅"}
+                else:
+                    return {"status": "error", "error_message": str(validation['violations'])}
+            except Exception as e:
+                return {"status": "error", "error_message": str(e)}
         
-        def calculate_pricing(ingredients: str) -> str:
-            """Calculate cost and pricing"""
-            items = parse_ingredients(ingredients)
-            prices = get_prices(env)
-            
-            # Calculate với compiled logic
-            pricing = calculate_cost_logic(items, prices)
-            
-            return f"Cost: {pricing['cost']}, Price: {pricing['price']}"
+        def calculate_pricing(ingredients: str) -> dict:
+            """Calculate cost and pricing."""
+            try:
+                items = [i.strip() for i in ingredients.split(',')]
+                prices = {'coffee': 5000, 'milk': 3000, 'sugar': 1000}  # Example
+                
+                # Calculate VỚI COMPILED logic
+                pricing = business_logic.calculate_cost(items, prices)
+                
+                return {
+                    "status": "success", 
+                    "report": f"Cost: {pricing['cost']:,}đ, Price: {pricing['price']:,}đ, Margin: {pricing['margin']:.0%}"
+                }
+            except Exception as e:
+                return {"status": "error", "error_message": str(e)}
         
         return [get_best_sellers, validate_recipe, calculate_pricing]
 ```
 
+---
+
 ## 🔧 Compilation
 
 ```bash
-cd custom_addons/trcf_my_agent
+cd custom_addons/trcf_my_agent/models/agents/my_agent
 
-# Compile tool logic
-cythonize -i models/tool_logic.py
+# Compile business logic
+cythonize -i business_logic.py
 
-# Cùng với các files khác
-cythonize -i models/business_logic.py
-cythonize -i models/prompt_config.py
+# Compile prompts
+cythonize -i prompts.py
 ```
+
+---
 
 ## 📦 Deploy Structure
 
 **Trước compile:**
 ```
-models/
-├── business_logic.py
-├── prompt_config.py
-├── tool_logic.py          # ← Chứa algorithms
-├── agent_wrapper.py
+my_agent/
+├── __init__.py
+├── business_logic.py   # ← Source - chứa algorithms
+├── prompts.py          # ← Source - chứa prompts
+├── agent.py
 ```
 
 **Sau compile & deploy:**
 ```
-models/
-├── business_logic.so      # ✅
-├── prompt_config.so       # ✅
-├── tool_logic.so          # ✅ Tool logic protected
-├── agent_wrapper.py       # Source (thin wrappers only)
+my_agent/
+├── __init__.py
+├── business_logic.so   # ✅ Compiled - algorithms protected
+├── prompts.so          # ✅ Compiled - prompts protected
+├── agent.py            # Source (thin wrappers only)
 ```
 
-## ✅ Lợi ích
+---
 
-1. **Bảo vệ algorithms**: Scoring, ranking, analysis
-2. **Che giấu rules**: Validation, constraints, limits
-3. **Bảo mật pricing**: Cost calculations, margins
-4. **IP protection**: Competitive advantages
-
-## 🎯 Best Practices
+## ✅ Best Practices
 
 ### 1. Tách rõ Logic vs Wrapper
 
 **❌ Không tốt - Logic trong wrapper:**
 ```python
-def get_best_sellers() -> str:
+def get_best_sellers() -> dict:
     data = get_data()
-    # Complex scoring logic here (không được bảo vệ)
+    # Complex scoring logic ở đây (KHÔNG được bảo vệ!)
     score = data['qty'] * data['price'] * 1.5
-    return format(score)
+    return {"status": "success", "report": str(score)}
 ```
 
 **✅ Tốt - Logic tách riêng:**
 ```python
-# tool_logic.py (COMPILE)
+# business_logic.py (COMPILE)
 def calculate_score(data):
     return data['qty'] * data['price'] * 1.5
 
-# agent_wrapper.py (NO COMPILE)
-def get_best_sellers() -> str:
+# agent.py (KHÔNG COMPILE)
+def get_best_sellers() -> dict:
     data = get_data()
-    score = calculate_score(data)  # Gọi compiled
-    return format(score)
+    score = business_logic.calculate_score(data)  # Gọi compiled
+    return {"status": "success", "report": str(score)}
 ```
 
-### 2. Modular Tool Logic
+### 2. Tools Return Dict
 
 ```python
-# tool_logic.py
-def analyze_sales(data):
-    """Main analysis"""
-    scores = calculate_scores(data)
-    trends = detect_trends(data)
-    return combine_results(scores, trends)
+# ⚠️ QUAN TRỌNG: Theo Google ADK docs, tools trả về dict
 
-def calculate_scores(data):
-    """Scoring sub-logic"""
-    pass
-
-def detect_trends(data):
-    """Trend detection sub-logic"""
-    pass
+def my_tool(param: str) -> dict:
+    """Tool description."""
+    if success:
+        return {"status": "success", "report": "..."}
+    else:
+        return {"status": "error", "error_message": "..."}
 ```
 
-### 3. Configuration-Driven
-
-```python
-# tool_logic.py
-SCORING_WEIGHTS = {
-    'quantity': 1.0,
-    'price': 0.8,
-    'margin': 1.5,
-    'repeat_customer': 2.0
-}
-
-def calculate_score(item):
-    score = 0
-    for factor, weight in SCORING_WEIGHTS.items():
-        score += item.get(factor, 0) * weight
-    return score
-```
+---
 
 ## 📋 Checklist
 
-- [ ] Tạo `tool_logic.py`
-- [ ] Move tool algorithms vào `tool_logic.py`
-- [ ] Move validation rules vào `tool_logic.py`
-- [ ] Move pricing logic vào `tool_logic.py`
-- [ ] Update `agent_wrapper.py` import từ `tool_logic`
-- [ ] Tool wrappers chỉ còn thin wrappers
+- [ ] Tạo `business_logic.py` với algorithms
+- [ ] Move tool logic vào `business_logic.py`
+- [ ] Move validation rules vào `business_logic.py`
+- [ ] Move pricing logic vào `business_logic.py`
+- [ ] `agent.py` chỉ còn thin wrappers
+- [ ] **Tools trả về dict với status/report**
 - [ ] Test tools hoạt động
-- [ ] Compile `tool_logic.py`
+- [ ] Compile `business_logic.py`
 - [ ] Verify compiled version
 - [ ] Deploy với `.so` files
 
-## 📚 Tham khảo
+---
+
+## 🔗 Tham khảo
 
 - Protect Prompts: `docs/protect_agent_prompts.md`
 - Cython Guide: `docs/cython_compilation.md`
+- ADK Concepts: `context_adk_agent/core-concepts.md`

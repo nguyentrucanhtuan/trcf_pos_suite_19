@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+# Main __init__.py template
+
+from . import models
+# from . import controllers
+# from . import wizards

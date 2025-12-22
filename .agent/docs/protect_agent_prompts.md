@@ -1,6 +1,10 @@
 # Bảo vệ Agent Prompts với Cython
 
-Hướng dẫn compile và bảo vệ agent prompts/instructions để che giấu logic nghiệp vụ.
+> **Last Updated**: 2025-12-22
+>
+> **Mục đích**: Tách và compile prompts/instructions để bảo vệ business logic khi deploy cho khách hàng.
+
+---
 
 ## 🎯 Vấn đề
 
@@ -10,105 +14,74 @@ Khi deploy ADK Agent, **instruction/prompt** chứa:
 - Decision-making rules
 - Competitive advantages
 
-➡️ **Cần bảo vệ** để khách hàng không thấy được.
+➡️ **Cần compile** để khách hàng không thấy được source code.
 
-## 💡 Giải pháp: Tách Prompt ra file riêng + Compile
+---
 
-### **Architecture Pattern:**
+## 💡 Giải pháp: Tách Prompt + Compile
+
+### Architecture Pattern
 
 ```
 models/
-├── business_logic.py          # ✅ COMPILE - Data processing
-├── prompt_config.py            # ✅ COMPILE - Agent prompts/instructions
-└── agent_wrapper.py            # ❌ NO COMPILE - Agent initialization
+├── agents/
+│   └── my_agent/
+│       ├── __init__.py       # ❌ KHÔNG compile
+│       ├── agent.py          # ❌ KHÔNG compile (Agent wrapper)
+│       ├── prompts.py        # ✅ COMPILE - Prompts/Instructions
+│       └── business_logic.py # ✅ COMPILE - Tool logic
 ```
+
+**Nguyên tắc:**
+- **COMPILE**: Files chứa logic proprietary
+- **KHÔNG COMPILE**: Agent wrapper, Odoo models, __init__.py
+
+---
 
 ## 📝 Implementation
 
-### 1. Tạo file `prompt_config.py` (COMPILE)
+### 1. `prompts.py` (✅ COMPILE)
 
 ```python
 # -*- coding: utf-8 -*-
 """
-Prompt Configuration - File này SẼ ĐƯỢC COMPILE
-Chứa tất cả prompts, instructions, và business rules
+Prompt Configuration - SẼ ĐƯỢC COMPILE
 """
 
-def get_agent_instruction():
+def get_system_instruction(today_str=None):
     """
-    Trả về instruction cho agent.
+    System instruction cho agent.
+    
     Function này sẽ được compile để bảo vệ prompt logic.
     """
-    instruction = """
-    Bạn là chuyên gia R&D đồ uống cấp cao cho chuỗi cà phê.
-    
-    NHIỆM VỤ:
-    1. Phân tích dữ liệu bán hàng để hiểu sở thích khách hàng
-    2. Tìm kiếm xu hướng đồ uống mới từ thị trường
-    3. Đề xuất công thức món mới dựa trên:
-       - Dữ liệu bán chạy hiện tại
-       - Trend thị trường
-       - Quy tắc pha chế của quán
-    
-    QUY TRÌNH 3 BƯỚC:
-    
-    BƯỚC 1: PHÂN TÍCH HIỆN TẠI
-    - Dùng tool `get_shop_best_sellers` để xem món bán chạy
-    - Phân tích: Khách thích vị gì? (Ngọt/Đắng/Chua/Béo)
-    - Xác định pattern: Thời tiết nào bán tốt?
-    
-    BƯỚC 2: TÌM KIẾM XU HƯỚNG
-    - Dùng tool `google_search` để tìm trend mới
-    - Keywords: "[hương vị bán chạy] + trends 2025"
-    - Lọc: Chỉ lấy ideas phù hợp với thiết bị quán
-    
-    BƯỚC 3: SÁNG TẠO & KIỂM TRA
-    - Kết hợp: Món bán chạy + Trend mới
-    - Dùng tool `consult_mixing_rules` để verify:
-      * Không vi phạm quy tắc pha chế
-      * Tỷ lệ nguyên liệu hợp lý
-      * Có thể thực hiện với thiết bị hiện tại
-    
-    ĐẦU RA:
-    - Tên món (Tiếng Việt, hấp dẫn, dễ nhớ)
-    - Lý do (Tại sao sẽ bán chạy? Cite data + trend)
-    - Công thức sơ bộ (Nguyên liệu + Tỷ lệ)
-    - Chi phí ước tính
-    - Giá bán đề xuất
-    
-    QUY TẮC VÀNG:
-    - Luôn cite nguồn dữ liệu (bán hàng/trend)
-    - Không đề xuất món quá phức tạp (>5 nguyên liệu)
-    - Ưu tiên nguyên liệu sẵn có
-    - Margin tối thiểu: 60%
-    """
-    return instruction
+    base = f"""Bạn là chuyên gia R&D đồ uống cho chuỗi cà phê.
+HÔM NAY: {today_str or 'không xác định'}
 
-def get_tool_instructions():
-    """Hướng dẫn sử dụng tools - Cũng nên bảo vệ"""
-    return {
-        'get_shop_best_sellers': """
-            Dùng khi cần biết món nào đang bán chạy.
-            Output: Top 3-5 món + doanh số + mô tả vị.
-        """,
-        'google_search': """
-            Dùng để tìm trend, công thức mới.
-            Tips: Search bằng tiếng Anh để có kết quả tốt hơn.
-        """,
-        'consult_mixing_rules': """
-            Kiểm tra công thức có hợp lệ không.
-            Bắt buộc gọi trước khi finalize công thức.
-        """
-    }
+NHIỆM VỤ:
+1. Phân tích dữ liệu bán hàng
+2. Tìm kiếm xu hướng mới
+3. Đề xuất công thức món mới
 
-def get_system_rules():
-    """Business rules - Proprietary logic"""
+QUY TRÌNH:
+1. Dùng tool `get_best_sellers` để xem món bán chạy
+2. Dùng tool `search_trends` để tìm xu hướng
+3. Dùng tool `validate_recipe` để kiểm tra công thức
+
+QUY TẮC:
+- Margin tối thiểu: 60%
+- Không quá 5 nguyên liệu
+- Ưu tiên nguyên liệu sẵn có"""
+    
+    return base
+
+def get_business_rules():
+    """Business rules - Proprietary logic."""
     return {
-        'min_margin': 0.6,  # 60% margin tối thiểu
+        'min_margin': 0.6,
         'max_ingredients': 5,
         'forbidden_combinations': [
-            ('milk', 'citrus'),  # Sữa + cam/chanh = kết tủa
-            ('coffee', 'yogurt'),  # Cà phê + sữa chua = vị lạ
+            ('milk', 'citrus'),
+            ('coffee', 'yogurt'),
         ],
         'seasonal_multiplier': {
             'summer': {'cold_drinks': 1.5, 'hot_drinks': 0.7},
@@ -117,186 +90,214 @@ def get_system_rules():
     }
 ```
 
-### 2. Update `agent_wrapper.py` (KHÔNG COMPILE)
+### 2. `business_logic.py` (✅ COMPILE)
 
 ```python
 # -*- coding: utf-8 -*-
-from google.adk.agents import Agent
-from google.adk.tools import google_search
-from odoo import models, fields
-from .business_logic import (
-    get_shop_best_sellers_internal,
-    consult_mixing_rules_internal
-)
-from .prompt_config import (  # Import từ file sẽ compile
-    get_agent_instruction,
-    get_tool_instructions,
-    get_system_rules
-)
+"""
+Business Logic - SẼ ĐƯỢC COMPILE
+Chứa thuật toán proprietary
+"""
+import logging
+_logger = logging.getLogger(__name__)
 
-class TrcfAgentWrapper(models.Model):
-    _name = 'trcf.agent.wrapper'
-    _description = 'ADK Agent Wrapper'
+def get_best_sellers_data(env):
+    """Lấy và xử lý dữ liệu bán chạy."""
+    try:
+        # Query Odoo data
+        lines = env['pos.order.line'].search([...], limit=100)
+        
+        # Proprietary analysis
+        analyzed = analyze_sales_data(lines)
+        return analyzed
+    except Exception as e:
+        _logger.error(f"Error: {e}")
+        return []
+
+def analyze_sales_data(lines):
+    """Phân tích data - Proprietary algorithm."""
+    results = []
+    for line in lines:
+        score = calculate_popularity_score(line)
+        results.append({
+            'product': line.product_id.name,
+            'score': score,
+            'quantity': line.qty
+        })
+    results.sort(key=lambda x: x['score'], reverse=True)
+    return results[:5]
+
+def calculate_popularity_score(line):
+    """Scoring algorithm - Bảo vệ công thức."""
+    # Proprietary formula
+    base = line.qty * line.price_subtotal
+    margin_bonus = base * 0.15
+    return base + margin_bonus
+
+def validate_recipe_logic(ingredients, rules):
+    """Validate công thức - Business rules."""
+    violations = []
     
-    name = fields.Char('Agent Name', required=True)
+    for combo in rules.get('forbidden_combinations', []):
+        if all(i in ingredients for i in combo):
+            violations.append(f"Không kết hợp {combo}")
+    
+    if len(ingredients) > rules.get('max_ingredients', 5):
+        violations.append("Quá nhiều nguyên liệu")
+    
+    return {
+        'valid': len(violations) == 0,
+        'violations': violations
+    }
+```
+
+### 3. `agent.py` (❌ KHÔNG COMPILE)
+
+```python
+# -*- coding: utf-8 -*-
+"""
+Agent Wrapper - KHÔNG COMPILE
+Thin wrapper, import từ compiled modules
+"""
+import os
+import asyncio
+
+from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+
+# Import TỪ FILES SẼ COMPILE
+from . import prompts         # prompts.so
+from . import business_logic  # business_logic.so
+
+APP_NAME = "my_agent"
+
+class MyAgent:
+    def __init__(self, env):
+        self.env = env
     
     def _create_tools(self):
-        """Tool wrappers - Đơn giản, không cần compile"""
+        """Tool wrappers - chỉ gọi compiled logic."""
         env = self.env
         
-        def get_shop_best_sellers() -> str:
-            """Wrapper gọi compiled function"""
-            data = get_shop_best_sellers_internal(env)
-            return data
+        # ⚠️ Tools TRẢ VỀ DICT (theo Google ADK docs)
+        def get_best_sellers() -> dict:
+            """Get top selling products."""
+            try:
+                data = business_logic.get_best_sellers_data(env)
+                return {
+                    "status": "success",
+                    "report": f"Top sellers: {data}"
+                }
+            except Exception as e:
+                return {"status": "error", "error_message": str(e)}
         
-        def consult_mixing_rules(query: str) -> str:
-            """Wrapper gọi compiled function"""
-            rules = get_system_rules()  # Từ compiled file
-            result = consult_mixing_rules_internal(query, rules)
-            return result
+        def validate_recipe(ingredients: str) -> dict:
+            """Validate a recipe."""
+            try:
+                items = [i.strip() for i in ingredients.split(',')]
+                rules = prompts.get_business_rules()
+                result = business_logic.validate_recipe_logic(items, rules)
+                
+                if result['valid']:
+                    return {"status": "success", "report": "Công thức hợp lệ"}
+                else:
+                    return {"status": "error", "error_message": str(result['violations'])}
+            except Exception as e:
+                return {"status": "error", "error_message": str(e)}
         
-        return [get_shop_best_sellers, consult_mixing_rules, google_search]
+        return [get_best_sellers, validate_recipe]
     
     def create_agent(self):
-        """Tạo agent - Không compile file này"""
-        tools = self._create_tools()
+        """Tạo agent - dùng prompts từ compiled module."""
+        api_key = self.env['ir.config_parameter'].sudo().get_param('trcf.gemini_api_key', '')
+        os.environ['GOOGLE_API_KEY'] = api_key
         
-        # Lấy instruction từ compiled file
-        instruction = get_agent_instruction()
+        from odoo import fields
+        today = fields.Date.today().strftime('%d-%m-%Y')
         
-        agent = Agent(
-            name=self.name,
-            model='gemini-2.5-flash',
-            tools=tools,
-            instruction=instruction  # Prompt đã được bảo vệ
+        # Instruction TỪ COMPILED prompts.so
+        instruction = prompts.get_system_instruction(today)
+        
+        return Agent(
+            name="my_agent",
+            model="gemini-2.0-flash",
+            description="AI Agent for business analysis",
+            instruction=instruction,  # Từ compiled module!
+            tools=self._create_tools()
         )
-        
-        return agent
 ```
 
-### 3. Compile Strategy
+---
+
+## 🔧 Compilation Commands
 
 ```bash
-cd custom_addons/trcf_my_agent
+cd custom_addons/trcf_my_agent/models/agents/my_agent
 
-# Compile business logic
-cythonize -i models/business_logic.py
+# Compile prompts và business logic
+cythonize -i prompts.py
+cythonize -i business_logic.py
 
-# Compile prompt config (QUAN TRỌNG!)
-cythonize -i models/prompt_config.py
-
-# KHÔNG compile agent_wrapper.py
+# KHÔNG compile agent.py
 ```
 
-## 🔐 Kết quả
+---
 
-### **Trước khi deploy:**
-```
-models/
-├── business_logic.py          # Source code
-├── prompt_config.py            # Source code - CHỨA PROMPT
-├── agent_wrapper.py            # Source code
-```
+## 📦 Deploy Structure
 
-### **Sau khi compile & deploy:**
+**Trước compile:**
 ```
-models/
-├── business_logic.so           # Compiled ✅
-├── prompt_config.so            # Compiled ✅ - PROMPT ĐÃ BẢO VỆ
-├── agent_wrapper.py            # Source (không chứa logic quan trọng)
+my_agent/
+├── __init__.py
+├── agent.py           # Source
+├── prompts.py         # Source - CHỨA PROMPTS
+├── business_logic.py  # Source - CHỨA ALGORITHMS
 ```
 
-**Xóa source files trước khi deploy:**
+**Sau compile (deploy):**
+```
+my_agent/
+├── __init__.py                    # Giữ nguyên
+├── agent.py                       # Giữ nguyên (thin wrapper)
+├── prompts.cpython-39-darwin.so   # ✅ Compiled
+├── business_logic.cpython-39-darwin.so  # ✅ Compiled
+```
+
+**Xóa source trước deploy:**
 ```bash
-rm models/business_logic.py
-rm models/prompt_config.py
-# Giữ agent_wrapper.py
+rm prompts.py business_logic.py
+# Giữ lại agent.py (nó chỉ là wrapper)
 ```
+
+---
 
 ## ✅ Lợi ích
 
-1. **Bảo vệ IP**: Khách hàng không thấy được prompt logic
-2. **Che giấu quy trình**: Business rules được compile
-3. **Bảo mật chiến lược**: Decision-making logic ẩn
-4. **Dễ maintain**: Tách prompt ra file riêng, dễ update
+1. **Bảo vệ Prompts**: Khách không thấy được instructions
+2. **Bảo vệ Algorithms**: Business logic được compile
+3. **Dễ maintain**: agent.py vẫn readable, dễ debug
+4. **Flexible**: Update compiled files mà không đổi wrapper
 
-## 🎯 Best Practices
-
-### 1. **Tách rõ ràng:**
-```python
-# prompt_config.py - COMPILE
-- Agent instructions
-- System prompts
-- Business rules
-- Decision logic
-
-# agent_wrapper.py - KHÔNG COMPILE
-- Agent initialization
-- Tool registration
-- Simple wrappers
-```
-
-### 2. **Modular Prompts:**
-```python
-def get_agent_instruction():
-    base = get_base_instruction()
-    rules = get_business_rules()
-    examples = get_examples()
-    return f"{base}\n\n{rules}\n\n{examples}"
-```
-
-### 3. **Dynamic Prompts:**
-```python
-def get_agent_instruction(context=None):
-    """Generate prompt based on context"""
-    instruction = BASE_TEMPLATE
-    
-    if context and context.get('season') == 'summer':
-        instruction += SUMMER_RULES
-    
-    return instruction
-```
-
-### 4. **Versioning:**
-```python
-PROMPT_VERSION = "2.1.0"
-
-def get_agent_instruction():
-    """Prompt v2.1.0 - Updated 2025-01-15"""
-    return f"""
-    [Version {PROMPT_VERSION}]
-    ...
-    """
-```
-
-## ⚠️ Lưu ý
-
-### **Không nên compile:**
-- Agent class initialization
-- Tool registration code
-- HTTP routing
-- Odoo model definitions
-
-### **Nên compile:**
-- ✅ Prompt templates
-- ✅ Business rules
-- ✅ Decision logic
-- ✅ Proprietary algorithms
-- ✅ System instructions
+---
 
 ## 📋 Checklist
 
-- [ ] Tạo `prompt_config.py` riêng
-- [ ] Move tất cả prompts vào `prompt_config.py`
-- [ ] Move business rules vào `prompt_config.py`
-- [ ] Update `agent_wrapper.py` import từ `prompt_config`
-- [ ] Test agent hoạt động với prompts từ file mới
-- [ ] Compile `prompt_config.py`
-- [ ] Verify compiled version hoạt động
-- [ ] Xóa `prompt_config.py` source trước deploy
-- [ ] Deploy chỉ với `.so` files
+- [ ] Tách prompts vào `prompts.py`
+- [ ] Tách business logic vào `business_logic.py`
+- [ ] `agent.py` chỉ còn thin wrappers
+- [ ] **Tools trả về `dict` với status/report** (theo ADK docs)
+- [ ] Test agent hoạt động với source files
+- [ ] Compile `prompts.py` và `business_logic.py`
+- [ ] Test agent với compiled files
+- [ ] Xóa `.py` source, giữ `.so`
+- [ ] Deploy
 
-## 📚 Tham khảo
+---
+
+## 🔗 Tham khảo
 
 - Cython Guide: `docs/cython_compilation.md`
-- ADK Reference: `docs/google_adk_reference.md`
+- Tool Logic Protection: `docs/compile_tool_logic.md`
+- ADK Concepts: `context_adk_agent/core-concepts.md`

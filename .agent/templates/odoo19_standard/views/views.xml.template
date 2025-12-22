@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Template: Odoo 19 Standard Views -->
+<!-- Variables: {{MODEL_NAME}}, {{MODEL_TITLE}}, {{MODULE_NAME}}, {{MENU_PARENT}}, {{MODEL_NAME_UNDERSCORE}} -->
+
+<odoo>
+    <!-- List View (Odoo 19: <list> not <tree>) -->
+    <record id="{{MODEL_NAME_UNDERSCORE}}_view_list" model="ir.ui.view">
+        <field name="name">{{MODEL_NAME}}.list</field>
+        <field name="model">{{MODEL_NAME}}</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active" decoration-info="state == 'draft'" decoration-success="state == 'done'">
+                <field name="name"/>
+                <field name="partner_id" optional="show"/>
+                <field name="date"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="{{MODEL_NAME_UNDERSCORE}}_view_form" model="ir.ui.view">
+        <field name="name">{{MODEL_NAME}}.form</field>
+        <field name="model">{{MODEL_NAME}}</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_done" string="Hoàn thành" type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" string="Hủy" type="object" invisible="state in ('done', 'cancelled')"/>
+                    <button name="action_draft" string="Đặt lại" type="object" invisible="state not in ('cancelled',)"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Đã lưu trữ" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Ví dụ: Tên bản ghi..."/></h1>
+                    </div>
+                    <group>
+                        <group string="Thông tin">
+                            <field name="partner_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group string="Khác">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="{{MODEL_NAME_UNDERSCORE}}_view_search" model="ir.ui.view">
+        <field name="name">{{MODEL_NAME}}.search</field>
+        <field name="model">{{MODEL_NAME}}</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter string="Mới" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Lưu trữ" name="inactive" domain="[('active','=',False)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Ngày" name="group_date" context="{'group_by':'date'}"/>
+                    <filter string="Trạng thái" name="group_state" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="{{MODEL_NAME_UNDERSCORE}}_action" model="ir.actions.act_window">
+        <field name="name">{{MODEL_TITLE}}</field>
+        <field name="res_model">{{MODEL_NAME}}</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="{{MODEL_NAME_UNDERSCORE}}_menu"
+              name="{{MODEL_TITLE}}"
+              parent="{{MENU_PARENT}}"
+              action="{{MODEL_NAME_UNDERSCORE}}_action"
+              sequence="10"/>
+</odoo>

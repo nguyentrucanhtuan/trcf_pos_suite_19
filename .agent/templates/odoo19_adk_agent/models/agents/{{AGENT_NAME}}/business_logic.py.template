@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+# Template: Business Logic for ADK Agent (✅ Compile-friendly)
+# Variables: {{AGENT_NAME}}
+
+import logging
+_logger = logging.getLogger(__name__)
+
+def get_system_info(env, query=None):
+    """
+    Logic lấy dữ liệu từ Odoo.
+    Hàm này có thể được biên dịch Cython để bảo mật logic nghiệp vụ.
+    """
+    try:
+        # Ví dụ: lấy danh sách đối tác
+        partners = env['res.partner'].sudo().search([('name', 'ilike', query or '')], limit=5)
+        return {
+            'data': partners.mapped('name'),
+            'count': len(partners)
+        }
+    except Exception as e:
+        _logger.error(f"Error in get_system_info: {e}")
+        return {'error': str(e)}
+
+def format_info_output(data):
+    """
+    Format dữ liệu trả về cho Agent (TRẢ VỀ DICT).
+    """
+    if 'error' in data:
+        return {
+            "status": "error", 
+            "error_message": data['error']
+        }
+    
+    if not data['data']:
+        return {
+            "status": "success",
+            "report": "Không tìm thấy dữ liệu phù hợp."
+        }
+        
+    report = f"📊 Tìm thấy {data['count']} kết quả:\n"
+    report += "\n".join([f"• {name}" for name in data['data']])
+    
+    return {
+        "status": "success",
+        "report": report
+    }

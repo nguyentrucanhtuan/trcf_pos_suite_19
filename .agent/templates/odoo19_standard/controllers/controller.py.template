@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+# Template: Odoo 19 Controller
+from odoo import http
+from odoo.http import request
+
+class {{CONTROLLER_CLASS}}(http.Controller):
+    @http.route('/{{MODULE_NAME}}/data', type='json', auth='user')
+    def get_data(self, **kwargs):
+        records = request.env['{{MODEL_NAME}}'].search_read([], ['name'])
+        return {'status': 'success', 'data': records}

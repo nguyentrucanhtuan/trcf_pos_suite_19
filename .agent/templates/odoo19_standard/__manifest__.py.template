@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+# Template: Odoo 19 Standard Module Manifest
+# Variables: {{MODULE_NAME}}, {{MODULE_TITLE}}, {{CATEGORY}}, {{SUMMARY}}, {{DEPENDS}}
+
+{
+    'name': '{{MODULE_TITLE}}',
+    'version': '19.0.1.0.0',
+    'category': '{{CATEGORY}}',
+    'summary': '{{SUMMARY}}',
+    'description': '''
+        {{DESCRIPTION}}
+    ''',
+    'author': 'Tuấn Rang Cà Phê',
+    'website': 'https://tuanrangcaphe.com',
+    'license': 'LGPL-3',
+    'depends': [{{DEPENDS}}],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/{{MODEL_FILE_NAME}}_views.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            '{{MODULE_NAME}}/static/src/js/**/*',
+            '{{MODULE_NAME}}/static/src/xml/**/*',
+            '{{MODULE_NAME}}/static/src/css/**/*',
+        ],
+    },
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+}
