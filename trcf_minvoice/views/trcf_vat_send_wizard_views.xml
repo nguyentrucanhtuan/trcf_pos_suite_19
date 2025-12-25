@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard Form View -->
+    <record id="view_trcf_vat_send_wizard_form" model="ir.ui.view">
+        <field name="name">trcf.vat.send.wizard.form</field>
+        <field name="model">trcf.vat.send.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Phát hành hóa đơn VAT">
+                <sheet>
+                    <widget name="trcf_vat_send_progress"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

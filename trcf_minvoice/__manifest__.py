@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TRCF - MInvoice VAT',
-    'version': '1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Point of Sale',
     'summary': 'Xuất hóa đơn điện tử qua MInvoice API',
     'author': 'Tuấn Rang Cà Phê',
@@ -9,10 +9,19 @@
     'data': [
         'security/ir.model.access.csv',
         'views/minvoice_res_config_settings_views.xml',
+        'views/trcf_vat_send_wizard_views.xml',
+        'views/trcf_order_pending_vat_search_view.xml',
         'views/trcf_order_pending_vat_views.xml',
         'views/trcf_order_pos_info.xml',
         'views/trcf_vat_info_form.xml'
     ],
+    'assets': {
+        'web.assets_backend': [
+            'trcf_minvoice/static/src/js/trcf_vat_send_progress.js',
+            'trcf_minvoice/static/src/xml/trcf_vat_send_progress.xml',
+        ],
+    },
+
     'installable': True,
     'application': True,
     'license': 'LGPL-3',

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_trcf_marketing_content_user,trcf.marketing.content.user,model_trcf_marketing_content,base.group_user,1,1,1,0
+access_trcf_marketing_content_manager,trcf.marketing.content.manager,model_trcf_marketing_content,base.group_system,1,1,1,1
+access_trcf_marketing_content_reject_wizard,trcf.marketing.content.reject.wizard,model_trcf_marketing_content_reject_wizard,base.group_user,1,1,1,1
+access_trcf_marketing_content_generate_wizard,trcf.marketing.content.generate.wizard,model_trcf_marketing_content_generate_wizard,base.group_user,1,1,1,1

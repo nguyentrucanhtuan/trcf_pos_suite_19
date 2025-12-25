@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_trcf_marketing_content_list" model="ir.ui.view">
+        <field name="name">trcf.marketing.content.list</field>
+        <field name="model">trcf.marketing.content</field>
+        <field name="arch" type="xml">
+            <list string="Content Library" default_order="create_date desc">
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="platform" widget="badge"/>
+                <field name="pillar"/>
+                <field name="angle"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'rejected'"
+                       decoration-warning="state == 'draft'"/>
+                <button name="action_approve" type="object" 
+                        string="✅" title="Duyệt" class="btn-success btn-sm"
+                        invisible="state != 'draft'"/>
+                <button name="action_reject" type="object" 
+                        string="❌" title="Từ chối" class="btn-danger btn-sm"
+                        invisible="state != 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_trcf_marketing_content_form" model="ir.ui.view">
+        <field name="name">trcf.marketing.content.form</field>
+        <field name="model">trcf.marketing.content</field>
+        <field name="arch" type="xml">
+            <form string="Marketing Content">
+                <header>
+                    <button name="action_approve" type="object" 
+                            string="✅ Duyệt" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_reject" type="object" 
+                            string="❌ Từ chối"
+                            invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,rejected"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="platform"/>
+                            <field name="pillar"/>
+                            <field name="angle"/>
+                        </group>
+                        <group>
+                            <field name="hook"/>
+                            <field name="hashtags"/>
+                            <field name="create_date" readonly="1"/>
+                            <field name="approval_date" invisible="state != 'approved'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Nội dung">
+                            <field name="content"/>
+                        </page>
+                        <page string="Lý do từ chối" invisible="state != 'rejected'">
+                            <field name="rejection_reason"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_trcf_marketing_content_search" model="ir.ui.view">
+        <field name="name">trcf.marketing.content.search</field>
+        <field name="model">trcf.marketing.content</field>
+        <field name="arch" type="xml">
+            <search string="Search Content">
+                <field name="name"/>
+                <field name="pillar"/>
+                <field name="platform"/>
+                <filter name="filter_draft" string="Chờ duyệt" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_approved" string="Đã duyệt" domain="[('state', '=', 'approved')]"/>
+                <filter name="filter_rejected" string="Từ chối" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter name="filter_tiktok" string="TikTok" domain="[('platform', '=', 'tiktok')]"/>
+                <filter name="filter_instagram" string="Instagram" domain="[('platform', '=', 'instagram')]"/>
+                <filter name="filter_facebook" string="Facebook" domain="[('platform', '=', 'facebook')]"/>
+                <filter name="filter_threads" string="Threads" domain="[('platform', '=', 'threads')]"/>
+                <separator/>
+                <filter name="group_state" string="Nhóm theo trạng thái" context="{'group_by': 'state'}"/>
+                <filter name="group_platform" string="Nhóm theo platform" context="{'group_by': 'platform'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_trcf_marketing_content" model="ir.actions.act_window">
+        <field name="name">Content Library</field>
+        <field name="res_model">trcf.marketing.content</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có content nào được tạo
+            </p>
+            <p>
+                Bắt đầu bằng cách cấu hình Customer Persona và Brand Key trong Settings,
+                sau đó dùng AI để tạo content!
+            </p>
+        </field>
+    </record>
+
+    <!-- Rejection Wizard -->
+    <record id="view_trcf_marketing_content_reject_wizard_form" model="ir.ui.view">
+        <field name="name">trcf.marketing.content.reject.wizard.form</field>
+        <field name="model">trcf.marketing.content.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Lý do từ chối">
+                <group>
+                    <field name="content_id" invisible="1"/>
+                    <field name="rejection_reason" placeholder="Nhập lý do từ chối để AI học và tránh lặp lại..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm_reject" type="object" 
+                            string="Xác nhận từ chối" class="btn-primary"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Generate Content Wizard -->
+    <record id="view_trcf_marketing_content_generate_wizard_form" model="ir.ui.view">
+        <field name="name">trcf.marketing.content.generate.wizard.form</field>
+        <field name="model">trcf.marketing.content.generate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Tạo Content với AI">
+                <group string="Chọn Platform">
+                    <group>
+                        <field name="platform_tiktok"/>
+                        <field name="platform_instagram"/>
+                    </group>
+                    <group>
+                        <field name="platform_facebook"/>
+                        <field name="platform_threads"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="custom_request" placeholder="VD: Tạo content về món Cold Brew mới ra mắt, nhấn mạnh vào hương vị độc đáo..."/>
+                </group>
+                <footer>
+                    <button name="action_generate" type="object" 
+                            string="🚀 Tạo Content" class="btn-primary"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action để mở wizard -->
+    <record id="action_trcf_marketing_generate" model="ir.actions.act_window">
+        <field name="name">Tạo Content mới</field>
+        <field name="res_model">trcf.marketing.content.generate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_trcf_marketing_plan_root"
+              name="Marketing Plan"
+              web_icon="trcf_marketing_plan,static/description/icon.png"
+              sequence="100"/>
+    
+    <menuitem id="menu_trcf_marketing_content"
+              name="Content Library"
+              parent="menu_trcf_marketing_plan_root"
+              action="action_trcf_marketing_content"
+              sequence="10"/>
+    
+    <menuitem id="menu_trcf_marketing_generate"
+              name="Tao Content moi"
+              parent="menu_trcf_marketing_plan_root"
+              action="action_trcf_marketing_generate"
+              sequence="5"/>
+</odoo>

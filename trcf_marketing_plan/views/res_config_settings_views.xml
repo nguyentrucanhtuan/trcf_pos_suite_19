@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_marketing" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.marketing</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Marketing Plan" string="Marketing Plan" name="trcf_marketing_plan" groups="base.group_system">
+                    <block title="AI Configuration" name="ai_config">
+                        <setting string="Gemini API Key" help="API Key de su dung AI Agent">
+                            <field name="marketing_gemini_api_key" password="True"/>
+                        </setting>
+                    </block>
+                    
+                    <block title="Customer Persona" name="customer_persona">
+                        <setting string="Chan dung khach hang" help="Do tuoi, nghe nghiep, nhu cau, pain points">
+                            <field name="marketing_customer_persona" class="o_light_label"/>
+                        </setting>
+                    </block>
+                    
+                    <block title="Brand Key" name="brand_key">
+                        <setting string="The manh thuong hieu" help="USP, tone, voice, core values">
+                            <field name="marketing_brand_key" class="o_light_label"/>
+                        </setting>
+                    </block>
+                    
+                    <block title="Customer Journey" name="customer_journey">
+                        <setting string="Hanh trinh khach hang" help="5 giai doan tu Awareness den Advocacy">
+                            <field name="marketing_customer_journey" class="o_light_label"/>
+                        </setting>
+                    </block>
+                    
+                    <block title="Business Goals" name="business_goals">
+                        <setting string="Muc tieu kinh doanh" help="Muc tieu quy hien tai">
+                            <field name="marketing_goals_current" class="o_light_label"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

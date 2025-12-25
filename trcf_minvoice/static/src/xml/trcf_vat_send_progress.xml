@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="trcf_minvoice.TrcfVatSendProgress">
+        <div class="trcf_vat_progress_container p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="h3 mb-0">
+                    <t t-esc="state.total"/> Đơn hàng
+                </div>
+                <div class="buttons">
+                    <button t-if="!state.isDone" 
+                            t-att-disabled="state.isProcessing"
+                            class="btn btn-primary me-2" 
+                            t-on-click="startProcessing">
+                        <i t-if="state.isProcessing" class="fa fa-spinner fa-spin me-1"/>
+                        <t t-if="!state.isProcessing">Bắt đầu gửi</t>
+                        <t t-else="">Đang xử lý...</t>
+                    </button>
+                    <button t-if="state.isDone" class="btn btn-secondary" t-on-click="() => this.props.record.model.actionCancel()">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-4">
+                    <div class="card bg-light border-0">
+                        <div class="card-body text-center p-2">
+                            <div class="small text-muted mb-1">Đang chờ</div>
+                            <div class="h4 mb-0 text-secondary"><t t-esc="state.pending"/></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card bg-success-light border-0" style="background-color: #e8f5e9;">
+                        <div class="card-body text-center p-2">
+                            <div class="small text-success mb-1">Thành công</div>
+                            <div class="h4 mb-0 text-success"><t t-esc="state.success"/></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card bg-danger-light border-0" style="background-color: #ffebee;">
+                        <div class="card-body text-center p-2">
+                            <div class="small text-danger mb-1">Thất bại</div>
+                            <div class="h4 mb-0 text-danger"><t t-esc="state.failed"/></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress mb-4" style="height: 10px;">
+                <div class="progress-bar bg-success" role="progressbar" 
+                     t-att-style="'width: ' + (state.success / state.total * 100) + '%'" 
+                     t-att-aria-valuenow="state.success" aria-valuemin="0" t-att-aria-valuemax="state.total"></div>
+                <div class="progress-bar bg-danger" role="progressbar" 
+                     t-att-style="'width: ' + (state.failed / state.total * 100) + '%'" 
+                     t-att-aria-valuenow="state.failed" aria-valuemin="0" t-att-aria-valuemax="state.total"></div>
+            </div>
+
+            <div class="table-responsive border rounded" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover table-sm mb-0">
+                    <thead class="sticky-top bg-white shadow-sm">
+                        <tr>
+                            <th class="ps-3 py-2">Mã đơn</th>
+                            <th class="text-end py-2">Số tiền</th>
+                            <th class="text-center py-2">Trạng thái</th>
+                            <th class="py-2">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="state.lines" t-as="line" t-key="line.id"
+                            t-att-class="line.status === 'success' ? 'table-success-light' : (line.status === 'failed' ? 'table-danger-light' : '')">
+                            <td class="ps-3 py-2 fw-bold"><t t-esc="line.order_ref"/></td>
+                            <td class="text-end py-2"><t t-esc="line.order_amount.toLocaleString()"/>đ</td>
+                            <td class="text-center py-2">
+                                <span t-att-class="'badge rounded-pill ' + 
+                                    (line.status === 'success' ? 'text-bg-success' : 
+                                    (line.status === 'failed' ? 'text-bg-danger' : 
+                                    (line.status === 'processing' ? 'text-bg-info' : 'text-bg-secondary')))">
+                                    <t t-if="line.status === 'pending'">Chờ xử lý</t>
+                                    <t t-if="line.status === 'processing'">Đang gửi...</t>
+                                    <t t-if="line.status === 'success'">Thành công</t>
+                                    <t t-if="line.status === 'failed'">Thất bại</t>
+                                </span>
+                            </td>
+                            <td class="py-2 small">
+                                <t t-if="line.vat_code">
+                                    <span class="text-success"><i class="fa fa-check-circle me-1"/>Mã VAT: <t t-esc="line.vat_code"/></span>
+                                </t>
+                                <t t-if="line.error_message">
+                                    <span class="text-danger"><i class="fa fa-exclamation-triangle me-1"/><t t-esc="line.error_message"/></span>
+                                </t>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+</templates>

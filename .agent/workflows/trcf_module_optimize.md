@@ -90,6 +90,68 @@ partners = self.mapped('partner_id')
 total = fields.Float(compute='_compute_total', store=True)
 ```
 
+**Lỗi Search View XML (Odoo 19):**
+
+> ⚠️ **QUAN TRỌNG**: Odoo 19 có XML schema rất strict cho search views!
+
+```xml
+<!-- ❌ SAI - Dùng Python expressions phức tạp trong domain -->
+<filter name="today" 
+    domain="[('date','>=',datetime.datetime.combine(context_today(),datetime.time(0,0,0)))]"/>
+
+<!-- ✅ ĐÚNG - Dùng expressions đơn giản -->
+<filter name="today" 
+    domain="[('date','>=',datetime.datetime.now().replace(hour=0,minute=0,second=0).strftime('%Y-%m-%d %H:%M:%S'))]"/>
+
+<!-- ❌ SAI - Dùng <group> với string attribute cho group-by -->
+<group expand="0" string="Nhóm theo">
+    <filter name="group_date" context="{'group_by':'date'}"/>
+</group>
+
+<!-- ✅ ĐÚNG - Bỏ <group> wrapper, đặt filters trực tiếp -->
+<separator/>
+<filter name="group_date" string="Ngày" context="{'group_by':'date'}"/>
+<filter name="group_status" string="Trạng thái" context="{'group_by':'state'}"/>
+
+<!-- ❌ SAI - Đặt <field> sau <filter> -->
+<search>
+    <filter name="my_filter" domain="[...]"/>
+    <field name="name"/>  <!-- Sai vị trí -->
+</search>
+
+<!-- ✅ ĐÚNG - <field> phải đứng trước <filter> -->
+<search>
+    <field name="name"/>
+    <field name="partner_id"/>
+    <filter name="my_filter" domain="[...]"/>
+</search>
+```
+
+**Template search view tối giản (luôn work):**
+```xml
+<record id="view_my_search" model="ir.ui.view">
+    <field name="name">my.model.search</field>
+    <field name="model">my.model</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="partner_id"/>
+            <filter name="filter_today" string="Hôm nay" 
+                domain="[('date','>=',datetime.datetime.now().replace(hour=0,minute=0,second=0).strftime('%Y-%m-%d %H:%M:%S'))]"/>
+            <filter name="filter_active" string="Active" domain="[('active','=',True)]"/>
+            <separator/>
+            <filter name="group_by_date" string="Ngày" context="{'group_by':'date:day'}"/>
+        </search>
+    </field>
+</record>
+```
+
+**Set default filter trong action:**
+```xml
+<field name="context">{'search_default_filter_today': 1}</field>
+<field name="search_view_id" ref="view_my_search"/>
+```
+
 ### 4. Test sau tối ưu
 
 // turbo

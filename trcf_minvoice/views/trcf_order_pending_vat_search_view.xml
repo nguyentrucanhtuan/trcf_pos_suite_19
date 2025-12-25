@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View cho Order Pending VAT -->
+    <record id="view_trcf_order_pending_vat_search" model="ir.ui.view">
+        <field name="name">trcf.order.pending.vat.search</field>
+        <field name="model">pos.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="pos_reference"/>
+                <field name="partner_id"/>
+                <field name="trcf_reference_tax_code"/>
+                <filter name="filter_today" string="Hôm nay" 
+                    domain="[('date_order','&gt;=', time.strftime('%Y-%m-%d 00:00:00')),('date_order','&lt;=', time.strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter name="filter_not_sent" string="Chưa xuất VAT" domain="[('trcf_is_vat_sent','=',False)]"/>
+                <filter name="filter_sent" string="Đã xuất VAT" domain="[('trcf_is_vat_sent','=',True)]"/>
+                <separator/>
+                <filter name="filter_last_7_days" string="7 ngày qua" 
+                    domain="[('date_order','&gt;=', (context_today()-datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_last_30_days" string="30 ngày qua" 
+                    domain="[('date_order','&gt;=', (context_today()-datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="group_by_date" string="Ngày" context="{'group_by':'date_order:day'}"/>
+                <filter name="group_by_vat_status" string="Trạng thái VAT" context="{'group_by':'trcf_is_vat_sent'}"/>
+                <filter name="group_by_partner" string="Khách hàng" context="{'group_by':'partner_id'}"/>
+            </search>
+        </field>
+    </record>
+</odoo>
