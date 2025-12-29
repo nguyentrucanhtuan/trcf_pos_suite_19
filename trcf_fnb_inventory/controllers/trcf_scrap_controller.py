@@ -333,7 +333,11 @@ class TrcfScrapController(http.Controller):
             if not scrap_location_id:
                 _logger.warning("No scrap destination location configured in settings, searching for scrap location")
                 scrap_location = request.env['stock.location'].sudo().search([
-                    ('scrap_location', '=', True)
+                    ('usage', '=', 'inventory'),
+                    ('name', 'ilike', 'scrap'),
+                    '|',
+                    ('company_id', '=', request.env.company.id),
+                    ('company_id', '=', False)
                 ], limit=1)
                 
                 # If still not found, try inventory usage

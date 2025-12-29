@@ -6,3 +6,4 @@ from . import trcf_scrap_controller
 from . import trcf_processing_controller
 from . import trcf_dashboard_controller
 from . import trcf_transfer_controller
+from . import trcf_history_move_report_controller

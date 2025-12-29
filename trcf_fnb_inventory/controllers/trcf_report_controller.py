@@ -816,6 +816,7 @@ class TrcfReportController(http.Controller):
 
         
         return session_list
+
     def get_session_details(self, start_date, end_date):
         """Lấy chi tiết các phiên bán hàng với breakdown tất cả payment methods"""
         # 1. Setup Timezone

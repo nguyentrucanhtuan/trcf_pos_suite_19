@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="move_report_template">
+        <html>
+            <head>
+                <meta charset="utf-8"/>
+                <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+                <title>Báo cáo Nhập Xuất</title>
+                <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+                <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+                <script>
+                    tailwind.config = {
+                        darkMode: "class",
+                        theme: {
+                            extend: {
+                                colors: {
+                                    primary: '#2563eb',
+                                    'primary-light': '#eff6ff',
+                                    'primary-dark': '#1e40af',
+                                    'background-light': '#f8fafc',
+                                    'background-dark': '#020617',
+                                    'text-light-primary': '#1e293b',
+                                    'text-light-secondary': '#64748b',
+                                    'text-dark-primary': '#f8fafc',
+                                    'text-dark-secondary': '#94a3b8',
+                                    'border-light': '#e2e8f0',
+                                    'border-dark': '#1e293b',
+                                },
+                                fontFamily: {
+                                    "display": ["Inter", "sans-serif"],
+                                    "sans": ["Inter", "sans-serif"]
+                                },
+                            },
+                        },
+                    }
+                </script>
+                <style>
+                    body { font-family: 'Inter', sans-serif; }
+                    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+                    .sort-icon { font-size: 18px !important; cursor: pointer; transition: color 0.2s; }
+                    .sort-icon:hover { color: #2563eb; }
+                    .sort-active { color: #2563eb !important; }
+                </style>
+            </head>
+            <body class="bg-background-light dark:bg-background-dark min-h-screen text-text-light-primary dark:text-text-dark-primary">
+                <div class="flex min-h-screen relative">
+                    <div id="mobile-overlay" class="hidden fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+                    
+                    <div id="sidebar-wrapper" class="hidden md:block fixed md:relative inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+                        <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    </div>
+
+                    <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+                        <div class="md:hidden flex items-center justify-between mb-4">
+                            <button id="mobile-menu-btn" class="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
+                                <span class="material-symbols-outlined">menu</span>
+                            </button>
+                            <h1 class="text-lg font-bold">Nhập Xuất</h1>
+                            <div class="w-10"></div>
+                        </div>
+
+                        <div class="max-w-7xl mx-auto">
+                            <div class="flex flex-col gap-6 mb-8">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div>
+                                        <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Báo cáo Nhập Xuất</h1>
+                                        <p class="text-text-light-secondary dark:text-text-dark-secondary mt-1">Theo dõi biến động kho cho <span class="font-semibold text-primary">Sản phẩm có theo dõi tồn kho</span>.</p>
+                                    </div>
+
+                                    <div class="flex items-center gap-1 bg-white dark:bg-slate-900 p-1 rounded-xl shadow-sm border border-border-light dark:border-border-dark">
+                                        <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=today&amp;search=#{search_query or ''}" 
+                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'today' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}">Hôm nay</a>
+                                        <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=week&amp;search=#{search_query or ''}" 
+                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'week' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}">Tuần</a>
+                                        <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=month&amp;search=#{search_query or ''}" 
+                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'month' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}">Tháng</a>
+                                    </div>
+                                </div>
+
+                                <div class="relative max-w-md">
+                                    <form action="/trcf_fnb_inventory/move_report" method="get" class="flex items-center">
+                                        <input type="hidden" name="filter_type" t-att-value="filter_type"/>
+                                        <div class="relative w-full">
+                                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="material-symbols-outlined text-gray-400 text-sm">search</span>
+                                            </span>
+                                            <input type="text" name="search" id="product-search" 
+                                                   class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark text-gray-900 dark:text-white text-sm rounded-xl focus:ring-primary focus:border-primary block w-full pl-10 p-2.5 outline-none transition-all" 
+                                                   placeholder="Tìm kiếm sản phẩm (ví dụ: NL...)" 
+                                                   t-att-value="search_query or ''"/>
+                                        </div>
+                                        <button type="submit" class="ml-2 px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-sm">Tìm</button>
+                                    </form>
+                                </div>
+                            </div>
+
+
+
+                            <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-border-light dark:border-border-dark overflow-hidden">
+                                <div class="px-6 py-4 border-b border-border-light dark:border-border-dark flex items-center justify-between">
+                                    <h2 class="text-lg font-bold flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary">analytics</span>
+                                        Bảng chi tiết (<t t-esc="len(move_stats)"/> SP)
+                                    </h2>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table id="move-table" class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-gray-50 dark:bg-slate-800/50 text-center font-bold text-[10px] uppercase tracking-widest text-text-light-secondary dark:text-text-dark-secondary border-b dark:border-border-dark">
+                                                <th rowspan="2" class="px-6 py-4 text-left border-r dark:border-border-dark min-w-[200px]">
+                                                    <div class="flex items-center justify-between">
+                                                        <span>Sản phẩm</span>
+                                                        <span class="material-symbols-outlined sort-icon" onclick="sortTable(0, 'string')">swap_vert</span>
+                                                    </div>
+                                                </th>
+                                                <th rowspan="2" class="px-3 py-4 border-r dark:border-border-dark">ĐVT</th>
+                                                <th colspan="3" class="px-4 py-2 border-r dark:border-border-dark text-red-600 dark:text-red-400 text-center">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <span>Chiều Xuất</span>
+                                                        <span class="material-symbols-outlined sort-icon" onclick="sortCombined(2, 3, 4)">swap_vert</span>
+                                                    </div>
+                                                </th>
+                                                <th colspan="2" class="px-4 py-2 text-green-600 dark:text-green-400 text-center">Chiều Nhập</th>
+                                            </tr>
+                                            <tr class="bg-gray-50/50 dark:bg-slate-800/30 text-[9px] uppercase font-bold text-text-light-secondary dark:text-text-dark-secondary border-b dark:border-border-dark">
+                                                <th class="px-4 py-2 border-r dark:border-border-dark text-right">
+                                                    <div class="flex items-center justify-end gap-1">
+                                                        <span>Bán hàng</span>
+                                                        <span class="material-symbols-outlined sort-icon text-[14px]" onclick="sortTable(2, 'number')">unfold_more</span>
+                                                    </div>
+                                                </th>
+                                                <th class="px-4 py-2 border-r dark:border-border-dark text-right">
+                                                    <div class="flex items-center justify-end gap-1">
+                                                        <span>Sản xuất</span>
+                                                        <span class="material-symbols-outlined sort-icon text-[14px]" onclick="sortTable(3, 'number')">unfold_more</span>
+                                                    </div>
+                                                </th>
+                                                <th class="px-4 py-2 border-r dark:border-border-dark text-right">
+                                                    <div class="flex items-center justify-end gap-1">
+                                                        <span>Huỷ</span>
+                                                        <span class="material-symbols-outlined sort-icon text-[14px]" onclick="sortTable(4, 'number')">unfold_more</span>
+                                                    </div>
+                                                </th>
+                                                <th class="px-4 py-2 border-r dark:border-border-dark text-right">Mua hàng</th>
+                                                <th class="px-4 py-2 text-right">Sản xuất</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-border-light dark:divide-border-dark text-gray-900 dark:text-gray-100">
+                                            <t t-if="not move_stats">
+                                                <tr><td colspan="7" class="px-6 py-12 text-center text-text-light-secondary italic">Không tìm thấy sản phẩm.</td></tr>
+                                            </t>
+                                            <t t-foreach="move_stats" t-as="stat">
+                                                <tr class="hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                                                    <td class="px-6 py-4 font-semibold border-r dark:border-border-dark" t-att-data-value="stat.get('name', '')" t-esc="stat.get('name', 'Unknown')"/>
+                                                    <td class="px-3 py-4 text-center text-text-light-secondary dark:text-text-dark-secondary border-r dark:border-border-dark" t-esc="stat.get('uom', '')"/>
+                                                    <td class="px-4 py-4 text-right font-bold text-red-600/90 dark:text-red-400/90 border-r dark:border-border-dark" t-att-data-value="stat.get('sales_qty', 0)" t-esc="format_qty(stat.get('sales_qty', 0))"/>
+                                                    <td class="px-4 py-4 text-right font-bold text-orange-600/90 dark:text-orange-400/90 border-r dark:border-border-dark" t-att-data-value="stat.get('consumed_qty', 0)" t-esc="format_qty(stat.get('consumed_qty', 0))"/>
+                                                    <td class="px-4 py-4 text-right font-bold text-pink-600/90 dark:text-pink-400/90 border-r dark:border-border-dark" t-att-data-value="stat.get('scrap_qty', 0)" t-esc="format_qty(stat.get('scrap_qty', 0))"/>
+                                                    <td class="px-4 py-4 text-right font-bold text-blue-600/90 dark:text-blue-400/90 border-r dark:border-border-dark" t-att-data-value="stat.get('purchase_qty', 0)" t-esc="format_qty(stat.get('purchase_qty', 0))"/>
+                                                    <td class="px-4 py-4 text-right font-bold text-green-600/90 dark:text-green-400/90" t-att-data-value="stat.get('prod_in_qty', 0)" t-esc="format_qty(stat.get('prod_in_qty', 0))"/>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+                <script>
+                    //<![CDATA[
+                    // Mobile Menu
+                    document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+                        document.getElementById('sidebar-wrapper').classList.toggle('hidden');
+                        document.getElementById('mobile-overlay').classList.toggle('hidden');
+                    });
+                    document.getElementById('mobile-overlay')?.addEventListener('click', () => {
+                        document.getElementById('sidebar-wrapper').classList.add('hidden');
+                        document.getElementById('mobile-overlay').classList.add('hidden');
+                    });
+
+                    // JS Sorting
+                    let currentSort = { col: -1, dir: 'asc' };
+
+                    function sortTable(n, type) {
+                        const table = document.getElementById("move-table");
+                        if (!table) return;
+                        const tbody = table.querySelector("tbody");
+                        const rows = Array.from(tbody.querySelectorAll("tr"));
+                        
+                        if (currentSort.col === n) {
+                            currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSort.col = n;
+                            currentSort.dir = 'asc';
+                        }
+
+                        rows.sort((a, b) => {
+                            let x = a.cells[n].getAttribute('data-value');
+                            let y = b.cells[n].getAttribute('data-value');
+                            
+                            if (type === 'number') {
+                                x = parseFloat(x) || 0;
+                                y = parseFloat(y) || 0;
+                            } else {
+                                x = (x || '').toLowerCase();
+                                y = (y || '').toLowerCase();
+                            }
+
+                            if (x === y) return 0;
+                            if (currentSort.dir === 'asc') {
+                                return x > y ? 1 : -1;
+                            } else {
+                                return x < y ? 1 : -1;
+                            }
+                        });
+
+                        tbody.innerHTML = "";
+                        rows.forEach(row => tbody.appendChild(row));
+                        updateSortIcons(n);
+                    }
+
+                    function sortCombined(n1, n2, n3) {
+                        const table = document.getElementById("move-table");
+                        if (!table) return;
+                        const tbody = table.querySelector("tbody");
+                        const rows = Array.from(tbody.querySelectorAll("tr"));
+                        const key = `combined_${n1}_${n2}_${n3}`;
+
+                        if (currentSort.col === key) {
+                            currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSort.col = key;
+                            currentSort.dir = 'asc';
+                        }
+
+                        rows.sort((a, b) => {
+                            const valA = (parseFloat(a.cells[n1].getAttribute('data-value')) || 0) + 
+                                         (parseFloat(a.cells[n2].getAttribute('data-value')) || 0) +
+                                         (parseFloat(a.cells[n3].getAttribute('data-value')) || 0);
+                            const valB = (parseFloat(b.cells[n1].getAttribute('data-value')) || 0) + 
+                                         (parseFloat(b.cells[n2].getAttribute('data-value')) || 0) +
+                                         (parseFloat(b.cells[n3].getAttribute('data-value')) || 0);
+                            
+                            if (valA === valB) return 0;
+                            if (currentSort.dir === 'asc') return valA > valB ? 1 : -1;
+                            return valA < valB ? 1 : -1;
+                        });
+
+                        tbody.innerHTML = "";
+                        rows.forEach(row => tbody.appendChild(row));
+                        updateSortIcons(key);
+                    }
+
+                    function updateSortIcons(activeKey) {
+                        document.querySelectorAll('.sort-icon').forEach(icon => {
+                            icon.classList.remove('sort-active');
+                            icon.innerHTML = 'swap_vert';
+                        });
+                    }
+                    //]]>
+                </script>
+            </body>
+        </html>
+    </template>
+</odoo>
