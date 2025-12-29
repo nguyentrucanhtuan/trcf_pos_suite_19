@@ -44,8 +44,17 @@ Kỹ năng này định hình cách Antigravity viết code cho dự án Tuấn 
 - Đăng ký assets trong `__manifest__.py` dưới key `assets`.
 - Sử dụng `setup()` và các hooks (`useState`, `onWillStart`) thay cho constructor cũ.
 
+## 🔄 Cơ chế Tự học & Cập nhật Tri thức
+Antigravity có trách nhiệm duy trì và nâng cấp "bộ não" của dự án thông qua các hành động sau:
+- **Ghi nhận lỗi**: Sau khi giải quyết một lỗi (bug) hoặc lỗi cấu trúc (logic error), phải cập nhật ngay vào `context_odoo19/troubleshooting.md`.
+- **Đúc kết kinh nghiệm**: Khi tìm ra giải pháp tối ưu hoặc kiến trúc tốt, phải ghi lại vào `context_odoo19/best_practices.md`.
+- **Cập nhật Skill (Quan trọng)**: Nếu phát hiện quy tắc trong file này (`odoo19_standard.md`) cần thay đổi hoặc bổ sung:
+    - **BẮT BUỘC** phải đề xuất với Người dùng những thay đổi dự kiến.
+    - **CHỈ ĐƯỢC PHÉP** cập nhật sau khi có sự xác nhận của Người dùng qua lệnh chat.
+
 ## ⚠️ Checklist "Sạch Code"
 1. Đã xóa code thừa/comment trống chưa?
 2. Docstring đã mô tả bằng tiếng Việt chưa?
 3. Các field số tiền đã dùng `Monetary` kèm field tiền tệ chưa?
 4. Đã có file `__init__.py` ở tất cả các folder con (`models`, `controllers`...) chưa?
+5. Có lỗi hoặc kinh nghiệm gì mới cần cập nhật vào bộ Context không?

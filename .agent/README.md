@@ -13,6 +13,16 @@ Hệ thống hoạt động dựa trên sự phối hợp của 4 tầng lớp:
 
 ---
 
+## 🔄 Cơ chế Tự học (The Learning Loop)
+
+Để hệ thống ngày càng thông minh, Antigravity sẽ tự động thực hiện:
+
+- **Cập nhật Lỗi**: Khi gặp một lỗi mới và fix xong, Agent sẽ tự viết vào `context_odoo19/troubleshooting.md`.
+- **Ghi lại Kinh nghiệm**: Các mẹo code hay hoặc kiến trúc tối ưu sẽ được lưu vào `context_odoo19/best_practices.md`.
+- **Tinh chỉnh Skill**: Nếu một quy tắc code không còn phù hợp, Agent sẽ kiến nghị bạn cập nhật `skills/odoo19_standard.md`.
+
+---
+
 ## 🚀 Các lệnh Slash Commands (Workflows)
 
 ### 1. `/trcf_module_create`
