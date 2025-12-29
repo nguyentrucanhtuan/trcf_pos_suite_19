@@ -1,5 +1,0 @@
-# -*- coding: utf-8 -*-
-# Models __init__.py template
-# Variables: {{MODEL_FILE_NAME}}
-
-from . import {{MODEL_FILE_NAME}}

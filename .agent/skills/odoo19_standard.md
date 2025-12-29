@@ -1,40 +1,51 @@
-# Skill: Phát triển Odoo 19 Standard Module (TRCF Style)
+# Skill: Phát triển Odoo 19 Standard Module (TRCF Standard)
 
-Kỹ năng này hướng dẫn Antigravity cách viết code chuẩn Odoo 19 cho hệ thống của Tuấn Rang Cà Phê.
+Kỹ năng này định hình cách Antigravity viết code cho dự án Tuấn Rang Cà Phê (TRCF), áp dụng các tiêu chuẩn mới nhất của Odoo 19.
 
-## 🎯 Mục tiêu
-- Tạo ra code sạch, dễ bảo trì, tuân thủ đúng kiến trúc Odoo 19.
-- Luôn sử dụng phong cách đặc trưng của dự án (TRCF).
+## 🎯 Tư duy Thiết kế (Mindset)
+- **Chuẩn Odoo 19**: Tuyệt đối không dùng code legacy. Ưu tiên `<list>`, reactive OWL, và Python expression modifiers.
+- **Tính đóng gói**: Một module phải "chạy được ngay" sau khi cài đặt (đầy đủ Data, Security, Action, Menu).
+- **Ngôn ngữ**: Toàn bộ nhãn hiển thị (string), thông báo lỗi và Docstring phải bằng **tiếng Việt**.
 
-## 🐍 Python Style
-- **Model Name**: Luôn bắt đầu bằng `trcf.`. Ví dụ: `trcf.inventory.check`.
-- **Field Conventions**:
-    - `name`: Luôn có `required=True` và `index=True`.
-    - `active`: Luôn có để hỗ trợ Archive.
-    - `state`: Luôn dùng Selection với các giá trị: `draft`, `confirmed`, `done`, `cancelled`.
-    - `tracking=True`: Sử dụng cho các trường quan trọng để lưu log vào Chatter.
-- **Methods**:
-    - Sử dụng `@api.model_create_multi` cho hàm `create`.
-    - Các hàm xử lý trạng thái bắt đầu bằng `action_` (ví dụ: `action_confirm`).
-    - Luôn có Docstring bằng tiếng Việt mô tả ngắn gọn mục đích.
+## 🐍 Quy tắc Python (Backend)
+- **Model Definition**: 
+    - Prefix: `trcf.`.
+    - Phải có `_description`.
+    - Trình tự: Attributes (`_name`, `_inherit`...) -> Fields -> Constrains -> Compute methods -> CRUD overrides -> Action methods.
+- **Fields Reference**:
+    - `name`: Luôn là `required=True`, `index=True` và `tracking=True`.
+    - `state`: Luôn là `Selection` với widget `statusbar` trong View.
+    - `active`: Thêm vào để hỗ trợ Archive nếu cần.
+    - `Many2one`: Luôn cân nhắc `ondelete='restrict'` hoặc `'cascade'`.
+- **ORM Style**: 
+    - Sử dụng `self.env` để truy cập `user`, `company`, `context`. Không dùng `self._uid` hay `self._context`.
+    - Overrides: Luôn dùng `@api.model_create_multi` cho `create`.
+    - Method naming: Logic nghiệp vụ bắt đầu bằng `action_`, logic nội bộ hoặc API riêng dùng `@api.private`.
+- **Error Handling**: Sử dụng `odoo.exceptions.ValidationError` hoặc `UserError` với nội dung tiếng Việt rõ ràng.
 
-## 📄 XML / UI Style
-- **Odoo 19 List View**: 
-    - Tuyệt đối không dùng thẻ `<tree>`, phải dùng `<list>`.
-    - Thêm `decoration-info`, `decoration-success` dựa trên `state`.
-- **Form View**:
-    - Cấu trúc: `<header>` (chứa buttons & statusbar) -> `<sheet>` -> `<div class="oe_title">` -> `<group>`.
-    - Luôn tích hợp Chatter (`oe_chatter`) ở cuối Form.
-- **Search View**: Luôn có các bộ lọc mặc định và Group By cho `state` và `date`.
+## 📄 Quy tắc XML / UI Style (Frontend)
+- **Views**:
+    - List View: Dùng thẻ `<list>`, không dùng `<tree>`. Thêm các thuộc tính trang trí `decoration-X`.
+    - Form View: Cấu trúc bắt buộc Header -> Sheet (Title -> Group -> Notebook) -> Chatter.
+    - Modifiers: Dùng trực tiếp `invisible`, `readonly`, `required` với logic Python (VD: `invisible="state == 'done'"`).
+- **Control Panel**: Luôn định nghĩa Search View với đầy đủ bộ lọc hữu ích cho người dùng TRCF.
+- **Menu Hierarchy**: Tuân thủ cấu trúc Menu của dự án, tránh tạo Menu rác ở Root.
 
-## 📁 File Structure
-- Luôn tuân thủ template trong `.agent/templates/odoo19_standard/`.
-- Tách biệt logic theo folder: `models/`, `views/`, `security/`, `static/`.
+## 📁 File Structure & Manifest
+- **__manifest__.py**: 
+    - `name`: Bắt đầu bằng `trcf_`.
+    - `license`: Bắt buộc là `LGPL-3`.
+    - `depends`: Luôn khai báo đủ các module phụ thuộc (VD: `base`, `mail`, `product`).
+    - `data`: Liệt kê theo thứ tự: Security -> Data -> Views -> Reports.
+- **Security**: File `ir.model.access.csv` phải đầy đủ quyền cho `base.group_user`.
 
-## ⚠️ Check & Fix
-- Khi gặp lỗi, hãy đối chiếu với `context_odoo19/troubleshooting.md`.
-- Tuyệt đối không dùng `attrs` (đã bị bỏ trong Odoo 19), hãy dùng trực tiếp `invisible`, `readonly`, `required` với điều kiện trực tiếp trong XML.
+## ⚙️ OWL & Assets
+- Sử dụng **ESM (import/export)**.
+- Đăng ký assets trong `__manifest__.py` dưới key `assets`.
+- Sử dụng `setup()` và các hooks (`useState`, `onWillStart`) thay cho constructor cũ.
 
-## 💡 Tư duy Logic
-- Hạn chế viết logic nặng trong Controller, hãy đưa vào Model (`models.py`) để tái sử dụng.
-- Luôn kiểm tra quyền truy cập (`ir.model.access.csv`) sau khi tạo model mới.
+## ⚠️ Checklist "Sạch Code"
+1. Đã xóa code thừa/comment trống chưa?
+2. Docstring đã mô tả bằng tiếng Việt chưa?
+3. Các field số tiền đã dùng `Monetary` kèm field tiền tệ chưa?
+4. Đã có file `__init__.py` ở tất cả các folder con (`models`, `controllers`...) chưa?

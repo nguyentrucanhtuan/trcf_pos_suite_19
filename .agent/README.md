@@ -1,56 +1,46 @@
-# Agent Development Documentation
+# Hệ thống Hỗ trợ Phát triển Odoo 19 (Antigravity Agent)
 
-Tài liệu phát triển modules Odoo 19 với Google ADK Agent.
+Tài liệu này hướng dẫn cách sử dụng bộ công cụ hỗ trợ phát triển Odoo 19 Standard cho dự án Tuấn Rang Cà Phê (TRCF). Hệ thống này được thiết kế để áp dụng trí tuệ nhân tạo vào quy trình lập trình, đảm bảo code luôn sạch, chuẩn và nhất quán.
 
-## 📁 Cấu trúc
+## 🏗 Cơ chế Hoạt động (How it works)
 
-```
-custom_addons/.agent/
-├── context_odoo19/             # Odoo 19 Documentation
-│   ├── orm-reference.md        # ORM API, Fields
-│   ├── views-reference.md      # Views (<list> không <tree>)
-│   └── owl-components.md       # OWL Components
-├── context_adk_agent/          # Google ADK Documentation
-│   ├── core-concepts.md        # Khái niệm ADK
-│   ├── odoo-integration.md     # Tích hợp Odoo
-│   ├── google-search-tool.md   # 🆕 Google Search Tool
-│   ├── best-practices.md       # Best practices
-│   └── troubleshooting.md      # Xử lý lỗi
-├── context_general/            # Coding Style, Git, Naming Conventions
-├── docs/                       # Bảo mật Code (Cython) & Deployment
-│   ├── protect_agent_prompts.md
-│   ├── compile_tool_logic.md
-│   └── cython_compilation.md
-├── templates/                  # Module Templates
-│   ├── odoo19_standard/        # 🆕 Standard Odoo 19 (CRUD, Business)
-│   └── odoo19_adk_agent/       # ⏳ ADK Agent (AI Integration)
-├── skills/                     # 🧠 AI Skills (Kỹ năng & Tư duy)
-│   ├── odoo19_standard.md      # Skill viết code Odoo 19 chuẩn
-│   └── adk_agent.md            # 🆕 Skill phát triển AI Agent (ADK)
-└── workflows/                  # Quy trình làm việc & /slash commands
-    ├── trcf_module_create.md   # /trcf_module_create - Tạo module
-    ├── trcf_module_optimize.md # /trcf_module_optimize - Tối ưu/Nâng cấp
-    └── trcf_adk_agent_create.md# /trcf_adk_agent_create - Tạo AI Agent
-```
+Hệ thống hoạt động dựa trên sự phối hợp của 4 tầng lớp:
 
-## 🚀 Workflows
+1.  **Context (Tri thức)**: Lưu trữ các bản tham chiếu kỹ thuật về Odoo 19 (ORM, Views, OWL). Khi bạn yêu cầu code, Agent sẽ "đọc" các file này để biết cú pháp Odoo 19 đúng.
+2.  **Skills (Kỹ năng)**: Chứa các quy chuẩn riêng của dự án TRCF (Prefix `trcf_`, ngôn ngữ Tiếng Việt, chuẩn bảo mật). Đây là bộ lọc để Agent không vi phạm quy tắc dự án.
+3.  **Workflows (Quy trình)**: Các kịch bản tự động hóa (Slash commands) giúp thực hiện các tác vụ phức tạp bằng một lệnh duy nhất.
+4.  **Templates (Mẫu)**: Các bộ khung file chuẩn để Agent sinh code nhanh và chính xác.
 
-| Command | Mô tả |
-|---------|-------|
-| `/trcf_module_create` | Tạo module Odoo 19 mới |
-| `/trcf_module_optimize` | Tối ưu + Nâng cấp module |
-| `/trcf_adk_agent_create` | Tạo module với Google ADK Agent |
+---
 
-## 📚 Tham khảo
+## 🚀 Các lệnh Slash Commands (Workflows)
 
-- **Odoo 19**: `context_odoo19/` (ORM, Views, OWL)
-- **Google ADK**: `context_adk_agent/` (Agent, Tools, Runner)
-- **Bảo mật**: `docs/` (Cython compilation)
-- **Chuẩn chung**: `context_general/`
+### 1. `/trcf_module_create`
+Dùng khi bạn muốn khởi tạo một module mới từ đầu.
+- **Cách dùng**: `/trcf_module_create [tên_module] "[mô_tả]"`
+- **Ví dụ**: `/trcf_module_create coffee_management "Quản lý kho hạt cà phê và rang xay"`
+- **Kết quả**: Agent sẽ tạo folder `trcf_coffee_management` với đầy đủ cấu hình Security, Model, View và Menu chuẩn Odoo 19.
 
-## 🏗️ Conventions
+### 2. `/trcf_module_optimize`
+Dùng để "dọn dẹp" và nâng cấp code hiện có.
+- **Cách dùng**: `/trcf_module_optimize [path_to_module]`
+- **Ví dụ**: Hãy tối ưu module này `/trcf_module_optimize custom_addons/trcf_old_module`
+- **Kết quả**: Agent sẽ tự động chuyển thẻ `<tree>` -> `<list>`, xóa `attrs`, cập nhật `@api.model_create_multi` và dịch toàn bộ nhãn sang Tiếng Việt.
 
-- **Prefix**: `trcf_`
-- **Author**: Tuấn Rang Cà Phê
-- **License**: LGPL-3
-- **Odoo 19**: Dùng `<list>` thay `<tree>`
+### 3. `/trcf_create_owl_component`
+Dùng để tạo nhanh các thành phần giao diện OWL.
+- **Cách dùng**: `/trcf_create_owl_component [tên_component]`
+- **Ví dụ**: `/trcf_create_owl_component pos_receipt_custom`
+- **Kết quả**: Agent tạo file `.js` (ESM) và `.xml` (Template), đồng thời tự động đăng ký vào `__manifest__.py`.
+
+---
+
+## 🧠 Mẹo dành cho Developer (Tips)
+
+- **Kích hoạt "Bộ não"**: Khi bắt đầu một task mới, bạn có thể nhắc Agent: *"Hãy tham chiếu Skill odoo19_standard và các Context liên quan trước khi thực hiện"*.
+- **Review Code**: Sau khi Agent viết code xong, hãy hỏi: *"Code này đã tuân thủ đúng Checklist Sạch Code trong Skill chưa?"* để Agent tự rà soát lỗi.
+- **Cập nhật tri thức**: Nếu Odoo 19 có bản cập nhật mới, hãy dán link doc vào và yêu cầu Agent tự cập nhật thư mục `context_odoo19/`.
+
+---
+**Duy trì bởi**: Antigravity x Tuấn Rang Cà Phê
+**Phiên bản**: 1.1 (Odoo 19 Standard - Enhanced)

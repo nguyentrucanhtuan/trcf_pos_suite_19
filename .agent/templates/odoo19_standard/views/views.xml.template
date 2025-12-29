@@ -1,85 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Template: Odoo 19 Standard Views -->
-<!-- Variables: {{MODEL_NAME}}, {{MODEL_TITLE}}, {{MODULE_NAME}}, {{MENU_PARENT}}, {{MODEL_NAME_UNDERSCORE}} -->
-
 <odoo>
-    <!-- List View (Odoo 19: <list> not <tree>) -->
-    <record id="{{MODEL_NAME_UNDERSCORE}}_view_list" model="ir.ui.view">
-        <field name="name">{{MODEL_NAME}}.list</field>
-        <field name="model">{{MODEL_NAME}}</field>
+    <!-- List View -->
+    <record id="view_trcf_${name}_list" model="ir.ui.view">
+        <field name="name">trcf.${name}.list</field>
+        <field name="model">trcf.${name}</field>
         <field name="arch" type="xml">
-            <list decoration-muted="not active" decoration-info="state == 'draft'" decoration-success="state == 'done'">
+            <list decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancel'">
                 <field name="name"/>
-                <field name="partner_id" optional="show"/>
                 <field name="date"/>
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancelled'"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'"/>
             </list>
         </field>
     </record>
 
     <!-- Form View -->
-    <record id="{{MODEL_NAME_UNDERSCORE}}_view_form" model="ir.ui.view">
-        <field name="name">{{MODEL_NAME}}.form</field>
-        <field name="model">{{MODEL_NAME}}</field>
+    <record id="view_trcf_${name}_form" model="ir.ui.view">
+        <field name="name">trcf.${name}.form</field>
+        <field name="model">trcf.${name}</field>
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" string="Xác nhận" type="object" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="action_done" string="Hoàn thành" type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
-                    <button name="action_cancel" string="Hủy" type="object" invisible="state in ('done', 'cancelled')"/>
-                    <button name="action_draft" string="Đặt lại" type="object" invisible="state not in ('cancelled',)"/>
+                    <button name="action_confirm" string="Xác nhận" type="object" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_done" string="Hoàn tất" type="object" invisible="state != 'confirmed'" class="oe_highlight"/>
+                    <button name="action_draft" string="Cài về nháp" type="object" invisible="state not in ['confirmed', 'cancel']"/>
+                    <button name="action_cancel" string="Hủy" type="object" invisible="state in ['done', 'cancel']"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
                 </header>
                 <sheet>
-                    <widget name="web_ribbon" title="Đã lưu trữ" bg_color="text-bg-danger" invisible="active"/>
                     <div class="oe_title">
                         <label for="name"/>
-                        <h1><field name="name" placeholder="Ví dụ: Tên bản ghi..."/></h1>
+                        <h1><field name="name" placeholder="VD: Tên đơn hàng..."/></h1>
                     </div>
                     <group>
-                        <group string="Thông tin">
-                            <field name="partner_id"/>
+                        <group>
                             <field name="date"/>
                         </group>
-                        <group string="Khác">
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="active" invisible="1"/>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user"/>
                         </group>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
 
     <!-- Search View -->
-    <record id="{{MODEL_NAME_UNDERSCORE}}_view_search" model="ir.ui.view">
-        <field name="name">{{MODEL_NAME}}.search</field>
-        <field name="model">{{MODEL_NAME}}</field>
+    <record id="view_trcf_${name}_search" model="ir.ui.view">
+        <field name="name">trcf.${name}.search</field>
+        <field name="model">trcf.${name}</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
-                <field name="partner_id"/>
-                <filter string="Mới" name="draft" domain="[('state','=','draft')]"/>
-                <filter string="Lưu trữ" name="inactive" domain="[('active','=',False)]"/>
-                <group expand="0" string="Nhóm theo">
-                    <filter string="Ngày" name="group_date" context="{'group_by':'date'}"/>
-                    <filter string="Trạng thái" name="group_state" context="{'group_by':'state'}"/>
+                <filter string="Của tôi" name="my_items" domain="[('user_id', '=', uid)]"/>
+                <filter string="Hôm nay" name="today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Gom nhóm theo">
+                    <filter string="Trạng thái" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Người phụ trách" name="group_user" context="{'group_by': 'user_id'}"/>
                 </group>
             </search>
         </field>
     </record>
-
-    <!-- Action -->
-    <record id="{{MODEL_NAME_UNDERSCORE}}_action" model="ir.actions.act_window">
-        <field name="name">{{MODEL_TITLE}}</field>
-        <field name="res_model">{{MODEL_NAME}}</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
-    <!-- Menu -->
-    <menuitem id="{{MODEL_NAME_UNDERSCORE}}_menu"
-              name="{{MODEL_TITLE}}"
-              parent="{{MENU_PARENT}}"
-              action="{{MODEL_NAME_UNDERSCORE}}_action"
-              sequence="10"/>
 </odoo>

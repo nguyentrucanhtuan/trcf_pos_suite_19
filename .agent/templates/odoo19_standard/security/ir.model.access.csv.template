@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_{{MODEL_NAME_UNDERSCORE}}_user,{{MODEL_NAME}}.user,model_{{MODEL_NAME_UNDERSCORE}},base.group_user,1,1,1,1
+access_trcf_${name},access.trcf.${name},model_trcf_${name},base.group_user,1,1,1,1
