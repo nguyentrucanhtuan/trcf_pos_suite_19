@@ -121,24 +121,41 @@ class TrcfTransferController(http.Controller):
             if not product.exists():
                 return {'error': 'Sản phẩm không tồn tại'}
             
-            # Get compatible UOMs using _has_common_reference method (Odoo 19)
+            # Get selectable UOMs: product.uom_id + product.uom_ids
             base_uom = product.uom_id
-            all_uoms = request.env['uom.uom'].sudo().search([('active', '=', True)])
-            compatible_uoms = request.env['uom.uom'].sudo()
-            
-            # Check each UOM for compatibility with base UOM
-            for uom in all_uoms:
-                if base_uom._has_common_reference(uom):
-                    compatible_uoms |= uom
+            secondary_uoms = product.uom_ids
             
             uom_list = []
-            for uom in compatible_uoms:
-                uom_list.append({
-                    'id': uom.id,
-                    'name': uom.name,
-                    'factor': uom.factor,
-                    'rounding': uom.rounding,
-                })
+            
+            # Primary UOM
+            uom_list.append({
+                'id': base_uom.id,
+                'name': base_uom.name,
+                'factor': base_uom.factor,
+                'rounding': base_uom.rounding,
+            })
+            
+            # Secondary UOMs (excluding primary if also in uom_ids)
+            for uom in secondary_uoms:
+                if uom.id != base_uom.id:
+                    uom_list.append({
+                        'id': uom.id,
+                        'name': uom.name,
+                        'factor': uom.factor,
+                        'rounding': uom.rounding,
+                    })
+            
+            # Calculate stock display
+            # We don't have location here, so we return the base calculation
+            # For dynamic updates, the frontend should call /trcf_fnb_inventory/get_location_stock
+            qty_available = product.qty_available
+            stock_display = f"{qty_available:.2f}".rstrip('0').rstrip('.') + f" {base_uom.name}"
+            
+            for uom in uom_list:
+                if uom['id'] != base_uom.id and uom['factor'] > 0:
+                    # Odoo logic: qty in uom = qty in base * (uom.factor / base.factor)
+                    converted_qty = qty_available * (base_uom.factor / uom['factor'])
+                    stock_display += f" - {converted_qty:.2f}".rstrip('0').rstrip('.') + f" ({uom['name']})"
             
             return {
                 'success': True,
@@ -148,12 +165,58 @@ class TrcfTransferController(http.Controller):
                     'default_uom_id': product.uom_id.id,
                     'default_uom_name': product.uom_id.name,
                 },
-                'uoms': uom_list
+                'uoms': uom_list,
+                'stock_display': stock_display
             }
-            
         except Exception as e:
             _logger.error(f"Error getting product UOMs: {str(e)}", exc_info=True)
             return {'error': f'Lỗi khi tải thông tin đơn vị: {str(e)}'}
+
+    @http.route('/trcf_fnb_inventory/get_location_stock', type='json', auth='user', methods=['POST'])
+    def get_location_stock(self, location_id, **kw):
+        """Get product stocks and formatted stock_display for a specific location"""
+        try:
+            current_company = request.env.company
+            location_id = int(location_id)
+            
+            # Search for storable products
+            products = request.env['product.product'].sudo().search([
+                ('active', '=', True),
+                ('is_storable', '=', True),
+                '|',
+                ('company_id', '=', current_company.id),
+                ('company_id', '=', False)
+            ])
+            
+            # Context for stock calculation
+            products_with_context = products.with_context(location=location_id)
+            
+            product_stocks = []
+            for product in products_with_context:
+                base_uom = product.uom_id
+                qty_available = product.qty_available
+                
+                # Base stock display
+                stock_display = f"{qty_available:.2f}".rstrip('0').rstrip('.') + f" {base_uom.name}"
+                
+                # Add secondary UOMs from uom_ids
+                for uom in product.uom_ids:
+                    if uom.id != base_uom.id and uom.factor > 0:
+                        converted_qty = qty_available * (base_uom.factor / uom.factor)
+                        stock_display += f" - {converted_qty:.2f}".rstrip('0').rstrip('.') + f" ({uom.name})"
+                
+                product_stocks.append({
+                    'id': product.id,
+                    'qty_available': qty_available,
+                    'stock_display': stock_display
+                })
+                
+            return {
+                'success': True,
+                'product_stocks': product_stocks
+            }
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
     
     # ==================== Private Helper Methods ====================
     
@@ -169,45 +232,6 @@ class TrcfTransferController(http.Controller):
         """
         current_company = request.env.company
         IrConfigParam = request.env['ir.config_parameter'].sudo()
-        
-        # Get all storable products
-        products = request.env['product.product'].sudo().search([
-            ('active', '=', True),
-            ('type', 'in', ['product', 'consu']),  # Storable and consumable
-            '|',
-            ('company_id', '=', current_company.id),
-            ('company_id', '=', False)
-        ], order='name')
-        
-        # Prepare product data for template
-        product_list = []
-        for product in products:
-            # Get compatible UOMs using _has_common_reference method (Odoo 19)
-            base_uom = product.uom_id
-            all_uoms = request.env['uom.uom'].sudo().search([('active', '=', True)])
-            compatible_uoms = request.env['uom.uom'].sudo()
-            
-            # Check each UOM for compatibility with base UOM
-            for uom in all_uoms:
-                if base_uom._has_common_reference(uom):
-                    compatible_uoms |= uom
-            
-            uom_list = []
-            for uom in compatible_uoms:
-                uom_list.append({
-                    'id': uom.id,
-                    'name': uom.name,
-                    'factor': uom.factor,
-                })
-            
-            product_list.append({
-                'id': product.id,
-                'name': product.name,
-                'uom_id': product.uom_id.id,
-                'uom_name': product.uom_id.name,
-                'qty_available': product.qty_available,
-                'uoms': uom_list,
-            })
         
         # Get internal locations (source and destination)
         internal_locations = request.env['stock.location'].sudo().search([
@@ -228,6 +252,65 @@ class TrcfTransferController(http.Controller):
         # Get default locations from settings
         default_source_id = IrConfigParam.get_param('trcf_fnb_inventory.trcf_transfer_source_location_id', default=False)
         default_dest_id = IrConfigParam.get_param('trcf_fnb_inventory.trcf_transfer_dest_location_id', default=False)
+        default_source_location_id = int(default_source_id) if default_source_id else False
+
+        # Get all storable products (tracked products)
+        products = request.env['product.product'].sudo().search([
+            ('active', '=', True),
+            ('is_storable', '=', True),  # Only products with "Theo dõi hàng tồn kho" checked
+            '|',
+            ('company_id', '=', current_company.id),
+            ('company_id', '=', False)
+        ], order='name')
+        
+        # Prepare products with context if default_source_location_id is present
+        if default_source_location_id:
+            products = products.with_context(location=default_source_location_id)
+
+        # Prepare product data for template
+        product_list = []
+        for product in products:
+            # Get selectable UOMs: product.uom_id + product.uom_ids
+            base_uom = product.uom_id
+            secondary_uoms = product.uom_ids
+            
+            uom_list = []
+            
+            # Primary UOM
+            uom_list.append({
+                'id': base_uom.id,
+                'name': base_uom.name,
+                'factor': base_uom.factor,
+            })
+            
+            # Secondary UOMs (excluding primary if also in uom_ids)
+            for uom in secondary_uoms:
+                if uom.id != base_uom.id:
+                    uom_list.append({
+                        'id': uom.id,
+                        'name': uom.name,
+                        'factor': uom.factor,
+                    })
+            
+            # Calculate stock display (multi-UoM)
+            qty_available = product.qty_available
+            stock_display = f"{qty_available:.2f}".rstrip('0').rstrip('.') + f" {base_uom.name}"
+            
+            for uom in uom_list:
+                if uom['id'] != base_uom.id and uom['factor'] > 0:
+                    # converted = base_qty * (base_factor / uom_factor)
+                    converted_qty = qty_available * (base_uom.factor / uom['factor'])
+                    stock_display += f" - {converted_qty:.2f}".rstrip('0').rstrip('.') + f" ({uom['name']})"
+
+            product_list.append({
+                'id': product.id,
+                'name': product.name,
+                'uom_id': product.uom_id.id,
+                'uom_name': product.uom_id.name,
+                'qty_available': qty_available,
+                'stock_display': stock_display,
+                'uoms': uom_list,
+            })
         
         # Get allow_employee_select setting
         allow_employee_select = IrConfigParam.get_param(

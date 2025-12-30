@@ -61,13 +61,26 @@
 
         <xpath expr="//body" position="replace">
             <body class="font-display bg-background-light dark:bg-background-dark">
-                <div class="flex min-h-screen">
-                    <!-- SideNavBar -->
-                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                <div class="flex min-h-screen relative overflow-x-hidden">
+                    <!-- Mobile Overlay -->
+                    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+
+                    <!-- SideNavBar Wrapper -->
+                    <div id="sidebar-wrapper" class="fixed inset-y-0 left-0 z-50 w-72 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:z-0">
+                        <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    </div>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8 overflow-auto">
-                        <div class="max-w-7xl mx-auto">
+                    <main class="flex-1 p-4 md:p-8 overflow-auto w-full">
+                        <div class="max-w-screen mx-auto">
+                            <!-- Mobile Header -->
+                            <div class="md:hidden flex items-center justify-between mb-6 bg-white dark:bg-slate-900 p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm">
+                                <button id="mobile-menu-btn" class="p-2 text-text-light-primary dark:text-dark-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                                    <span class="material-symbols-outlined">menu</span>
+                                </button>
+                                <span class="font-bold text-lg dark:text-white">Kiểm Kho</span>
+                                <div class="w-10"></div>
+                            </div>
                             
                             <!-- Success Message -->
                             <t t-if="success">
@@ -89,8 +102,8 @@
                                 </div>
                             </t>
 
-                            <header class="mb-6">
-                                <h1 class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em]">Tạo Phiếu Kiểm Kho</h1>
+                            <header class="mb-6 text-center md:text-left">
+                                <h1 class="text-text-light-primary dark:text-text-dark-primary text-2xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Tạo Phiếu Kiểm Kho</h1>
                             </header>
 
                             <form id="inventoryCheckForm" method="POST" action="/trcf_fnb_inventory/check_inventory_add">
@@ -157,11 +170,14 @@
                                                             <table class="min-w-full">
                                                                 <thead class="border-b border-border-light dark:border-border-dark">
                                                                     <tr>
-                                                                        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary sm:pl-0 w-[35%]" scope="col">Sản phẩm</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Đơn vị</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Tồn hệ thống</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[20%]" scope="col">Tồn thực tế</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Chênh lệch</th>
+                                                                        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary sm:pl-0 w-[20%]" scope="col">Sản phẩm</th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Đơn vị</th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Hệ thống</th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Tối thiểu</th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Tối đa</th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Thực tế</th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Chênh lệch</th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Cần đặt</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="productsTableBody" class="text-text-light-primary dark:text-white">
@@ -271,34 +287,61 @@
                             }
 
                             products.forEach(function(product) {
-                                const row = $(`
-                                    <tr class="border-b border-border-light dark:border-border-dark">
-                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0">
-                                            ${escapeHtml(product.product_name)}
-                                        </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                            ${escapeHtml(product.uom_name)}
-                                        </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                            ${product.system_qty.toFixed(2)}
-                                        </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm">
-                                            <input type="number"
-                                                   name="actual_qty_${product.product_id}"
-                                                   data-product-id="${product.product_id}"
-                                                   data-system-qty="${product.system_qty}"
-                                                   step="0.01"
-                                                   min="0"
-                                                   value="${product.system_qty.toFixed(2)}"
-                                                   class="actual-qty-input form-input w-32 rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm" />
-                                            <input type="hidden" name="system_qty_${product.product_id}" value="${product.system_qty}" />
-                                            <input type="hidden" name="uom_id_${product.product_id}" value="${product.uom_id}" />
-                                        </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm font-medium difference-cell">
-                                            0.00
-                                        </td>
-                                    </tr>
-                                `);
+                                // Fallback for transition period (when server not yet restarted)
+                                const sysQtyTarget = typeof product.system_qty_target !== 'undefined' ? product.system_qty_target : (product.system_qty || 0);
+                                const sysQtyBase = typeof product.system_qty_base !== 'undefined' ? product.system_qty_base : sysQtyTarget;
+                                const minQtyBase = typeof product.min_qty_base !== 'undefined' ? product.min_qty_base : null;
+                                const maxQtyBase = typeof product.max_qty_base !== 'undefined' ? product.max_qty_base : null;
+
+                                // Determine color for system_qty using BASE units
+                                let systemQtyColorClass = '';
+                                if (minQtyBase != null && maxQtyBase != null) {
+                                    if (sysQtyBase < minQtyBase) {
+                                        systemQtyColorClass = 'text-red-600 font-bold';
+                                    } else if (sysQtyBase <= maxQtyBase) {
+                                        systemQtyColorClass = 'text-emerald-600 font-bold';
+                                    } else {
+                                        systemQtyColorClass = 'text-blue-600 font-bold';
+                                    }
+                                }
+
+                                const row = $(
+                                    '<tr class="border-b border-border-light dark:border-border-dark">' +
+                                        '<td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium sm:pl-0">' +
+                                            escapeHtml(product.product_name) +
+                                        '</td>' +
+                                        '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
+                                            escapeHtml(product.uom_name) +
+                                        '</td>' +
+                                        '<td class="px-3 py-4 text-xs ' + systemQtyColorClass + '">' +
+                                            (product.system_display || sysQtyTarget.toFixed(2)) +
+                                        '</td>' +
+                                        '<td class="px-3 py-4 text-xs text-text-light-secondary dark:text-text-dark-secondary">' +
+                                            (product.min_display || '-') +
+                                        '</td>' +
+                                        '<td class="px-3 py-4 text-xs text-text-light-secondary dark:text-text-dark-secondary">' +
+                                            (product.max_display || '-') +
+                                        '</td>' +
+                                        '<td class="whitespace-nowrap px-3 py-4 text-sm">' +
+                                            '<input type="number" ' +
+                                                   'name="actual_qty_' + product.product_id + '" ' +
+                                                   'data-product-id="' + product.product_id + '" ' +
+                                                   'data-system-qty="' + sysQtyTarget + '" ' +
+                                                   'step="0.01" ' +
+                                                   'min="0" ' +
+                                                   'value="' + sysQtyTarget.toFixed(2) + '" ' +
+                                                   'class="actual-qty-input form-input w-24 rounded-lg text-text-light-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary text-sm p-2" />' +
+                                            '<input type="hidden" name="system_qty_' + product.product_id + '" value="' + sysQtyTarget + '" />' +
+                                            '<input type="hidden" name="uom_id_' + product.product_id + '" value="' + product.uom_id + '" />' +
+                                        '</td>' +
+                                        '<td class="whitespace-nowrap px-3 py-4 text-sm font-medium difference-cell">' +
+                                            '0.00' +
+                                        '</td>' +
+                                        '<td class="px-3 py-4 text-sm font-bold text-primary dark:text-blue-400">' +
+                                            (product.to_order_display || '-') +
+                                        '</td>' +
+                                    '</tr>'
+                                );
                                 tbody.append(row);
                             });
 
@@ -335,6 +378,36 @@
                             };
                             return text.replace(/[&<>"']/g, function(m) { return map[m]; });
                         }
+
+                         // Mobile Menu Logic
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                            const sidebarWrapper = document.getElementById('sidebar-wrapper');
+                            const mobileOverlay = document.getElementById('mobile-overlay');
+
+                            function toggleMobileMenu() {
+                                if (!sidebarWrapper) return;
+                                const isOpen = !sidebarWrapper.classList.contains('-translate-x-full');
+                                if (isOpen) {
+                                    sidebarWrapper.classList.add('-translate-x-full');
+                                    mobileOverlay.classList.add('hidden');
+                                    mobileOverlay.classList.remove('opacity-100');
+                                    document.body.style.overflow = '';
+                                } else {
+                                    sidebarWrapper.classList.remove('-translate-x-full');
+                                    mobileOverlay.classList.remove('hidden');
+                                    setTimeout(() => mobileOverlay.classList.add('opacity-100'), 0);
+                                    document.body.style.overflow = 'hidden';
+                                }
+                            }
+
+                            if (mobileMenuBtn) {
+                                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+                            }
+                            if (mobileOverlay) {
+                                mobileOverlay.addEventListener('click', toggleMobileMenu);
+                            }
+                        });
 
                         // Form validation before submit
                         $('#inventoryCheckForm').on('submit', function(e) {

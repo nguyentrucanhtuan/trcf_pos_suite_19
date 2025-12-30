@@ -22,4 +22,7 @@ Workflow này dùng để rà soát, làm sạch và nâng cấp các module cũ
 4.  **Kiểm tra Security & Manifest**:
     - Đảm bảo mọi model đều có access rights.
     - Kiểm tra `license: LGPL-3` và `depends` trong manifest.
-5.  **Báo cáo**: Liệt kê danh sách các thay đổi đã thực hiện và lý do tối ưu.
+5.  **Kiểm tra & Xác minh**:
+    - Chạy lệnh nâng cấp module: `./odoo-bin -c odoo19.conf -u <tên_module> --stop-after-init`.
+    - Kiểm tra terminal để đảm bảo không có lỗi (Error/Critical).
+6.  **Báo cáo**: Liệt kê danh sách các thay đổi đã thực hiện và lý do tối ưu.

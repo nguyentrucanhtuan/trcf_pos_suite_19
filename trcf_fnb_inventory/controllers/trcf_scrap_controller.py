@@ -167,7 +167,6 @@ class TrcfScrapController(http.Controller):
                 'name': product.name,
                 'uom_id': product.uom_id.id,
                 'uom_name': product.uom_id.name,
-                'qty_available': product.qty_available,
                 'is_kit': is_kit,
                 'boms': boms,
             })

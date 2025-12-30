@@ -1,5 +1,7 @@
 from odoo import http
 from odoo.http import request
+from datetime import datetime
+import calendar
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -10,12 +12,20 @@ class TrcfCheckInventoryController(http.Controller):
     @http.route('/trcf_fnb_inventory/check_inventory_list', 
                 type='http', auth='user', website=False)
     def check_inventory_list(self, **kw):
-        """Display inventory check history"""
-        # Load inventory check records
+        """Display inventory check history for current month"""
+        # Get current month range
+        now = datetime.now()
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        last_day = calendar.monthrange(now.year, now.month)[1]
+        month_end = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=0)
+
+        # Load inventory check records for current month
         checks = request.env['trcf.inventory.check'].sudo().search(
-            [], 
-            order='check_date desc',
-            limit=50
+            [
+                ('check_date', '>=', month_start),
+                ('check_date', '<=', month_end)
+            ], 
+            order='check_date desc'
         )
         
         check_list = []
@@ -98,12 +108,62 @@ class TrcfCheckInventoryController(http.Controller):
                 else:
                     system_qty = base_qty
                 
+                # Get Orderpoint (Min/Max) - Exact location as requested
+                orderpoint = request.env['stock.warehouse.orderpoint'].sudo().search([
+                    ('product_id', '=', line.product_id.id),
+                    ('location_id', '=', template.location_id.id),
+                ], limit=1)
+                
+                def format_uom_display(qty_base, uom_base, uom_target):
+                    """Helper to format 'QtyBase UomBase (QtyTarget UomTarget)'"""
+                    if qty_base == 0.0:
+                        return "0 " + uom_base.name
+                        
+                    if uom_base.id == uom_target.id:
+                        return f"{qty_base:.2f}".rstrip('0').rstrip('.') + f" {uom_base.name}"
+                    
+                    qty_target = uom_base._compute_quantity(qty_base, uom_target)
+                    return (f"{qty_base:.2f}".rstrip('0').rstrip('.') + f" {uom_base.name} "
+                            f"({qty_target:.2f}".rstrip('0').rstrip('.') + f" {uom_target.name})")
+
+                min_display = None
+                max_display = None
+                to_order_display = None
+                min_qty_conv = None
+                max_qty_conv = None
+                
+                if orderpoint:
+                    orderpoint_min = orderpoint.product_min_qty
+                    orderpoint_max = orderpoint.product_max_qty
+                    min_display = format_uom_display(orderpoint_min, base_uom, target_uom)
+                    max_display = format_uom_display(orderpoint_max, base_uom, target_uom)
+                    
+                    # Convert to template's UoM for JS comparison
+                    if base_uom.id != target_uom.id:
+                        min_qty_conv = base_uom._compute_quantity(orderpoint_min, target_uom)
+                        max_qty_conv = base_uom._compute_quantity(orderpoint_max, target_uom)
+                    else:
+                        min_qty_conv = orderpoint_min
+                        max_qty_conv = orderpoint_max
+                    
+                    # Calculate "To Order"
+                    if base_qty < orderpoint_min:
+                        to_order_qty = orderpoint_max - base_qty
+                        to_order_display = format_uom_display(to_order_qty, base_uom, target_uom)
+
                 products.append({
                     'product_id': line.product_id.id,
                     'product_name': line.product_id.name,
                     'uom_id': line.uom_id.id,
                     'uom_name': line.uom_id.name,
-                    'system_qty': system_qty,
+                    'system_qty_target': system_qty, # For diff calc
+                    'system_display': format_uom_display(base_qty, base_uom, target_uom),
+                    'system_qty_base': base_qty,     # For color comparison
+                    'min_display': min_display,
+                    'max_display': max_display,
+                    'min_qty_base': orderpoint_min if orderpoint else None,
+                    'max_qty_base': orderpoint_max if orderpoint else None,
+                    'to_order_display': to_order_display,
                     'sequence': line.sequence,
                 })
             

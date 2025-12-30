@@ -116,13 +116,26 @@
         <xpath expr="//body" position="replace">
 
             <body class="font-display bg-background-light dark:bg-background-dark">
-                <div class="flex min-h-screen">
-                    <!-- SideNavBar -->
-                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                <div class="flex min-h-screen relative overflow-x-hidden">
+                    <!-- Mobile Overlay -->
+                    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+
+                    <!-- SideNavBar Wrapper -->
+                    <div id="sidebar-wrapper" class="fixed inset-y-0 left-0 z-50 w-72 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:z-0">
+                        <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    </div>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8">
+                    <main class="flex-1 p-4 md:p-8 w-full">
                         <div class="w-full max-w-screen mx-auto">
+                            <!-- Mobile Header -->
+                            <div class="md:hidden flex items-center justify-between mb-6 bg-white dark:bg-slate-900 p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm">
+                                <button id="mobile-menu-btn" class="p-2 text-text-light-primary dark:text-dark-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                                    <span class="material-symbols-outlined">menu</span>
+                                </button>
+                                <span class="font-bold text-lg dark:text-white">Chuyển Kho</span>
+                                <div class="w-10"></div>
+                            </div>
                             
                             <!-- Error Message -->
                             <t t-if="error">
@@ -145,8 +158,8 @@
                                 </t>
                                 <input type="hidden" name="products_data" id="products_data"/>
                                 
-                                <header class="mb-8">
-                                    <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em] mb-2">Chuyển Kho</p>
+                                <header class="mb-8 text-center md:text-left">
+                                    <p class="text-text-light-primary dark:text-text-dark-primary text-2xl md:text-4xl font-black leading-tight tracking-[-0.033em] mb-2">Chuyển Kho</p>
                                     
                                     <!-- Nếu cho phép nhân viên chọn: hiển thị dropdowns chọn kho -->
                                     <t t-if="allow_employee_select">
@@ -181,26 +194,28 @@
                                     </t>
                                     <!-- Nếu không cho phép: hiển thị thông tin kho đã cấu hình -->
                                     <t t-else="">
-                                        <t t-if="source_location_name and dest_location_name">
-                                            <p class="text-text-light-secondary dark:text-text-dark-secondary text-base mt-2">
-                                                Chuyển từ <span class="font-bold text-primary"><t t-esc="source_location_name"/></span> 
-                                                → <span class="font-bold text-primary"><t t-esc="dest_location_name"/></span>
-                                            </p>
-                                        </t>
-                                        <t t-else="">
-                                            <p class="text-yellow-600 dark:text-yellow-400 text-sm mt-2">
-                                                ⚠️ Chưa cấu hình kho mặc định. Vui lòng liên hệ admin.
-                                            </p>
-                                        </t>
+                                        <div class="text-center md:text-left">
+                                            <t t-if="source_location_name and dest_location_name">
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-base mt-2">
+                                                    Chuyển từ <span class="font-bold text-primary"><t t-esc="source_location_name"/></span> 
+                                                    → <span class="font-bold text-primary"><t t-esc="dest_location_name"/></span>
+                                                </p>
+                                            </t>
+                                            <t t-else="">
+                                                <p class="text-yellow-600 dark:text-yellow-400 text-sm mt-2">
+                                                    ⚠️ Chưa cấu hình kho mặc định. Vui lòng liên hệ admin.
+                                                </p>
+                                            </t>
+                                        </div>
                                     </t>
                                 </header>
 
                                 <!-- Products Section -->
                                 <div class="bg-white dark:bg-slate-900 border-2 border-border-light dark:border-border-dark rounded-2xl p-8 mb-8 shadow-sm">
-                                    <div class="flex items-center justify-between mb-6">
-                                        <h3 class="text-2xl font-bold text-text-light-primary dark:text-text-dark-primary">Sản Phẩm Chuyển</h3>
-                                        <button type="button" id="addProductBtn" class="flex items-center gap-3 px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-xl text-lg font-bold transition-all hover:shadow-lg">
-                                            <span class="material-symbols-outlined text-2xl">add_circle</span>
+                                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                                        <h3 class="text-xl md:text-2xl font-bold text-text-light-primary dark:text-text-dark-primary">Sản Phẩm Chuyển</h3>
+                                        <button type="button" id="addProductBtn" class="flex items-center justify-center gap-3 px-6 md:px-8 py-3 md:py-4 bg-primary hover:bg-primary-dark text-white rounded-xl text-base md:text-lg font-bold transition-all hover:shadow-lg w-full md:w-auto">
+                                            <span class="material-symbols-outlined text-xl md:text-2xl">add_circle</span>
                                             <span>Thêm Sản Phẩm</span>
                                         </button>
                                     </div>
@@ -431,14 +446,12 @@
                             return;
                         }
 
-                        dropdown.innerHTML = products.map((product, index) => `
                             <div class="custom-select-option" data-index="${index}" onclick="selectProduct(${lineId}, ${product.id})">
                                 <div class="font-semibold text-text-light-primary dark:text-text-dark-primary text-base">${product.name}</div>
                                 <div class="text-sm text-text-light-secondary dark:text-text-dark-secondary mt-1">
-                                    ${product.qty_available} ${product.uom_name} có sẵn
+                                    ${product.stock_display} có sẵn
                                 </div>
                             </div>
-                        `).join('');
                     }
 
                     // Open dropdown
@@ -509,33 +522,94 @@
                         }
                     }
 
-                    // Collect product data for submission
-                    function collectProductData() {
-                        const data = [];
+                    // Update stock information when location changes
+                    async function updateStockByLocation(locationId) {
+                        if (!locationId) return;
                         
-                        productLines.forEach(line => {
-                            const productId = document.getElementById(`product_id_${line.id}`).value;
-                            const qty = document.getElementById(`qty_${line.id}`).value;
-                            const uomId = document.getElementById(`uom_${line.id}`).value;
-
-                            if (productId && qty && uomId) {
-                                data.push({
-                                    product_id: parseInt(productId),
-                                    qty: parseFloat(qty),
-                                    uom_id: parseInt(uomId),
+                        // Show loading state or disable inputs if needed
+                        console.log('Updating stock for location:', locationId);
+                        
+                        try {
+                            const response = await fetch('/trcf_fnb_inventory/get_location_stock', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                                },
+                                body: JSON.stringify({
+                                    params: {
+                                        location_id: parseInt(locationId)
+                                    }
+                                })
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.result && result.result.success) {
+                                const newStocks = result.result.product_stocks;
+                                
+                                // Update allProducts with new stock levels
+                                allProducts.forEach(product => {
+                                    const stockInfo = newStocks.find(s => s.id === product.id);
+                                    if (stockInfo) {
+                                        product.qty_available = stockInfo.qty_available;
+                                        product.stock_display = stockInfo.stock_display;
+                                    } else {
+                                        product.qty_available = 0;
+                                        product.stock_display = '0';
+                                    }
                                 });
+                                
+                                console.log('Stock updated successfully');
+                            } else {
+                                console.error('Error updating stock:', result.result ? result.result.error : 'Unknown error');
                             }
-                        });
-
-                        return data;
+                        } catch (error) {
+                            console.error('Fetch error:', error);
+                        }
                     }
 
-                    // Form submission
-                    document.addEventListener('DOMContentLoaded', function() {
+                     // Mobile Menu Logic
+                    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                    const sidebarWrapper = document.getElementById('sidebar-wrapper');
+                    const mobileOverlay = document.getElementById('mobile-overlay');
+
+                    function toggleMobileMenu() {
+                        const isOpen = !sidebarWrapper.classList.contains('-translate-x-full');
+                        if (isOpen) {
+                            sidebarWrapper.classList.add('-translate-x-full');
+                            mobileOverlay.classList.add('hidden');
+                            mobileOverlay.classList.remove('opacity-100');
+                            document.body.style.overflow = '';
+                        } else {
+                            sidebarWrapper.classList.remove('-translate-x-full');
+                            mobileOverlay.classList.remove('hidden');
+                            setTimeout(() => mobileOverlay.classList.add('opacity-100'), 0);
+                            document.body.style.overflow = 'hidden';
+                        }
+                    }
+
+                    if (mobileMenuBtn) {
+                        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+                    }
+                    if (mobileOverlay) {
+                        mobileOverlay.addEventListener('click', toggleMobileMenu);
+                    }
+
+                    // Collect all product lines data for submission
+                    function collectProductData() {
                         loadProductsData();
 
                         // Add product button
                         document.getElementById('addProductBtn').addEventListener('click', addProductLine);
+
+                        // Source location change handler
+                        const sourceLocSelect = document.getElementById('source_location_select');
+                        if (sourceLocSelect) {
+                            sourceLocSelect.addEventListener('change', function() {
+                                updateStockByLocation(this.value);
+                            });
+                        }
 
                         // Form submit
                         document.getElementById('transferForm').addEventListener('submit', function(e) {

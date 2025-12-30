@@ -44,6 +44,11 @@ Kỹ năng này định hình cách Antigravity viết code cho dự án Tuấn 
 - Đăng ký assets trong `__manifest__.py` dưới key `assets`.
 - Sử dụng `setup()` và các hooks (`useState`, `onWillStart`) thay cho constructor cũ.
 
+## 🧪 Quy tắc Kiểm tra & Xác minh (Verification Rules)
+- **Cập nhật Module**: Sau khi thay đổi XML (View, Data) hoặc logic Python quan trọng, **BẮT BUỘC** phải chạy lệnh nâng cấp module để kiểm tra lỗi cú pháp hoặc lỗi logic ngay trên terminal.
+    - Lệnh: `./odoo-bin -c odoo19.conf -u <tên_module> --stop-after-init`
+- **Kiểm tra Log**: Luôn quan sát đầu ra của terminal để đảm bảo không có `ERROR` hoặc `CRITICAL` sau khi nâng cấp.
+
 ## 🔄 Cơ chế Tự học & Cập nhật Tri thức
 Antigravity có trách nhiệm duy trì và nâng cấp "bộ não" của dự án thông qua các hành động sau:
 - **Ghi nhận lỗi**: Sau khi giải quyết một lỗi (bug) hoặc lỗi cấu trúc (logic error), phải cập nhật ngay vào `context_odoo19/troubleshooting.md`.

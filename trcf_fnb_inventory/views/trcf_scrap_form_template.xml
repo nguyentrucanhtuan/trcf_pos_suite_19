@@ -126,12 +126,25 @@
         <xpath expr="//body" position="replace">
 
             <body class="font-display bg-background-light dark:bg-background-dark">
-                <div class="flex min-h-screen">
-                    <!-- SideNavBar -->
-                    <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                <div class="flex min-h-screen relative overflow-x-hidden">
+                    <!-- Mobile Overlay -->
+                    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity duration-300 opacity-0"></div>
+
+                    <!-- SideNavBar Wrapper -->
+                    <div id="sidebar-wrapper" class="fixed inset-y-0 left-0 z-50 w-72 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:z-0">
+                        <t t-call="trcf_fnb_inventory.sidebar_layout_template"/>
+                    </div>
 
                     <!-- Main Content -->
-                    <main class="flex-1 p-8">
+                    <main class="flex-1 p-4 md:p-8 w-full">
+                        <!-- Mobile Header -->
+                        <div class="md:hidden flex items-center justify-between mb-6 bg-white dark:bg-slate-900 p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm">
+                            <button id="mobile-menu-btn" class="p-2 text-text-light-primary dark:text-dark-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                                <span class="material-symbols-outlined">menu</span>
+                            </button>
+                            <span class="font-bold text-lg dark:text-white">Hủy Sản Phẩm</span>
+                            <div class="w-10"></div> <!-- Spacer -->
+                        </div>
                         <div class="w-full max-w-2xl mx-auto">
                             
                             <!-- Error Message -->
@@ -147,8 +160,8 @@
                             <form id="scrapForm" method="POST" action="/trcf_fnb_inventory/scrap_add">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 
-                                <header class="mb-6">
-                                    <p class="text-text-light-primary dark:text-text-dark-primary text-4xl font-black leading-tight tracking-[-0.033em] mb-2">Hủy Sản Phẩm</p>
+                                <header class="mb-6 text-center md:text-left">
+                                    <p class="text-text-light-primary dark:text-text-dark-primary text-2xl md:text-4xl font-black leading-tight tracking-[-0.033em] mb-2">Hủy Sản Phẩm</p>
                                     <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm">Ghi nhận hàng hóa hư hỏng, hết hạn hoặc hao hụt</p>
                                 </header>
                                 
@@ -186,13 +199,11 @@
                                                         <t t-foreach="products" t-as="product">
                                                             <option t-att-value="product['id']"
                                                                     t-att-data-uom="product['uom_name']"
-                                                                    t-att-data-qty="product['qty_available']"
                                                                     t-att-data-is-kit="product['is_kit']"
                                                                     t-att-data-boms="json.dumps(product['boms'])"
                                                                     t-att-data-name="product['name']">
                                                                 <t t-esc="product['name']"/>
                                                                 <t t-if="product['is_kit']">[Kit]</t>
-                                                                (<t t-esc="product['qty_available']"/> <t t-esc="product['uom_name']"/> có sẵn)
                                                             </option>
                                                         </t>
                                                     </select>
@@ -344,7 +355,6 @@
                                 name: opt.getAttribute('data-name') || opt.textContent.trim(),
                                 displayText: opt.textContent.trim(),
                                 uom: opt.getAttribute('data-uom'),
-                                qty: opt.getAttribute('data-qty'),
                                 isKit: opt.getAttribute('data-is-kit') === 'True',
                                 boms: opt.getAttribute('data-boms'),
                                 searchText: removeVietnameseAccents(opt.textContent.trim())
@@ -371,9 +381,6 @@
                                             <div class="font-medium text-text-light-primary dark:text-text-dark-primary">
                                                 ${product.name}
                                                 ${product.isKit ? '<span class="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Kit</span>' : ''}
-                                            </div>
-                                            <div class="text-xs text-text-light-secondary dark:text-text-dark-secondary mt-1">
-                                                ${product.qty} ${product.uom} có sẵn
                                             </div>
                                         </div>
                                     </div>
@@ -630,10 +637,38 @@
                         });
 
                         // BoM select listener
+```
                         const bomSelect = document.getElementById('bom_select');
                         if (bomSelect) {
                             bomSelect.addEventListener('change', onBomChange);
                         }
+
+                         // Mobile Menu Logic
+                    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                    const sidebarWrapper = document.getElementById('sidebar-wrapper');
+                    const mobileOverlay = document.getElementById('mobile-overlay');
+
+                    function toggleMobileMenu() {
+                        const isOpen = !sidebarWrapper.classList.contains('-translate-x-full');
+                        if (isOpen) {
+                            sidebarWrapper.classList.add('-translate-x-full');
+                            mobileOverlay.classList.add('hidden');
+                            mobileOverlay.classList.remove('opacity-100');
+                            document.body.style.overflow = '';
+                        } else {
+                            sidebarWrapper.classList.remove('-translate-x-full');
+                            mobileOverlay.classList.remove('hidden');
+                            setTimeout(() => mobileOverlay.classList.add('opacity-100'), 0);
+                            document.body.style.overflow = 'hidden';
+                        }
+                    }
+
+                    if (mobileMenuBtn) {
+                        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+                    }
+                    if (mobileOverlay) {
+                        mobileOverlay.addEventListener('click', toggleMobileMenu);
+                    }
 
                         // Form validation
                         document.getElementById('scrapForm').addEventListener('submit', function(e) {

@@ -168,7 +168,17 @@
                                     </div>
                                 </a>
 
-                                <!-- Báo cáo -->
+                                <!-- Báo cáo Nhập Xuất -->
+                                <a href="/trcf_fnb_inventory/move_report" class="group flex cursor-pointer flex-col items-center justify-center gap-2 md:gap-3 rounded-lg md:rounded-xl border border-gray-200 bg-white p-2 md:p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                    <div class="flex items-center justify-center rounded-lg md:rounded-xl bg-sky-100 dashboard-card-padding p-6 md:p-10 lg:p-12">
+                                        <span class="material-symbols-outlined text-sky-600 dashboard-icon" style="font-size: 160px;">analytics</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Báo cáo nhập xuất</h2>
+                                    </div>
+                                </a>
+
+                                <!-- Báo cáo Tổng hợp -->
                                 <a href="/trcf_fnb_inventory/daily_report" class="group flex cursor-pointer flex-col items-center justify-center gap-2 md:gap-3 rounded-lg md:rounded-xl border border-gray-200 bg-white p-2 md:p-3 text-center shadow-sm transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                                     <div class="flex items-center justify-center rounded-lg md:rounded-xl bg-indigo-100 dashboard-card-padding p-6 md:p-10 lg:p-12">
                                         <span class="material-symbols-outlined text-indigo-600 dashboard-icon" style="font-size: 160px;">bar_chart</span>
