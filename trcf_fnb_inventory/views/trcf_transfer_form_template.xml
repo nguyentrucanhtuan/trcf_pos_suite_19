@@ -446,12 +446,14 @@
                             return;
                         }
 
+                        dropdown.innerHTML = products.map((product, index) => `
                             <div class="custom-select-option" data-index="${index}" onclick="selectProduct(${lineId}, ${product.id})">
                                 <div class="font-semibold text-text-light-primary dark:text-text-dark-primary text-base">${product.name}</div>
                                 <div class="text-sm text-text-light-secondary dark:text-text-dark-secondary mt-1">
-                                    ${product.stock_display} có sẵn
+                                    ${product.qty_available} ${product.uom_name} có sẵn
                                 </div>
                             </div>
+                        `).join('');
                     }
 
                     // Open dropdown
@@ -526,9 +528,6 @@
                     async function updateStockByLocation(locationId) {
                         if (!locationId) return;
                         
-                        // Show loading state or disable inputs if needed
-                        console.log('Updating stock for location:', locationId);
-                        
                         try {
                             const response = await fetch('/trcf_fnb_inventory/get_location_stock', {
                                 method: 'POST',
@@ -559,49 +558,70 @@
                                         product.stock_display = '0';
                                     }
                                 });
-                                
-                                console.log('Stock updated successfully');
-                            } else {
-                                console.error('Error updating stock:', result.result ? result.result.error : 'Unknown error');
                             }
                         } catch (error) {
                             console.error('Fetch error:', error);
                         }
                     }
 
-                     // Mobile Menu Logic
-                    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-                    const sidebarWrapper = document.getElementById('sidebar-wrapper');
-                    const mobileOverlay = document.getElementById('mobile-overlay');
-
-                    function toggleMobileMenu() {
-                        const isOpen = !sidebarWrapper.classList.contains('-translate-x-full');
-                        if (isOpen) {
-                            sidebarWrapper.classList.add('-translate-x-full');
-                            mobileOverlay.classList.add('hidden');
-                            mobileOverlay.classList.remove('opacity-100');
-                            document.body.style.overflow = '';
-                        } else {
-                            sidebarWrapper.classList.remove('-translate-x-full');
-                            mobileOverlay.classList.remove('hidden');
-                            setTimeout(() => mobileOverlay.classList.add('opacity-100'), 0);
-                            document.body.style.overflow = 'hidden';
-                        }
-                    }
-
-                    if (mobileMenuBtn) {
-                        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-                    }
-                    if (mobileOverlay) {
-                        mobileOverlay.addEventListener('click', toggleMobileMenu);
-                    }
-
-                    // Collect all product lines data for submission
+                    // Collect product data for submission
                     function collectProductData() {
+                        const data = [];
+                        
+                        productLines.forEach(line => {
+                            const productId = document.getElementById(`product_id_${line.id}`).value;
+                            const qty = document.getElementById(`qty_${line.id}`).value;
+                            const uomId = document.getElementById(`uom_${line.id}`).value;
+
+                            if (productId && qty && uomId) {
+                                data.push({
+                                    product_id: parseInt(productId),
+                                    qty: parseFloat(qty),
+                                    uom_id: parseInt(uomId),
+                                });
+                            }
+                        });
+
+                        return data;
+                    }
+
+                    // Initialization
+                    document.addEventListener('DOMContentLoaded', function() {
                         loadProductsData();
 
                         // Add product button
-                        document.getElementById('addProductBtn').addEventListener('click', addProductLine);
+                        const addProductBtn = document.getElementById('addProductBtn');
+                        if (addProductBtn) {
+                            addProductBtn.addEventListener('click', addProductLine);
+                        }
+
+                        // Mobile Menu Logic
+                        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                        const sidebarWrapper = document.getElementById('sidebar-wrapper');
+                        const mobileOverlay = document.getElementById('mobile-overlay');
+
+                        function toggleMobileMenu() {
+                            if (!sidebarWrapper) return;
+                            const isOpen = !sidebarWrapper.classList.contains('-translate-x-full');
+                            if (isOpen) {
+                                sidebarWrapper.classList.add('-translate-x-full');
+                                mobileOverlay.classList.add('hidden');
+                                mobileOverlay.classList.remove('opacity-100');
+                                document.body.style.overflow = '';
+                            } else {
+                                sidebarWrapper.classList.remove('-translate-x-full');
+                                mobileOverlay.classList.remove('hidden');
+                                setTimeout(() => mobileOverlay.classList.add('opacity-100'), 0);
+                                document.body.style.overflow = 'hidden';
+                            }
+                        }
+
+                        if (mobileMenuBtn) {
+                            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+                        }
+                        if (mobileOverlay) {
+                            mobileOverlay.addEventListener('click', toggleMobileMenu);
+                        }
 
                         // Source location change handler
                         const sourceLocSelect = document.getElementById('source_location_select');
@@ -612,20 +632,22 @@
                         }
 
                         // Form submit
-                        document.getElementById('transferForm').addEventListener('submit', function(e) {
-                            const productsData = collectProductData();
+                        const transferForm = document.getElementById('transferForm');
+                        if (transferForm) {
+                            transferForm.addEventListener('submit', function(e) {
+                                const productsData = collectProductData();
 
-                            if (productsData.length === 0) {
-                                e.preventDefault();
-                                alert('Vui lòng thêm ít nhất một sản phẩm');
-                                return false;
-                            }
+                                if (productsData.length === 0) {
+                                    e.preventDefault();
+                                    alert('Vui lòng thêm ít nhất một sản phẩm');
+                                    return false;
+                                }
 
-                            // Set products data
-                            document.getElementById('products_data').value = JSON.stringify(productsData);
-
-                            return true;
-                        });
+                                // Set products data
+                                document.getElementById('products_data').value = JSON.stringify(productsData);
+                                return true;
+                            });
+                        }
                     });
                 ]]>
                 </script>

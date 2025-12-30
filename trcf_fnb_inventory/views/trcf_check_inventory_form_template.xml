@@ -380,34 +380,32 @@
                         }
 
                          // Mobile Menu Logic
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-                            const sidebarWrapper = document.getElementById('sidebar-wrapper');
-                            const mobileOverlay = document.getElementById('mobile-overlay');
+                        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                        const sidebarWrapper = document.getElementById('sidebar-wrapper');
+                        const mobileOverlay = document.getElementById('mobile-overlay');
 
-                            function toggleMobileMenu() {
-                                if (!sidebarWrapper) return;
-                                const isOpen = !sidebarWrapper.classList.contains('-translate-x-full');
-                                if (isOpen) {
-                                    sidebarWrapper.classList.add('-translate-x-full');
-                                    mobileOverlay.classList.add('hidden');
-                                    mobileOverlay.classList.remove('opacity-100');
-                                    document.body.style.overflow = '';
-                                } else {
-                                    sidebarWrapper.classList.remove('-translate-x-full');
-                                    mobileOverlay.classList.remove('hidden');
-                                    setTimeout(() => mobileOverlay.classList.add('opacity-100'), 0);
-                                    document.body.style.overflow = 'hidden';
-                                }
+                        function toggleMobileMenu() {
+                            if (!sidebarWrapper) return;
+                            const isOpen = !sidebarWrapper.classList.contains('-translate-x-full');
+                            if (isOpen) {
+                                sidebarWrapper.classList.add('-translate-x-full');
+                                mobileOverlay.classList.add('hidden');
+                                mobileOverlay.classList.remove('opacity-100');
+                                document.body.style.overflow = '';
+                            } else {
+                                sidebarWrapper.classList.remove('-translate-x-full');
+                                mobileOverlay.classList.remove('hidden');
+                                setTimeout(() => mobileOverlay.classList.add('opacity-100'), 0);
+                                document.body.style.overflow = 'hidden';
                             }
+                        }
 
-                            if (mobileMenuBtn) {
-                                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-                            }
-                            if (mobileOverlay) {
-                                mobileOverlay.addEventListener('click', toggleMobileMenu);
-                            }
-                        });
+                        if (mobileMenuBtn) {
+                            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+                        }
+                        if (mobileOverlay) {
+                            mobileOverlay.addEventListener('click', toggleMobileMenu);
+                        }
 
                         // Form validation before submit
                         $('#inventoryCheckForm').on('submit', function(e) {
