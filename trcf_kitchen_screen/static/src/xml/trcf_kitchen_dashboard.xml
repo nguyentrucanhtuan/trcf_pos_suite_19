@@ -48,6 +48,7 @@
                 height: 100vh;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
+                zoom: 90%;
             }
             .line-completed .item-content {
                 text-decoration: line-through;
@@ -79,6 +80,14 @@
                                 <div class="relative cursor-pointer">
                                     <div t-att-class="'h-6 w-11 rounded-full transition-colors ' + (state.showRecipe ? 'bg-green-500' : 'bg-gray-300')"></div>
                                     <div t-att-class="'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ' + (state.showRecipe ? 'left-[22px]' : 'left-0.5')"></div>
+                                </div>
+                            </div>
+                            <!-- Toggle tổng hợp -->
+                            <div class="flex items-center gap-2" t-on-click="() => this.toggleSummary()">
+                                <span class="cursor-pointer text-base font-medium text-gray-600">Tổng hợp</span>
+                                <div class="relative cursor-pointer">
+                                    <div t-att-class="'h-6 w-11 rounded-full transition-colors ' + (state.showSummary ? 'bg-orange-500' : 'bg-gray-300')"></div>
+                                    <div t-att-class="'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ' + (state.showSummary ? 'left-[22px]' : 'left-0.5')"></div>
                                 </div>
                             </div>
                             <span class="text-base font-medium text-gray-500">
@@ -123,12 +132,17 @@
                                                     <div t-att-class="'relative py-3 ' + (line.trcf_order_status !== 'draft' ? 'line-completed' : '')">
                                                         <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
                                                             <div class="item-content flex-1">
-                                                                <p class="text-xl font-bold leading-normal text-gray-800">
-                                                                    <t t-esc="line.qty"/>x <t t-esc="line.product_id[1]"/>
-                                                                </p>
+                                                                <div class="flex items-center gap-3">
+                                                                    <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-2xl font-black text-white shadow-sm ring-2 ring-orange-200">
+                                                                        <t t-esc="line.qty"/>
+                                                                    </span>
+                                                                    <p class="text-xl font-bold leading-tight text-gray-800 flex-1">
+                                                                        <t t-esc="line.full_product_name || line.product_id[1]"/>
+                                                                    </p>
+                                                                </div>
                                                                 <t t-if="line.note">
-                                                                    <p class="item-note text-base text-orange-600 font-medium">
-                                                                        <t t-esc="line.note"/>
+                                                                    <p class="item-note text-base text-orange-600 font-medium pt-3">
+                                                                        <t t-esc="getNote(line.note)"/>
                                                                     </p>
                                                                 </t>
                                                             </div>
@@ -188,6 +202,39 @@
                         </t>
                     </div>
                 </main>
+
+                <!-- Summary Footer -->
+                <footer t-if="state.showSummary and aggregatedSummary.length > 0" 
+                        class="sticky bottom-0 z-20 w-full border-t border-gray-200 bg-white/95 p-4 shadow-2xl backdrop-blur-sm">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-orange-600">analytics</span>
+                            Tổng hợp món đang chờ
+                        </h2>
+                        <span class="text-sm font-medium text-gray-500">
+                            <t t-esc="aggregatedSummary.length"/> món khác nhau
+                        </span>
+                    </div>
+                    <div class="max-h-[25vh] overflow-y-auto">
+                        <div class="flex flex-wrap gap-2">
+                            <t t-foreach="aggregatedSummary" t-as="item" t-key="item.full_product_name">
+                                <div class="flex items-center gap-2 rounded-xl bg-orange-50 border border-orange-100 px-4 py-2 shadow-sm transition-all hover:shadow-md">
+                                    <span class="text-xl font-black text-orange-600">
+                                        <t t-esc="item.qty"/>
+                                    </span>
+                                    <span class="text-base font-bold text-gray-800">
+                                        <t t-esc="item.full_product_name"/>
+                                    </span>
+                                    <!-- Nút Xong hàng loạt -->
+                                    <button t-on-click="() => this.markBatchAsReady(item.full_product_name)"
+                                            class="ml-2 rounded-lg bg-green-600 px-3 py-1 text-sm font-bold text-white shadow-sm transition-colors hover:bg-green-700 active:scale-95">
+                                        XONG
+                                    </button>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </div>
     </t>

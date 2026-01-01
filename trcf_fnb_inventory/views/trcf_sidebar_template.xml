@@ -70,11 +70,11 @@
             <div class="mt-auto flex flex-col gap-1">
                 <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
                     <span class="material-symbols-outlined">settings</span>
-                    <p class="text-sm font-medium leading-normal">Cài đặt</p>
+                    <p class="text-sm font-medium leading-normal">CÀI ĐẶT</p>
                 </a>
                 <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
                     <span class="material-symbols-outlined">help_center</span>
-                    <p class="text-sm font-medium leading-normal">Hỗ trợ</p>
+                    <p class="text-sm font-medium leading-normal">HỖ TRỢ</p>
                 </a>
             </div>
         </aside>

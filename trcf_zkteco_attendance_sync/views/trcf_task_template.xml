@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="task_dashboard_page" name="Bảng điều khiển công việc">
+<t t-raw="'&lt;!DOCTYPE html&gt;'"/>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title t-esc="title"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+          tailwind.config = {
+            darkMode: "class",
+            theme: {
+              extend: {
+                colors: {
+                  "primary": "#141414",
+                  "background-light": "#f7f7f7",
+                  "background-dark": "#191919",
+                },
+                fontFamily: {
+                  "display": ["Plus Jakarta Sans", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+              },
+            },
+          }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #dbdbdb; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b0b0b0; }
+        
+        @keyframes ringPulse {
+            0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.8); }
+            70% { box-shadow: 0 0 0 25px rgba(234, 179, 8, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+        }
+        .pulse-ring { 
+            animation: ringPulse 1.0s infinite; 
+            border-color: #eab308 !important; 
+            border-width: 2px !important;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-primary font-display h-screen flex overflow-hidden">
+    <audio id="taskAlert" src="/trcf_zkteco_attendance_sync/static/src/audio/task-sound-effect.mp3" preload="auto"></audio>
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <header class="bg-background-light dark:bg-background-dark/95 backdrop-blur-sm z-10 px-4 md:px-8 py-6 border-b border-neutral-200/50 sticky top-0 shrink-0">
+            <div class="max-w-5xl mx-auto w-full flex flex-wrap justify-between items-end gap-4">
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-primary dark:text-white text-2xl md:text-3xl font-extrabold tracking-tight" t-esc="title"/>
+                    <div class="flex items-center gap-2 text-neutral-500">
+                        <span class="material-symbols-outlined text-[18px]" t-esc="'groups' if is_team_view else 'person'"/>
+                        <span class="text-sm font-medium" t-esc="subtitle"/>
+                        <span class="mx-1">•</span>
+                        <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                        <span class="text-sm font-medium" t-esc="today.strftime('%d/%m/%Y')"/>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="text-right">
+                        <div class="text-3xl font-bold text-primary dark:text-white" id="currentTime">--:--</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 pt-6">
+            <div id="tasks-container" class="max-w-5xl mx-auto w-full flex flex-col gap-8 pb-20">
+                <!-- Data will be rendered by JS -->
+                <div class="text-center py-16">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                    <p class="mt-4 text-neutral-500">Đang tải dữ liệu...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+<![CDATA[
+    const isTeamView = ]]><t t-esc="'true' if is_team_view else 'false'"/><![CDATA[;
+    const refreshUrl = ']]><t t-esc="refresh_url"/><![CDATA[';
+    const startUrl = ']]><t t-esc="start_url"/><![CDATA[';
+    const completeUrl = ']]><t t-esc="complete_url"/><![CDATA[';
+    
+    const taskAlert = document.getElementById('taskAlert');
+    let alertedTasks = new Set();
+
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const clockEl = document.getElementById('currentTime');
+        if (clockEl) clockEl.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    function handleStart(taskId) {
+        fetch(startUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {task_id: taskId}})
+        })
+        .then(r => r.json())
+        .then(d => { if (d.result && d.result.success) refreshDashboard(); else alert('Lỗi: ' + (d.result ? d.result.message : 'Unknown')); });
+    }
+
+    function handleComplete(taskId) {
+        if (!confirm('Xác nhận hoàn thành?')) return;
+        fetch(completeUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {task_id: taskId}})
+        })
+        .then(r => r.json())
+        .then(d => { if (d.result && d.result.success) refreshDashboard(); else alert('Lỗi: ' + (d.result ? d.result.message : 'Unknown')); });
+    }
+
+    function renderProgress(total, completed) {
+        const percent = total > 0 ? Math.floor(completed * 100 / total) : 0;
+        return `
+            <section class="bg-white dark:bg-[#202020] p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm">
+                <div class="flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-primary dark:text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-green-600">check_circle</span>
+                            Tiến độ ${isTeamView ? 'chung' : 'hôm nay'}
+                        </h3>
+                        <span class="text-sm font-bold text-neutral-500">${percent}%</span>
+                    </div>
+                    <div class="h-2.5 w-full bg-neutral-100 dark:bg-neutral-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: ${percent}%;"></div>
+                    </div>
+                    <p class="text-xs text-neutral-400 font-medium text-right">${completed} / ${total} công việc hoàn thành</p>
+                </div>
+            </section>
+        `;
+    }
+
+    function renderTask(task) {
+        const stateClasses = {
+            'pending': 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-700',
+            'in_progress': 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-500 border-yellow-200 dark:border-yellow-800',
+            'done': 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-500 border-green-200 dark:border-green-800',
+            'overdue': 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-500 border-red-200 dark:border-red-800'
+        };
+        const stateLabels = {
+            'pending': 'Đang chờ',
+            'in_progress': 'Đang làm',
+            'done': 'Hoàn thành',
+            'overdue': 'Quá hạn'
+        };
+
+        const now = new Date();
+        const currentHour = now.getHours() + now.getMinutes() / 60;
+        const diff = task.time_start - currentHour;
+        
+        // Pulse starts 5 mins before start time and continues until state is 'done'
+        const shouldPulse = (task.state !== 'done' && diff <= 5/60 + 0.01);
+
+        let badge = `<span class="px-2 py-1 rounded ${stateClasses[task.state]} text-xs font-bold border">${stateLabels[task.state]}</span>`;
+        if (shouldPulse) {
+            const label = diff > 0 ? "⚠️ Sắp tới" : "🚨 Cần làm ngay";
+            const colorClass = diff > 0 
+                ? "bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-500 border-orange-200 dark:border-orange-800"
+                : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-500 border-red-200 dark:border-red-800";
+            badge = `<span class="px-2 py-1 rounded ${colorClass} text-xs font-bold border">${label}</span>`;
+        }
+
+        const pulseClass = shouldPulse ? 'pulse-ring' : '';
+
+        return `
+            <div class="group flex flex-col md:flex-row gap-4 bg-white dark:bg-[#202020] p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-600 transition-all shadow-sm ${pulseClass}">
+                <div class="flex items-start gap-4 flex-1">
+                    <div class="flex flex-col gap-1 w-full ${task.state === 'done' ? 'opacity-50 transition-opacity' : ''}">
+                        <span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit mb-1">${task.time_display}</span>
+                        <p class="text-base font-bold text-primary dark:text-white leading-tight ${task.state === 'done' ? 'line-through decoration-neutral-400' : ''}">${task.name}</p>
+                        ${task.description ? `<p class="text-sm text-neutral-500 dark:text-neutral-400">${task.description}</p>` : ''}
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            ${badge}
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/3 flex flex-col justify-center items-end border-l-0 md:border-l border-neutral-100 dark:border-neutral-700 pl-0 md:pl-4 pt-2 md:pt-0">
+                    <div class="flex items-center gap-2 mt-2 md:mt-0">
+                        ${task.state === 'pending' ? `
+                            <button onclick="handleStart(${task.id})" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-500 border border-yellow-200 dark:border-yellow-800 hover:bg-yellow-100 transition-colors text-sm font-bold">
+                                <span class="material-symbols-outlined text-[18px]">play_arrow</span> Bắt đầu
+                            </button>
+                        ` : ''}
+                        ${task.state !== 'done' ? `
+                            <button onclick="handleComplete(${task.id})" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-500 border border-green-200 dark:border-green-800 hover:bg-green-100 transition-colors text-sm font-bold">
+                                <span class="material-symbols-outlined text-[18px]">check</span> Hoàn thành
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderEmployee(employee) {
+        const sortedTasks = [...employee.tasks].sort((a, b) => {
+            if (a.state === 'done' && b.state !== 'done') return 1;
+            if (a.state !== 'done' && b.state === 'done') return -1;
+            return a.time_start - b.time_start;
+        });
+
+        const iconBox = isTeamView ? `
+            <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                ${employee.name.substring(0, 1)}
+            </div>
+        ` : '';
+
+        return `
+            <section class="${isTeamView ? 'mb-4' : ''}">
+                ${isTeamView ? `
+                    <h3 class="text-lg font-bold text-primary dark:text-white mb-3 flex items-center gap-2">
+                        ${iconBox}
+                        <span>${employee.name}</span>
+                        <span class="text-sm text-neutral-500 font-medium">(${employee.tasks.length} công việc)</span>
+                    </h3>
+                ` : ''}
+                <div class="flex flex-col gap-3">
+                    ${sortedTasks.map(task => renderTask(task)).join('')}
+                </div>
+            </section>
+        `;
+    }
+
+    function checkUpcomingTasks(employees) {
+        const now = new Date();
+        const currentHour = now.getHours() + now.getMinutes() / 60;
+        
+        employees.forEach(emp => {
+            emp.tasks.forEach(task => {
+                const diff = task.time_start - currentHour;
+                if (task.state === 'pending' && !alertedTasks.has(task.id)) {
+                    if (diff <= 5/60 + 0.01 && diff >= -1/60) { 
+                        taskAlert.play().catch(e => console.error("Audio play failed:", e));
+                        alertedTasks.add(task.id);
+                    }
+                }
+            });
+        });
+    }
+
+    function refreshDashboard() {
+        fetch(refreshUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({jsonrpc: '2.0', method: 'call', params: {}})
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.result && d.result.success) {
+                const container = document.getElementById('tasks-container');
+                if (!d.result.employees || d.result.employees.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-16">
+                            <span class="material-symbols-outlined text-neutral-300" style="font-size: 4rem;">task_alt</span>
+                            <h3 class="text-xl font-semibold text-neutral-600 mt-4">${isTeamView ? 'Chưa có công việc hôm nay' : 'Không có công việc hôm nay'}</h3>
+                            <p class="text-neutral-500 mt-2">${isTeamView ? 'Chưa có nhân viên nào được gán công việc' : 'Bạn chưa được gán công việc nào'}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = renderProgress(d.result.total_tasks, d.result.completed_tasks);
+                html += d.result.employees.map(emp => renderEmployee(emp)).join('');
+                container.innerHTML = html;
+                
+                checkUpcomingTasks(d.result.employees);
+            }
+        });
+    }
+
+    refreshDashboard();
+    setInterval(refreshDashboard, 30000);
+]]>
+</script>
+
+</body>
+</html>
+    </template>
+
+    <template id="task_no_employee" name="Không có nhân viên">
+        <t t-raw="'&lt;!DOCTYPE html&gt;'"/>
+        <html lang="vi">
+        <head>
+            <meta charset="utf-8"/>
+            <title>Không có quyền</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-[#f7f7f7] min-h-screen flex items-center justify-center font-sans">
+            <div class="text-center p-8">
+                <div class="text-6xl text-red-500 mb-4">❌</div>
+                <h1 class="text-2xl font-bold text-slate-800 mb-2">Không tìm thấy nhân viên</h1>
+                <p class="text-slate-600 mb-6" t-esc="message"/>
+                <a href="/" class="px-6 py-3 bg-[#141414] text-white rounded-xl font-medium hover:bg-neutral-800 transition inline-block">Về trang chủ</a>
+            </div>
+        </body>
+        </html>
+    </template>
+</odoo>

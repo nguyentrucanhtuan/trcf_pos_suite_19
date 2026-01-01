@@ -47,6 +47,7 @@ export class TrcfKitchenDashboard extends Component {
             loadingOrders: [],
             loadingOrderLines: [],  // Track loading state cho từng món
             showRecipe: false,  // Toggle hiển thị công thức
+            showSummary: false, // Toggle hiển thị tổng hợp món
         });
 
         self.setupAudio();
@@ -287,9 +288,96 @@ export class TrcfKitchenDashboard extends Component {
         return this.state.loadingOrders.includes(orderId);
     }
 
+    // HOÀN THÀNH HÀNG LOẠT MÓN TỪ BẢNG TỔNG HỢP
+    async markBatchAsReady(fullProductName) {
+        var self = this;
+
+        // 1. Tìm tất cả các line ID có tên này và đang ở trạng thái draft
+        const draftOrders = this.getOrdersByStatus('draft');
+        const draftOrderIds = draftOrders.map(o => o.id);
+
+        const lineIdsToUpdate = this.state.order_lines
+            .filter(line =>
+                line.order_id &&
+                draftOrderIds.includes(line.order_id[0]) &&
+                line.trcf_order_status === 'draft' &&
+                (line.full_product_name || line.product_id[1]) === fullProductName
+            )
+            .map(line => line.id);
+
+        if (lineIdsToUpdate.length === 0) return;
+
+        // 2. Thêm vào loading state để UI phản hồi
+        lineIdsToUpdate.forEach(id => {
+            if (!self.state.loadingOrderLines.includes(id)) {
+                self.state.loadingOrderLines.push(id);
+            }
+        });
+
+        // 3. Gọi API cập nhật hàng loạt
+        try {
+            const result = await this.orm.call(
+                "pos.order.line",
+                "update_order_lines_status_batch",
+                [lineIdsToUpdate, 'ready']
+            );
+
+            if (!result.success) {
+                console.error('Lỗi cập nhật hàng loạt:', result.message);
+                // Xóa loading nếu lỗi
+                lineIdsToUpdate.forEach(id => {
+                    const index = self.state.loadingOrderLines.indexOf(id);
+                    if (index > -1) self.state.loadingOrderLines.splice(index, 1);
+                });
+            }
+        } catch (error) {
+            console.error('Lỗi cập nhật hàng loạt:', error);
+            lineIdsToUpdate.forEach(id => {
+                const index = self.state.loadingOrderLines.indexOf(id);
+                if (index > -1) self.state.loadingOrderLines.splice(index, 1);
+            });
+        }
+    }
+
     // TOGGLE HIỂN THỊ CÔNG THỨC
     toggleRecipe() {
         this.state.showRecipe = !this.state.showRecipe;
+    }
+
+    // TOGGLE HIỂN THỊ TỔNG HỢP MÓN
+    toggleSummary() {
+        this.state.showSummary = !this.state.showSummary;
+    }
+
+    // GETTER: TỔNG HỢP CÁC MÓN ĐANG CHỜ (DRAFT)
+    get aggregatedSummary() {
+        const summaryMap = {};
+
+        // 1. Lọc các đơn đang ở trạng thái draft
+        const draftOrders = this.getOrdersByStatus('draft');
+        const draftOrderIds = draftOrders.map(o => o.id);
+
+        // 2. Gom tất cả các món từ những đơn draft này
+        this.state.order_lines.forEach(line => {
+            // Chỉ tính những món thuộc về các đơn draft đang hiển thị
+            // Và món đó cũng phải ở trạng thái draft (chưa nấu xong)
+            if (line.order_id && draftOrderIds.includes(line.order_id[0]) && line.trcf_order_status === 'draft') {
+                const name = line.full_product_name || line.product_id[1];
+                const qty = parseFloat(line.qty) || 0;
+
+                if (summaryMap[name]) {
+                    summaryMap[name] += qty;
+                } else {
+                    summaryMap[name] = qty;
+                }
+            }
+        });
+
+        // 3. Chuyển thành mảng { full_product_name, qty }
+        return Object.entries(summaryMap).map(([name, qty]) => ({
+            full_product_name: name,
+            qty: qty
+        })).sort((a, b) => b.qty - a.qty); // Sắp xếp theo số lượng giảm dần
     }
 
     // ✅ =============  INCREMENTAL UPDATE METHODS =============
@@ -449,6 +537,20 @@ export class TrcfKitchenDashboard extends Component {
     renderHtml(htmlString) {
         if (!htmlString) return '';
         return markup(htmlString);
+    }
+
+    // ✅ Parse note JSON string thành text
+    getNote(note) {
+        if (!note) return "";
+        try {
+            const parsed = JSON.parse(note);
+            if (Array.isArray(parsed)) {
+                return parsed.map(item => item.text || "").join(" ");
+            }
+            return note;
+        } catch (e) {
+            return note;
+        }
     }
 
     getScreenIdFromURL() {

@@ -52,6 +52,51 @@ class PosOrderLine(models.Model):
             _logger.error(f"❌ Lỗi cập nhật trạng thái order line {order_line_id}: {str(e)}")
             return {'success': False, 'error': str(e)}
 
+    @api.model
+    def update_order_lines_status_batch(self, order_line_ids, new_status):
+        """Cập nhật trạng thái cho nhiều sản phẩm cùng lúc và gửi thông báo"""
+        import logging
+        from datetime import datetime
+        _logger = logging.getLogger(__name__)
+
+        try:
+            lines = self.env["pos.order.line"].browse(order_line_ids)
+            valid_lines = lines.exists()
+            
+            if not valid_lines:
+                return {'success': False, 'error': 'Không tìm thấy sản phẩm nào'}
+
+            # Lưu danh sách order_ids để kiểm tra hoàn thành đơn sau
+            order_ids = valid_lines.mapped('order_id').ids
+
+            # Cập nhật trạng thái
+            valid_lines.write({'trcf_order_status': new_status})
+
+            # Kiểm tra và cập nhật trạng thái đơn hàng (đơn nào xong hết thì auto complete)
+            for order_id in set(order_ids):
+                self.check_order_done(order_id)
+
+            # Gửi thông báo bus cho từng line (hoặc có thể gom lại nếu cần tối ưu hơn)
+            # Hiện tại gửi từng line để UI hiện tại của client (onBusMessage) dễ xử lý
+            for line in valid_lines:
+                channel_name = 'pos_order_line_status_updated'
+                bus_type = 'notification'
+                payload_data = {
+                    'message': 'pos_order_line_status_updated',
+                    'res_model': 'pos.order.line',
+                    'line_id': line.id,
+                    'new_status': new_status,
+                    'order_id': line.order_id.id,
+                    'timestamp': datetime.now().isoformat(),
+                }
+                self.env["bus.bus"]._sendone(channel_name, bus_type, payload_data)
+
+            return {'success': True, 'count': len(valid_lines)}
+
+        except Exception as e:
+            _logger.error(f"❌ Lỗi cập nhật hàng loạt order lines: {str(e)}")
+            return {'success': False, 'error': str(e)}
+
 
     @api.model
     def check_order_done(self, order_id):

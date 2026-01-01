@@ -34,6 +34,7 @@ class TrcfPosOrder(models.Model):
                 line_data = {
                     'id': line.id,
                     'product_id': [line.product_id.id, line.product_id.name],
+                    'full_product_name': line.full_product_name,  # ✅ Full name with attributes
                     'product_id_pos_categ_ids': line.product_id.product_tmpl_id.pos_categ_ids.ids,  # ✅ Category IDs để filter
                     'qty': line.qty,
                     'note': line.note or '',
@@ -127,6 +128,7 @@ class TrcfPosOrder(models.Model):
             line_data = line.read()[0]  # Lấy data mặc định
             # Thêm public_description từ product template
             line_data['public_description'] = line.product_id.product_tmpl_id.public_description or ''
+            line_data['full_product_name'] = line.full_product_name  # ✅ Thêm tên đầy đủ kèm thuộc tính
             order_lines_data.append(line_data)
         
         values = {
