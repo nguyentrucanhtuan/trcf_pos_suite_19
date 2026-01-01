@@ -81,6 +81,18 @@ class TrcfPurchaseController(http.Controller):
                     receipt_color = 'yellow'
                     can_receive = True
             
+            # Get product summary
+            product_summary = []
+            for line in po.order_line:
+                subtotal = line.product_qty * line.price_unit
+                product_summary.append({
+                    'name': line.product_id.name,
+                    'qty': line.product_qty,
+                    'uom': line.product_uom_id.name,
+                    'price_unit': line.price_unit,
+                    'subtotal': subtotal,
+                })
+            
             # Lấy warehouse name từ picking_type
             warehouse_name = '--'
             if po.picking_type_id and po.picking_type_id.warehouse_id:
@@ -99,6 +111,7 @@ class TrcfPurchaseController(http.Controller):
                 'date_order': date_formatted,
                 'payment_date': payment_date_formatted,
                 'warehouse_name': warehouse_name,
+                'product_summary': product_summary,
                 # Receipt status fields
                 'receipt_status': receipt_status,
                 'receipt_status_display': receipt_status_display,
@@ -317,6 +330,9 @@ class TrcfPurchaseController(http.Controller):
                     # Add tax if selected (tax_id > 0 means a tax was selected)
                     if tax_id > 0:
                         line_vals['tax_ids'] = [(6, 0, [tax_id])]
+                    else:
+                        # Explicitly set empty taxes to prevent Odoo from picking up product defaults
+                        line_vals['tax_ids'] = [(6, 0, [])]
                     
                     _logger.info(f"Creating line with vals: {line_vals}")
                     

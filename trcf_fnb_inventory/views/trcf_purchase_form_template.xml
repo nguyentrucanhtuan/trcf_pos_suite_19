@@ -768,10 +768,10 @@
                         priceInput.value = Math.round(product.standard_price);
                         
                         // Build VAT dropdown from product's supplier_taxes
-                        let vatOptions = '<option value="0" data-amount="0">Không thuế (0%)</option>';
+                        let vatOptions = '';
                         
                         if (product.supplier_taxes && product.supplier_taxes.length > 0) {
-                            // Add taxes from product's supplier_taxes_id
+                            // Add only taxes from product's supplier_taxes
                             product.supplier_taxes.forEach(function(tax) {
                                 vatOptions += '<option value="' + tax.id + '" data-amount="' + tax.amount + '">' + tax.name + ' (' + tax.amount + '%)</option>';
                             });
@@ -783,6 +783,7 @@
                             vatSelect.value = product.supplier_taxes[0].id;
                         } else {
                             // No taxes configured for this product
+                            vatOptions = '<option value="0" data-amount="0">---</option>';
                             vatSelect.innerHTML = vatOptions;
                             vatSelect.value = '0';
                         }
