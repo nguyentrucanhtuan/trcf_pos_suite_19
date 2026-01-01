@@ -5,3 +5,4 @@ from . import trcf_work_shift
 from . import trcf_shift_registration
 from . import trcf_shift_task_template
 from . import trcf_shift_task
+from . import res_config_settings

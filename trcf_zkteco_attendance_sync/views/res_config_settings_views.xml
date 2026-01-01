@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.trcf.shift</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="90"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="TRCF Quản lý ca" string="TRCF Quản lý ca" name="trcf_zkteco_attendance_sync">
+                    <block title="Tác vụ tự động" name="automation_settings">
+                        <setting id="weekly_task_automation" 
+                                 title="Tự động tạo công việc tuần" 
+                                 help="Cấu hình thời gian hệ thống tự động tạo danh sách công việc cho tuần mới.">
+                            <field name="trcf_auto_generate_weekly_tasks"/>
+                            <div class="content-group" invisible="not trcf_auto_generate_weekly_tasks">
+                                <div class="mt16">
+                                    <label for="trcf_weekly_tasks_day" string="Ngày chạy hàng tuần" class="col-lg-3 o_light_label"/>
+                                    <field name="trcf_weekly_tasks_day" class="oe_inline"/>
+                                </div>
+                                <div class="mt8">
+                                    <label for="trcf_weekly_tasks_time" string="Giờ chạy (Giờ địa phương)" class="col-lg-3 o_light_label"/>
+                                    <field name="trcf_weekly_tasks_time" widget="float_time" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="trcf_shift_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Cấu hình chung</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context" eval="{'module': 'trcf_zkteco_attendance_sync'}"/>
+    </record>
+
+    <!-- Menu Cấu hình -->
+    <menuitem id="trcf_shift_config_menu"
+              name="Cấu hình"
+              parent="trcf_shift_management_menu_root"
+              sequence="100"
+              groups="hr.group_hr_user"/>
+
+    <menuitem id="trcf_shift_config_settings_menu"
+              name="Cấu hình chung"
+              parent="trcf_shift_config_menu"
+              action="trcf_shift_config_settings_action"
+              sequence="10"/>
+</odoo>
