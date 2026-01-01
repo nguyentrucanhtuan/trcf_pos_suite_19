@@ -53,8 +53,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Opening balance (only show if > 0) -->
-                            <tr t-if="pm.opening > 0">
+                            <!-- Opening balance (only show if > 0 and is Cash) -->
+                            <tr t-if="pm.isCash &amp;&amp; pm.opening > 0">
                                 <td class="ps-3">Mở ca</td>
                                 <td class="text-end">
                                     <t t-esc="env.utils.formatCurrency(pm.opening)"/>
@@ -69,32 +69,62 @@
                                 </td>
                             </tr>
 
-                            <!-- Expenses with expand/collapse -->
-                            <tr class="trcf-expandable-row" t-on-click="() => this.togglePMExpenses(pm.id)">
-                                <td class="ps-3">
-                                    <i t-attf-class="fa fa-chevron-{{isPMExpensesExpanded(pm.id) ? 'down' : 'right'}} me-2"/>
-                                    Chi
-                                </td>
-                                <td class="text-end fw-bold text-danger">
-                                    <t t-esc="env.utils.formatCurrency(pm.expenses)"/>
-                                </td>
-                            </tr>
+                            <t t-if="pm.isCash">
+                                <!-- Expenses with expand/collapse -->
+                                <tr class="trcf_expandable_row" t-on-click="() => this.togglePMExpenses(pm.id)">
+                                    <td class="ps-3">
+                                        <i t-attf-class="fa fa-chevron-{{isPMExpensesExpanded(pm.id) ? 'down' : 'right'}} me-2"/>
+                                        Chi
+                                    </td>
+                                    <td class="text-end fw-bold text-danger">
+                                        <t t-esc="env.utils.formatCurrency(pm.expenses)"/>
+                                    </td>
+                                </tr>
 
-                            <!-- Expense details (expandable) -->
-                            <t t-if="isPMExpensesExpanded(pm.id)">
-                                <tr t-foreach="pm.expenseDetails" t-as="expense" t-key="expense.id" class="trcf-expense-detail">
-                                    <td class="ps-5 text-muted">
-                                        <small t-esc="expense.name"/>
+                                <!-- Expense details (expandable) -->
+                                <t t-if="isPMExpensesExpanded(pm.id)">
+                                    <tr t-foreach="pm.expenseDetails" t-as="expense" t-key="expense.id" class="trcf-expense-detail">
+                                        <td class="ps-5 text-muted">
+                                            <small t-esc="expense.name"/>
+                                        </td>
+                                        <td class="text-end text-muted">
+                                            <small t-esc="env.utils.formatCurrency(expense.trcf_amount)"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="pm.expenseDetails.length === 0" class="trcf-expense-detail">
+                                        <td colspan="2" class="ps-5 text-muted">
+                                            <small><em>Không có chi phí</em></small>
+                                        </td>
+                                    </tr>
+                                </t>
+
+                                <!-- Purchases with expand/collapse -->
+                                <tr class="trcf_expandable_row" t-on-click="() => this.togglePMPurchases(pm.id)">
+                                    <td class="ps-3">
+                                        <i t-attf-class="fa fa-chevron-{{isPMPurchasesExpanded(pm.id) ? 'down' : 'right'}} me-2"/>
+                                        Mua hàng
                                     </td>
-                                    <td class="text-end text-muted">
-                                        <small t-esc="env.utils.formatCurrency(expense.trcf_amount)"/>
+                                    <td class="text-end fw-bold text-danger">
+                                        <t t-esc="env.utils.formatCurrency(pm.purchases)"/>
                                     </td>
                                 </tr>
-                                <tr t-if="pm.expenseDetails.length === 0" class="trcf-expense-detail">
-                                    <td colspan="2" class="ps-5 text-muted">
-                                        <small><em>Không có chi phí</em></small>
-                                    </td>
-                                </tr>
+
+                                <!-- Purchase details (expandable) -->
+                                <t t-if="isPMPurchasesExpanded(pm.id)">
+                                    <tr t-foreach="pm.purchaseDetails" t-as="purchase" t-key="purchase.id" class="trcf-expense-detail">
+                                        <td class="ps-5 text-muted">
+                                            <small t-esc="purchase.name"/>
+                                        </td>
+                                        <td class="text-end text-muted">
+                                            <small t-esc="env.utils.formatCurrency(purchase.amount_total)"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="pm.purchaseDetails.length === 0" class="trcf-expense-detail">
+                                        <td colspan="2" class="ps-5 text-muted">
+                                            <small><em>Không có đơn mua hàng</em></small>
+                                        </td>
+                                    </tr>
+                                </t>
                             </t>
 
                             <!-- Counted amount (display only) -->

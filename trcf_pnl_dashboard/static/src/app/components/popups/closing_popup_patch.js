@@ -17,6 +17,7 @@ patch(ClosePosPopup.prototype, {
         // Toggle states for collapsible sections
         this.state.trcf_show_cash_expenses = false;
         this.state.trcf_expanded_pm_expenses = {};
+        this.state.trcf_expanded_pm_purchases = {};
 
         // Counted amounts for non-cash payment methods
         this.state.trcf_counted_amounts = {};
@@ -51,6 +52,18 @@ patch(ClosePosPopup.prototype, {
             ['name', 'trcf_amount', 'trcf_payment_method_id', 'trcf_payment_date', 'create_date', 'state']
         );
 
+        // Fetch purchase orders created after session started
+        const purchases = await this.pos.data.searchRead(
+            'purchase.order',
+            [
+                ['create_date', '>=', startAt],
+                ['create_date', '<=', stopAt],
+                ['trcf_payment_status', '=', 'paid'],
+                ['state', '=', 'purchase'],
+            ],
+            ['name', 'amount_total', 'trcf_payment_method_id', 'trcf_payment_date', 'create_date', 'trcf_payment_status']
+        );
+
         // Load payment income using new API (uses _read_group for efficiency)
         const paymentIncome = await this.pos.data.call(
             'pos.session',
@@ -60,8 +73,8 @@ patch(ClosePosPopup.prototype, {
 
         // Store in reactive state to trigger re-render
         this.state.trcf_expenses = expenses || [];
+        this.state.trcf_purchases = purchases || [];
         this.state.trcf_payment_income = paymentIncome || {};
-        this.state.trcf_purchases = []; // Temporarily empty, will add later
         this.state.trcf_loading = false;
     },
 
@@ -250,6 +263,50 @@ patch(ClosePosPopup.prototype, {
         return this.state.trcf_expanded_pm_expenses && this.state.trcf_expanded_pm_expenses[paymentMethodId];
     },
 
+    // Toggle payment method purchases visibility
+    togglePMPurchases(paymentMethodId) {
+        if (!this.state.trcf_expanded_pm_purchases) {
+            this.state.trcf_expanded_pm_purchases = {};
+        }
+        this.state.trcf_expanded_pm_purchases[paymentMethodId] = !this.state.trcf_expanded_pm_purchases[paymentMethodId];
+    },
+
+    // Check if payment method purchases are expanded
+    isPMPurchasesExpanded(paymentMethodId) {
+        return this.state.trcf_expanded_pm_purchases && this.state.trcf_expanded_pm_purchases[paymentMethodId];
+    },
+
+    // Get purchases by payment method ID (returns total or array)
+    getPurchasesByPaymentMethodId(paymentMethodId, returnArray = false) {
+        const purchases = (this.state.trcf_purchases || []).filter(purchase => {
+            if (purchase.trcf_payment_method_id) {
+                // Handle both integer ID and [id, name] array format
+                const pmId = Array.isArray(purchase.trcf_payment_method_id)
+                    ? purchase.trcf_payment_method_id[0]
+                    : purchase.trcf_payment_method_id;
+
+                return pmId === paymentMethodId;
+            }
+            return false;
+        });
+
+        if (returnArray) {
+            return purchases;
+        }
+
+        // Return total
+        return purchases.reduce((sum, po) => sum + (po.amount_total || 0), 0);
+    },
+
+    // Calculate total of all purchases
+    get totalAllPurchases() {
+        let total = 0;
+        (this.state.trcf_purchases || []).forEach((purchase) => {
+            total += purchase.amount_total || 0;
+        });
+        return total;
+    },
+
     // Calculate income from actual payment lines (excluding opening balance)
     // Now uses data loaded from database instead of looping through in-memory orders
     getPaymentIncomeByMethod(paymentMethodId) {
@@ -269,11 +326,14 @@ patch(ClosePosPopup.prototype, {
             // Calculate income from actual payment lines (most accurate method)
             const income = this.getPaymentIncomeByMethod(cashPMId);
 
-            const expenseTotal = this.getCashExpenses();
-            const expenseDetails = this.getExpensesByPaymentMethod('cash');
+            const expenseTotal = this.getExpensesByPaymentMethodId(cashPMId, false);
+            const expenseDetails = this.getExpensesByPaymentMethodId(cashPMId, true);
 
-            // Expected total = opening + income - expenses
-            const expectedTotal = opening + income - expenseTotal;
+            const purchaseTotal = this.getPurchasesByPaymentMethodId(cashPMId, false);
+            const purchaseDetails = this.getPurchasesByPaymentMethodId(cashPMId, true);
+
+            // Expected total = opening + income - expenses - purchases
+            const expectedTotal = opening + income - expenseTotal - purchaseTotal;
 
             // Get counted from state, default to 0 if not entered
             const counted = this.state.trcf_counted_amounts[cashPMId] !== undefined
@@ -290,6 +350,8 @@ patch(ClosePosPopup.prototype, {
                 income: income,
                 expenses: expenseTotal,
                 expenseDetails: expenseDetails,
+                purchases: purchaseTotal,
+                purchaseDetails: purchaseDetails,
                 counted: counted,
                 difference: difference,
                 isCash: true,
@@ -301,16 +363,21 @@ patch(ClosePosPopup.prototype, {
         // Add non-cash payment methods from props
         if (this.props.non_cash_payment_methods && this.props.non_cash_payment_methods.length > 0) {
             this.props.non_cash_payment_methods.forEach(pm => {
-                const opening = pm.opening || 0;
+                // Force opening to 0 for non-cash methods as per user request
+                const opening = 0;
 
                 // Calculate income from actual payment lines (most accurate method)
                 const income = this.getPaymentIncomeByMethod(pm.id);
 
-                const expenseTotal = this.getExpensesByPaymentMethodId(pm.id, false);
-                const expenseDetails = this.getExpensesByPaymentMethodId(pm.id, true);
+                // Expenses and purchases are only for cash
+                const expenseTotal = 0;
+                const expenseDetails = [];
 
-                // Expected total = opening + income - expenses
-                const expectedTotal = opening + income - expenseTotal;
+                const purchaseTotal = 0;
+                const purchaseDetails = [];
+
+                // Expected total = income only for non-cash
+                const expectedTotal = income;
 
                 // Get counted from state, default to 0 if not entered
                 const counted = this.state.trcf_counted_amounts[pm.id] !== undefined
@@ -327,6 +394,8 @@ patch(ClosePosPopup.prototype, {
                     income: income,
                     expenses: expenseTotal,
                     expenseDetails: expenseDetails,
+                    purchases: purchaseTotal,
+                    purchaseDetails: purchaseDetails,
                     counted: counted,
                     difference: difference,
                     isCash: false,
@@ -379,18 +448,16 @@ patch(ClosePosPopup.prototype, {
             const cashOpening = this.props.default_cash_details.opening || 0;
             const cashAmount = this.props.default_cash_details.amount || 0;
             const cashIncome = cashAmount - cashOpening; // Exclude opening from income
-            const cashExpenses = this.getCashExpenses();
-            total += cashOpening + cashIncome - cashExpenses;
+            const cashExpenses = this.getExpensesByPaymentMethodId(cashPMId);
+            const cashPurchases = this.getPurchasesByPaymentMethodId(cashPMId);
+            total += cashOpening + cashIncome - cashExpenses - cashPurchases;
         }
 
-        // Add non-cash balances
+        // Add non-cash balances (only income for non-cash)
         if (this.props.non_cash_payment_methods) {
             this.props.non_cash_payment_methods.forEach(pm => {
-                const opening = (pm.type === 'bank' && pm.number !== 0) ? this.getPaymentMethodOpening(pm.id) : 0;
-                const pmAmount = pm.amount || 0;
-                const income = pmAmount - opening; // Exclude opening from income
-                const expenses = this.getExpensesByPaymentMethodId(pm.id);
-                total += opening + income - expenses;
+                const income = this.getPaymentIncomeByMethod(pm.id);
+                total += income;
             });
         }
 
