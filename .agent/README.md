@@ -43,6 +43,14 @@ Dùng để tạo nhanh các thành phần giao diện OWL.
 - **Ví dụ**: `/trcf_create_owl_component pos_receipt_custom`
 - **Kết quả**: Agent tạo file `.js` (ESM) và `.xml` (Template), đồng thời tự động đăng ký vào `__manifest__.py`.
 
+### 4. `/trcf_create_adk_agent`
+Dùng để tạo một AI Agent mới sử dụng Google ADK tích hợp vào Odoo Discuss.
+- **Cách dùng**: `/trcf_create_adk_agent [tên_agent] "[mô_tả_nhiệm_vụ]"`
+- **Ví dụ (Prompt mẫu)**: 
+    - `@[/trcf_create_adk_agent] marketing_bot "Trợ lý viết nội dung quảng cáo facebook dựa trên thông tin sản phẩm và khách hàng mục tiêu"`
+    - `@[/trcf_create_adk_agent] inventory_analyst "Trợ lý phân tích tồn kho, cảnh báo các mặt hàng sắp hết hàng"`
+- **Kết quả**: Agent tạo cấu trúc thư mục chuẩn, đăng ký registry, cấu hình hook Discuss và **tự động chạy lệnh nâng cấp module** để áp dụng thay đổi ngay.
+
 ---
 
 ## 🧠 Mẹo dành cho Developer (Tips)

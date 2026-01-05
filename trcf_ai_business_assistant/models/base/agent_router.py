@@ -1,49 +1,25 @@
 # -*- coding: utf-8 -*-
-"""
-AGENT ROUTER - Điều hướng tin nhắn đến agent phù hợp
-"""
-import logging
 import importlib
-
+import logging
 from . import agent_registry
 
 _logger = logging.getLogger(__name__)
 
-
 def route(env, message):
-    """
-    Điều hướng message đến agent phù hợp và trả về response
+    """Điều hướng tin nhắn đến Agent phù hợp"""
+    agent_key, agent_config = agent_registry.get_agent_by_keyword(message)
     
-    Args:
-        env: Odoo environment
-        message: Nội dung tin nhắn từ user
-        
-    Returns:
-        str: Response từ agent
-    """
+    _logger.info(f"🤖 Routing message to agent: {agent_key}")
+    
     try:
-        # Tìm agent phù hợp
-        agent_key, agent_config = agent_registry.get_agent_by_keyword(message)
-        
-        if not agent_config:
-            return "⚠️ Không tìm thấy agent phù hợp"
-        
-        _logger.info(f"🚀 Routing to: {agent_config['name']}")
-        
-        # Dynamic import agent module
+        # Dynamic import
         module = importlib.import_module(agent_config['module_path'])
         agent_class = getattr(module, agent_config['class_name'])
         
-        # Khởi tạo và query agent
+        # Khởi tạo và truy vấn
         agent_instance = agent_class(env)
-        response = agent_instance.query(message)
-        
-        return response
-        
-    except ImportError as e:
-        _logger.error(f"❌ Import error: {e}")
-        return f"⚠️ Agent chưa được implement: {agent_key}"
+        return agent_instance.query(message)
         
     except Exception as e:
         _logger.error(f"❌ Router error: {e}", exc_info=True)
-        return f"⚠️ Lỗi xử lý: {str(e)}"
+        return f"⚠️ Lỗi router: {str(e)}"

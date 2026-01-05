@@ -1,38 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Bot Partner -->
-        <record id="partner_trcf_drink_creative_assistant" model="res.partner">
-            <field name="name">Trợ lý Sáng tạo Thức uống</field>
-            <field name="email">drink.assistant@coffeetree.vn</field>
-            <field name="active">True</field>
+        <record id="partner_ai_assistant" model="res.partner">
+            <field name="name">TRCF AI Assistant</field>
+            <field name="email">ai_assistant@coffeetree.vn</field>
             <field name="company_id" ref="base.main_company"/>
         </record>
-        
-        <!-- Bot User - minimal fields -->
-        <record id="user_trcf_drink_creative_assistant" model="res.users">
-            <field name="name">Trợ lý Sáng tạo Thức uống</field>
-            <field name="login">trcf_drink_creative_assistant</field>
-            <field name="partner_id" ref="partner_trcf_drink_creative_assistant"/>
-            <field name="active">True</field>
-        </record>
-        
-        <!-- Default creativity rules -->
-        <record id="default_drink_creativity_rules" model="ir.config_parameter">
-            <field name="key">trcf_ai.drink_creativity_rules</field>
-            <field name="value">1. Tỷ lệ espresso/sữa chuẩn: 1:3 (30ml espresso : 90ml sữa)
-2. Độ ngọt cân bằng: 15-20% đường so với tổng thể tích
-3. Nhiệt độ phục vụ: Lạnh dưới 5°C, Nóng 65-70°C
-4. Topping không quá 3 loại để tránh hỗn loạn vị
-5. Syrup: 20-30ml cho ly 350ml, 30-40ml cho ly 500ml
-6. Trà/Matcha: Pha đậm gấp 1.5 lần nếu thêm sữa
-7. Đá: Chiếm 30-40% thể tích ly cho đồ lạnh</field>
-        </record>
-        
-        <!-- Default trend period -->
-        <record id="default_drink_trend_period" model="ir.config_parameter">
-            <field name="key">trcf_ai.drink_trend_period</field>
-            <field name="value">30</field>
+
+        <record id="user_ai_assistant" model="res.users">
+            <field name="login">trcf_ai_assistant</field>
+            <field name="password">trcf_ai_assistant_secure_pass</field>
+            <field name="partner_id" ref="partner_ai_assistant"/>
+            <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="company_id" ref="base.main_company"/>
         </record>
     </data>
 </odoo>
