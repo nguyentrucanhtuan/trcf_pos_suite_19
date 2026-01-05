@@ -7,7 +7,7 @@ import json
 
 class TrcfShiftScheduleGridController(http.Controller):
     
-    @http.route('/shift-schedule', type='http', auth='user', website=True)
+    @http.route('/shift-schedule', type='http', auth='user', website=True, allow_frames=True)
     def shift_schedule_grid_page(self, start_date=None, **kwargs):
         """Trang xếp ca theo tuần cho Admin - dùng trcf.shift.registration"""
         

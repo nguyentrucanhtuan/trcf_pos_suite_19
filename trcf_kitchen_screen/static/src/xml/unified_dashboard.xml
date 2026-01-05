@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="trcf_kitchen_screen.UnifiedDashboardTemplate">
+        <div class="o_action h-100 flex flex-col bg-gray-100 font-sans">
+            <!-- Tailwind CDN (Dùng tạm nếu odoo chưa load đủ) -->
+            <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+            
+            <!-- Header/Tabs Navigation -->
+            <div class="bg-white shadow-sm border-b border-gray-200 z-30">
+                <div class="flex items-center justify-between px-4 h-16">
+                    <div class="flex items-center space-x-1 h-full">
+                        <!-- Tab Bếp -->
+                        <button t-on-click="() => this.switchTab('kitchen')"
+                                t-attf-class="px-6 h-full flex items-center space-x-2 font-bold transition-all border-b-4 #{state.activeTab === 'kitchen' ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent text-gray-500 hover:bg-gray-50'}">
+                            <span class="text-xl">🍳</span>
+                            <span>MÀN HÌNH BẾP</span>
+                            <t t-if="state.hasNewOrder">
+                                <span class="flex h-3 w-3 relative">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                </span>
+                            </t>
+                        </button>
+                        
+                        <!-- Tab Công việc -->
+                        <button t-on-click="() => this.switchTab('tasks')"
+                                t-attf-class="px-6 h-full flex items-center space-x-2 font-bold transition-all border-b-4 #{state.activeTab === 'tasks' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-transparent text-gray-500 hover:bg-gray-50'}">
+                            <span class="text-xl">📋</span>
+                            <span>CÔNG VIỆC TEAM</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Đồng hồ & Info -->
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <div class="text-xl font-black text-gray-800" t-esc="state.currentTime.toLocaleTimeString('vi-VN')"></div>
+                            <div class="text-xs text-gray-500 font-medium" t-esc="state.currentTime.toLocaleDateString('vi-VN')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 relative overflow-hidden">
+                <!-- Màn hình Bếp (Nhúng trực tiếp component) -->
+                <div t-att-class="'absolute inset-0 overflow-auto transition-opacity duration-300 ' + (state.activeTab === 'kitchen' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')">
+                    <TrcfKitchenDashboard screen_id="screen_id"/>
+                </div>
+
+                <!-- Iframe Công việc (Giữ nguyên iframe vì là route riêng) -->
+                <div t-att-class="'absolute inset-0 transition-opacity duration-300 ' + (state.activeTab === 'tasks' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none')">
+                    <iframe t-att-src="tasksUrl" 
+                            class="w-full h-full border-none"/>
+                </div>
+            </div>
+
+            <!-- Task Notification Popup (Overlay) -->
+            <t t-if="state.showTaskPopup">
+                <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div class="bg-white rounded-3xl shadow-2xl w-[450px] overflow-hidden transform animate-in zoom-in-95 duration-300">
+                        <div class="bg-blue-600 p-6 text-white flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-3xl">⏰</span>
+                                <h3 class="text-xl font-black uppercase tracking-wider">Nhắc việc sắp tới</h3>
+                            </div>
+                            <button t-on-click="closeTaskPopup" class="hover:bg-white/20 rounded-full p-2 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                        <div class="p-8 text-center">
+                            <div class="inline-block px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-bold mb-4" t-esc="state.upcomingTask.time_display"></div>
+                            <h2 class="text-2xl font-black text-gray-800 mb-2" t-esc="state.upcomingTask.name"></h2>
+                            <p class="text-gray-500 mb-8" t-esc="state.upcomingTask.description or 'Vui lòng thực hiện công việc đúng hạn.'"></p>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <button t-on-click="closeTaskPopup" 
+                                        class="px-6 py-4 rounded-2xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition-colors uppercase tracking-widest text-sm">
+                                    ĐỂ SAU
+                                </button>
+                                <button t-on-click="goToTasks" 
+                                        class="px-6 py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all uppercase tracking-widest text-sm">
+                                    XEM NGAY
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

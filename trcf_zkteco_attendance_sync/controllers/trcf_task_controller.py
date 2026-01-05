@@ -7,8 +7,8 @@ class TrcfTaskController(http.Controller):
     
     # --- Team Tasks Routes ---
     
-    @http.route('/team-tasks', type='http', auth='public', website=True)
-    def team_tasks_page(self, **kwargs):
+    @http.route('/team-tasks', type='http', auth='public', website=True, allow_frames=True)
+    def team_tasks_page(self, minimal=False, **kwargs):
         """Trang tổng hợp công việc của tất cả nhân viên trong ca"""
         TaskModel = request.env['trcf.shift.task'].sudo()
         today = fields.Date.context_today(TaskModel)
@@ -38,6 +38,7 @@ class TrcfTaskController(http.Controller):
             'is_team_view': True,
             'today': today,
             'employees': employees_data,
+            'minimal': minimal,
             'refresh_url': '/team-tasks/refresh',
             'start_url': '/team-tasks/start',
             'complete_url': '/team-tasks/complete',

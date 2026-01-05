@@ -6,15 +6,18 @@
     'category': 'Point of Sale',
     'author': 'Tuấn Rang Cà Phê',
     'website': 'https://coffeetree.vn',  # có thể thay đổi
-    'depends': ['point_of_sale'],
+    'depends': ['point_of_sale', 'trcf_zkteco_attendance_sync'],
     'data': [
         'security/ir.model.access.csv',
         'views/trcf_kitchen_screen_views.xml',
+        'views/trcf_kitchen_iframe_templates.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'trcf_kitchen_screen/static/src/js/trcf_kitchen_dashboard.js',
             'trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml',
+            'trcf_kitchen_screen/static/src/js/unified_dashboard.js',
+            'trcf_kitchen_screen/static/src/xml/unified_dashboard.xml',
             'trcf_kitchen_screen/static/src/css/trcf_kitchen_dashboard.css'
         ],
     },

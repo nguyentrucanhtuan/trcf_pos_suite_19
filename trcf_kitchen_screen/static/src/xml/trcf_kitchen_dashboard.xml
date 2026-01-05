@@ -99,8 +99,8 @@
 
                 <!-- Main Content -->
                 <main class="w-full p-2">
-                    <!-- Orders Grid -->
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <!-- Orders Grid (Responsive: <=1024px: 2 cols, >1024px: 3 cols) -->
+                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
                         <t t-foreach="getOrdersByStatus('draft')" t-as="order" t-key="order.id">
                             <!-- ✅ CHỈ HIỆN ĐƠN CÓ MÓN -->
                             <t t-if="hasVisibleLines(order.id)">

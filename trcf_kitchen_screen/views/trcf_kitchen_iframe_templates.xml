@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="kitchen_screen_iframe_template" name="Kitchen Screen Iframe">
+        <t t-call="web.layout">
+            <t t-set="html_data" t-value="{'style': 'height: 100%;'}"/>
+            <t t-set="title">Màn hình Bếp</t>
+            <t t-set="head">
+                <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+                <script type="text/javascript">
+                    odoo.__session_info__ = <t t-out="json.dumps(request.env['ir.http'].get_frontend_session_info())"/>;
+                    // Truyền ID bếp vào context của action
+                    window.odoo_kitchen_screen_id = <t t-esc="screen_id"/>;
+                </script>
+                <t t-call-assets="web.assets_backend" t-js="false"/>
+                <t t-call-assets="web.assets_backend" t-css="false"/>
+                <style>
+                    body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+                    .o_web_client { height: 100%; display: flex; flex-direction: column; }
+                    .o_action_manager { flex: 1; height: 100%; }
+                </style>
+            </t>
+            <body class="o_web_client">
+                <div class="o_action_manager">
+                    <!-- Template này giờ chỉ phục vụ việc debug route, 
+                         Dashboard chính đã dùng nhúng trực tiếp component -->
+                </div>
+            </body>
+        </t>
+    </template>
+</odoo>

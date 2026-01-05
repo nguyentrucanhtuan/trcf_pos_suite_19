@@ -9,8 +9,8 @@ export class TrcfKitchenDashboard extends Component {
         super.setup();
         this.busService = this.env.services.bus_service;
 
-        // ✅ LẤY SCREEN ID TỪ URL odoo/action-xxx/SCREEN_ID/action-yyy
-        this.screen_id = this.getScreenIdFromURL();
+        // ✅ LẤY SCREEN ID TỪ PROPS HOẶC URL
+        this.screen_id = this.props.screen_id || this.getScreenIdFromURL();
 
         // ✅ SETUP DEBOUNCING & DUPLICATE TRACKING
         this.pendingOrderUpdates = new Set();
@@ -555,15 +555,22 @@ export class TrcfKitchenDashboard extends Component {
 
     getScreenIdFromURL() {
         const url = window.location.href;
-        // Regex pattern
+        // Regex pattern cho backend action (mặc định của Odoo)
         const pattern = /action-\d+\/(\d+)\/action-/;
         const match = url.match(pattern);
 
         if (match) {
             return parseInt(match[1]);
-        } else {
-            return 1; // default
         }
+
+        // Regex pattern cho custom route /pos/kitchen_screen/:id
+        const routePattern = /\/pos\/kitchen_screen\/(\d+)/;
+        const routeMatch = url.match(routePattern);
+        if (routeMatch) {
+            return parseInt(routeMatch[1]);
+        }
+
+        return 1; // default
     }
 
     // ============= TAILWIND HELPER METHODS =============

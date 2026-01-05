@@ -3,7 +3,13 @@
 
     <record id="kitchen_dashboard_action" model="ir.actions.client">
         <field name="name">Kitchen Dashboard Screen</field>
-        <field name="tag">kitchen_dashboard_tags</field> <!-- tag này chính là JS class -->
+        <field name="tag">kitchen_dashboard_tags</field>
+        <field name="target">fullscreen</field>
+    </record>
+
+    <record id="trcf_unified_dashboard_action" model="ir.actions.client">
+        <field name="name">Dashboard Tổng Hợp (Bếp + Công Việc)</field>
+        <field name="tag">trcf_unified_dashboard_tags</field>
         <field name="target">fullscreen</field>
     </record>
 
@@ -33,7 +39,12 @@
                     </group>
                     <button name="%(kitchen_dashboard_action)d"
                         type="action"
-                        string="Mở màn hình bếp"
+                        string="Màn hình bếp"
+                        class="btn-secondary me-2"
+                        />
+                    <button name="%(trcf_unified_dashboard_action)d"
+                        type="action"
+                        string="Màn hình tổng hợp"
                         class="btn-primary"
                         />
                 </sheet>
