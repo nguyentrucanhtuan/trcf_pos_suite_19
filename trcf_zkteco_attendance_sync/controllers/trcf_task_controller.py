@@ -44,7 +44,7 @@ class TrcfTaskController(http.Controller):
             'complete_url': '/team-tasks/complete',
         })
     
-    @http.route('/team-tasks/refresh', type='json', auth='public', methods=['POST'])
+    @http.route('/team-tasks/refresh', type='jsonrpc', auth='public', methods=['POST'])
     def refresh_team_tasks(self, **kwargs):
         """API lấy dữ liệu tasks mới nhất để update UI ngầm"""
         try:
@@ -79,11 +79,11 @@ class TrcfTaskController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
-    @http.route('/team-tasks/start', type='json', auth='public', methods=['POST'])
+    @http.route('/team-tasks/start', type='jsonrpc', auth='public', methods=['POST'])
     def team_start_task(self, task_id, **kwargs):
         return self._start_task(task_id)
 
-    @http.route('/team-tasks/complete', type='json', auth='public', methods=['POST'])
+    @http.route('/team-tasks/complete', type='jsonrpc', auth='public', methods=['POST'])
     def team_complete_task(self, task_id, **kwargs):
         return self._complete_task(task_id)
 
@@ -111,7 +111,7 @@ class TrcfTaskController(http.Controller):
             'complete_url': '/my-tasks/complete',
         })
     
-    @http.route('/my-tasks/refresh', type='json', auth='user', methods=['POST'])
+    @http.route('/my-tasks/refresh', type='jsonrpc', auth='user', methods=['POST'])
     def refresh_my_tasks(self, **kwargs):
         """API lấy dữ liệu tasks mới nhất của nhân viên"""
         try:
@@ -146,11 +146,11 @@ class TrcfTaskController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
 
-    @http.route('/my-tasks/start', type='json', auth='user', methods=['POST'])
+    @http.route('/my-tasks/start', type='jsonrpc', auth='user', methods=['POST'])
     def my_start_task(self, task_id, **kwargs):
         return self._start_task(task_id)
 
-    @http.route('/my-tasks/complete', type='json', auth='user', methods=['POST'])
+    @http.route('/my-tasks/complete', type='jsonrpc', auth='user', methods=['POST'])
     def my_complete_task(self, task_id, **kwargs):
         return self._complete_task(task_id)
 

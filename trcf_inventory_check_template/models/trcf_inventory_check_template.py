@@ -115,24 +115,24 @@ class TrcfInventoryCheckTemplateLine(models.Model):
         help='Thứ tự hiển thị sản phẩm trong phiếu kiểm'
     )
     
-    @api.depends('product_id', 'product_id.uom_id')
+    @api.depends('product_id', 'product_id.uom_id', 'product_id.uom_ids')
     def _compute_compatible_uom_ids(self):
-        """Tính danh sách đơn vị tính tương thích với đơn vị mặc định của sản phẩm"""
+        """
+        Tính danh sách đơn vị tính tương thích.
+        Chỉ bao gồm đơn vị mặc định và các đơn vị được chọn trong uom_ids của sản phẩm.
+        """
         for line in self:
-            if line.product_id and line.product_id.uom_id:
-                base_uom = line.product_id.uom_id
-                all_uoms = self.env['uom.uom'].search([])
-                compatible_uoms = self.env['uom.uom']
+            if line.product_id:
+                # Bắt đầu với đơn vị mặc định
+                compatible_uoms = line.product_id.uom_id
                 
-                # Kiểm tra từng UOM xem có chung reference với base UOM không
-                for uom in all_uoms:
-                    # Sử dụng method _has_common_reference để kiểm tra
-                    if base_uom._has_common_reference(uom):
-                        compatible_uoms |= uom
+                # Thêm các đơn vị được chọn trong uom_ids (nếu có)
+                if line.product_id.uom_ids:
+                    compatible_uoms |= line.product_id.uom_ids
                 
                 line.compatible_uom_ids = compatible_uoms
             else:
-                line.compatible_uom_ids = self.env['uom.uom'].search([])
+                line.compatible_uom_ids = self.env['uom.uom']
     
     _sql_constraints = [
         ('product_template_unique', 

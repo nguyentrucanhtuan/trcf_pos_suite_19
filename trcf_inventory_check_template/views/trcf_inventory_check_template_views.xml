@@ -39,6 +39,7 @@
                                     <field name="sequence" widget="handle"/>
                                     <field name="product_id" options="{'no_create': True}"/>
                                     <field name="product_uom_id" string="ĐV mặc định" readonly="1"/>
+                                    <field name="compatible_uom_ids" column_invisible="True"/>
                                     <field name="uom_id" options="{'no_create': True}"/>
                                 </list>
                             </field>

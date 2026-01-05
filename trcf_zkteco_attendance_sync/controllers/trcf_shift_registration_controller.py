@@ -63,7 +63,7 @@ class TrcfShiftRegistrationController(http.Controller):
             'registered_dict': registered_dict,
         })
     
-    @http.route('/dang-ky-ca/save', type='json', auth='user', methods=['POST'])
+    @http.route('/dang-ky-ca/save', type='jsonrpc', auth='user', methods=['POST'])
     def save_shift_registration(self, **kwargs):
         """API lưu đăng ký ca"""
         try:
@@ -106,7 +106,7 @@ class TrcfShiftRegistrationController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
-    @http.route('/dang-ky-ca/remove', type='json', auth='user', methods=['POST'])
+    @http.route('/dang-ky-ca/remove', type='jsonrpc', auth='user', methods=['POST'])
     def remove_shift_registration(self, **kwargs):
         """API hủy đăng ký ca"""
         try:

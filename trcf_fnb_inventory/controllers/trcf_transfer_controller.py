@@ -172,7 +172,7 @@ class TrcfTransferController(http.Controller):
             _logger.error(f"Error getting product UOMs: {str(e)}", exc_info=True)
             return {'error': f'Lỗi khi tải thông tin đơn vị: {str(e)}'}
 
-    @http.route('/trcf_fnb_inventory/get_location_stock', type='json', auth='user', methods=['POST'])
+    @http.route('/trcf_fnb_inventory/get_location_stock', type='jsonrpc', auth='user', methods=['POST'])
     def get_location_stock(self, location_id, **kw):
         """Get product stocks and formatted stock_display for a specific location"""
         try:

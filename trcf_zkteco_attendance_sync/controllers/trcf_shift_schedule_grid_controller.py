@@ -105,7 +105,7 @@ class TrcfShiftScheduleGridController(http.Controller):
             'employees_json': json.dumps(employees_list),
         })
     
-    @http.route('/shift-schedule/add-employee', type='json', auth='user', methods=['POST'])
+    @http.route('/shift-schedule/add-employee', type='jsonrpc', auth='user', methods=['POST'])
     def add_employee_to_shift(self, **kwargs):
         """API thêm nhân viên vào ca (tạo registration)"""
         try:
@@ -142,7 +142,7 @@ class TrcfShiftScheduleGridController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
-    @http.route('/shift-schedule/remove-employee', type='json', auth='user', methods=['POST'])
+    @http.route('/shift-schedule/remove-employee', type='jsonrpc', auth='user', methods=['POST'])
     def remove_employee_from_shift(self, **kwargs):
         """API xóa nhân viên khỏi ca (xóa registration)"""
         try:
@@ -161,7 +161,7 @@ class TrcfShiftScheduleGridController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
-    @http.route('/shift-schedule/approve', type='json', auth='user', methods=['POST'])
+    @http.route('/shift-schedule/approve', type='jsonrpc', auth='user', methods=['POST'])
     def approve_registration(self, **kwargs):
         """API duyệt registration"""
         try:
@@ -180,7 +180,7 @@ class TrcfShiftScheduleGridController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
-    @http.route('/shift-schedule/approve-all', type='json', auth='user', methods=['POST'])
+    @http.route('/shift-schedule/approve-all', type='jsonrpc', auth='user', methods=['POST'])
     def approve_all_registrations(self, **kwargs):
         """API duyệt tất cả registration trong tuần"""
         try:
