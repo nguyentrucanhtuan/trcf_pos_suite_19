@@ -14,6 +14,11 @@
             </xpath>
             
             <xpath expr="//field[@name='worked_hours']" position="after">
+                <field name="check_in_status" optional="show" decoration-danger="is_late == True" decoration-success="is_late == False"/>
+                <field name="check_out_status" optional="show" decoration-danger="early_leave_minutes > 0" decoration-success="is_overtime == True"/>
+                <field name="is_late" column_invisible="1"/>
+                <field name="is_overtime" column_invisible="1"/>
+                <field name="early_leave_minutes" column_invisible="1"/>
                 <field name="late_minutes" optional="hide" decoration-danger="late_minutes > 0"/>
                 <field name="overtime_minutes" optional="hide" decoration-success="overtime_minutes > 0"/>
                 <field name="trcf_hourly_salary_display" optional="show"/>
@@ -75,5 +80,17 @@
               parent="trcf_shift_management_menu_root"
               action="trcf_attendance_payroll_action"
               sequence="50"/>
+
+    <!-- Server Action: Liên kết ca làm việc -->
+    <record id="action_attendance_recompute_shift" model="ir.actions.server">
+        <field name="name">Liên kết ca làm việc</field>
+        <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="binding_model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">
+action = records.action_recompute_shift_registration()
+        </field>
+    </record>
 
 </odoo>

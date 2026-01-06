@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Menu Root: TRCF Máy in (ngang hàng với TRCF Quản lý ca) -->
     <menuitem id="menu_trcf_printer_root"
+        name="TRCF Máy in"
+        sequence="27"/>
+    
+    <!-- Submenu: Quản lý máy in -->
+    <menuitem id="menu_trcf_printer_manager"
         name="Quản lý máy in"
-        parent="point_of_sale.menu_point_root"
-        sequence="11"
+        parent="menu_trcf_printer_root"
+        sequence="10"
         action="action_trcf_printer_manager"/>
 </odoo>

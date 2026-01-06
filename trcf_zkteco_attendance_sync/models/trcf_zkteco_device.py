@@ -4,6 +4,7 @@ from collections import defaultdict
 import pytz
 from odoo.exceptions import UserError
 from odoo import _
+import traceback
 from datetime import datetime, timedelta, time
 
 # Hằng số cấu hình
@@ -249,6 +250,8 @@ class TrcfZktecoDevice(models.Model):
                 for record in attendance_data:
                     user_id_tamp = str(record['user_id'])
                     date_tamp = str(record['date'])
+                    if not user_id_tamp or not date_tamp:
+                        continue
                     attendance_group[user_id_tamp][date_tamp].append(record)
 
                 #Danh sách hr_attendance_list sẵn sàn đưa vào dữ liệu
@@ -267,7 +270,9 @@ class TrcfZktecoDevice(models.Model):
                     sorted_dates = sorted(dates_dict.keys())
                     
                     for date_str in sorted_dates:
-                        attendance_list = dates_dict[date_str]
+                        attendance_list = dates_dict.get(date_str, [])
+                        if not attendance_list:
+                            continue
                         print(f"  📅 Ngày: {date_str}")
                         
                         # Sắp xếp theo thời gian trong ngày
@@ -383,7 +388,8 @@ class TrcfZktecoDevice(models.Model):
             }
             
         except Exception as e:
-            print(f"Lỗi đồng bộ: {str(e)}")
+            error_traceback = traceback.format_exc()
+            print(f"Lỗi đồng bộ: {str(e)}\n{error_traceback}")
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',

@@ -57,10 +57,15 @@
         </field>
     </record>
 
-    <!-- Menu Item dưới Point of Sale > Orders -->
+    <!-- Menu Root: TRCF VAT (ngang hàng với TRCF Quản lý ca) -->
+    <menuitem id="menu_trcf_vat_root"
+              name="TRCF VAT"
+              sequence="26"/>
+
+    <!-- Submenu: Hoá đơn chờ xuất VAT -->
     <menuitem id="menu_trcf_order_pending_vat"
               name="Hoá đơn chờ xuất VAT"
-              parent="point_of_sale.menu_point_of_sale"
+              parent="menu_trcf_vat_root"
               action="action_trcf_order_pending_vat"
-              sequence="1"/>
+              sequence="10"/>
 </odoo>

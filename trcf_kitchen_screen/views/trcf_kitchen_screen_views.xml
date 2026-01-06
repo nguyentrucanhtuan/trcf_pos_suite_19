@@ -59,10 +59,17 @@
         <field name="view_id" ref="view_trcf_kitchenscreen_list"/>
     </record>
 
+    <!-- Menu Root: TRCF Màn hình bếp (ngang hàng với TRCF Quản lý ca) -->
     <menuitem
         id="menu_trcf_kitchen_root"
-        name="Màn hình bếp"
-        parent="point_of_sale.menu_point_root"
+        name="TRCF Màn hình bếp"
+        sequence="28"/>
+    
+    <!-- Submenu: Cấu hình màn hình bếp -->
+    <menuitem
+        id="menu_trcf_kitchen_config"
+        name="Cấu hình màn hình"
+        parent="menu_trcf_kitchen_root"
         sequence="10"
         action="action_trcf_kitchenscreen"/>
 </odoo>
