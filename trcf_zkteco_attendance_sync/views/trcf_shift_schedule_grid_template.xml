@@ -88,18 +88,25 @@
                                                 
                                                 <!-- Nhân viên -->
                                                 <t t-foreach="cell_data.get('employees', [])" t-as="emp">
-                                                    <div t-attf-class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium m-1 #{'bg-green-500 text-white' if emp.get('state') == 'confirmed' else 'bg-amber-100 text-amber-800 border border-dashed border-amber-400'}"
+                                                    <div t-attf-class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium m-1 #{'bg-green-500 text-white' if emp.get('state') == 'confirmed' else 'bg-red-100 text-red-800 border border-dashed border-red-400' if emp.get('state') == 'rejected' else 'bg-amber-100 text-amber-800 border border-dashed border-amber-400'}"
                                                          t-att-data-employee-id="emp.get('id')"
                                                          t-att-data-registration-id="emp.get('registration_id')"
                                                          t-att-data-state="emp.get('state')">
                                                         <span t-esc="emp.get('name', '')"/>
                                                         <t t-if="emp.get('state') == 'draft'">
-                                                            <button type="button" class="ml-1 hover:text-red-600 text-lg btn-remove-emp" title="Xóa">×</button>
-                                                        </t>
-                                                        <t t-if="emp.get('state') == 'draft'">
                                                             <button type="button" class="ml-1 text-green-600 hover:text-green-800 btn-approve-emp" title="Duyệt">
                                                                 <i class="fa fa-check"></i>
                                                             </button>
+                                                            <button type="button" class="ml-1 text-red-500 hover:text-red-700 btn-reject-emp" title="Từ chối">
+                                                                <i class="fa fa-ban"></i>
+                                                            </button>
+                                                            <button type="button" class="ml-1 hover:text-red-600 text-lg btn-remove-emp" title="Xóa">×</button>
+                                                        </t>
+                                                        <t t-if="emp.get('state') == 'rejected'">
+                                                            <button type="button" class="ml-1 text-green-600 hover:text-green-800 btn-approve-emp" title="Duyệt lại">
+                                                                <i class="fa fa-check"></i>
+                                                            </button>
+                                                            <button type="button" class="ml-1 hover:text-red-600 text-lg btn-remove-emp" title="Xóa">×</button>
                                                         </t>
                                                     </div>
                                                 </t>
@@ -125,6 +132,10 @@
                         <div class="flex items-center gap-2 text-sm text-slate-600">
                             <span class="w-5 h-4 rounded-full bg-amber-100 border border-dashed border-amber-400"></span>
                             <span>Chờ duyệt</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-slate-600">
+                            <span class="w-5 h-4 rounded-full bg-red-100 border border-dashed border-red-400"></span>
+                            <span>Từ chối</span>
                         </div>
                     </div>
                 </div>
@@ -218,6 +229,34 @@
                                 const registrationId = chip.dataset.registrationId;
                                 
                                 fetch('/shift-schedule/approve', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        jsonrpc: '2.0',
+                                        method: 'call',
+                                        params: {registration_id: registrationId}
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.result <![CDATA[&&]]> data.result.success) {
+                                        location.reload();
+                                    } else {
+                                        alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                    }
+                                });
+                            });
+                        });
+                        
+                        // Click nút từ chối
+                        document.querySelectorAll('.btn-reject-emp').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                
+                                const chip = this.closest('div');
+                                const registrationId = chip.dataset.registrationId;
+                                
+                                fetch('/shift-schedule/reject', {
                                     method: 'POST',
                                     headers: {'Content-Type': 'application/json'},
                                     body: JSON.stringify({

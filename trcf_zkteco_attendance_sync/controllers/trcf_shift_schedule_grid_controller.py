@@ -179,6 +179,25 @@ class TrcfShiftScheduleGridController(http.Controller):
             
         except Exception as e:
             return {'success': False, 'message': str(e)}
+
+    @http.route('/shift-schedule/reject', type='jsonrpc', auth='user', methods=['POST'])
+    def reject_registration(self, **kwargs):
+        """API từ chối registration"""
+        try:
+            if not request.env.user.has_group('hr.group_hr_user'):
+                return {'success': False, 'message': 'Bạn không có quyền thực hiện thao tác này'}
+            
+            registration_id = kwargs.get('registration_id')
+            
+            registration = request.env['trcf.shift.registration'].sudo().browse(int(registration_id))
+            if registration.exists():
+                registration.action_reject()
+                return {'success': True}
+            
+            return {'success': False, 'message': 'Không tìm thấy đăng ký'}
+            
+        except Exception as e:
+            return {'success': False, 'message': str(e)}
     
     @http.route('/shift-schedule/approve-all', type='jsonrpc', auth='user', methods=['POST'])
     def approve_all_registrations(self, **kwargs):
