@@ -175,7 +175,7 @@
                                     </div>
 
                                     <!-- Complete Button -->
-                                    <div class="border-t border-gray-200 p-3">
+                                    <!--div class="border-t border-gray-200 p-3">
                                         <button 
                                             t-on-click="() => this.markAsDone(order.id)"
                                             t-att-disabled="isOrderLoading(order.id)"
@@ -187,7 +187,7 @@
                                                 ✓ Hoàn thành
                                              </t>
                                         </button>
-                                    </div>
+                                    </div-->
                                 </div>
                             </t>
                         </t>

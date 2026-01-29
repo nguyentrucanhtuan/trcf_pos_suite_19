@@ -1,0 +1,170 @@
+{
+  "heading_2": {
+    "type": "heading_2",
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{HEADING_TEXT}}" }
+        }
+      ]
+    }
+  },
+  
+  "heading_3": {
+    "type": "heading_3",
+    "heading_3": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{HEADING_TEXT}}" }
+        }
+      ]
+    }
+  },
+  
+  "paragraph": {
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{CONTENT}}" }
+        }
+      ]
+    }
+  },
+  
+  "paragraph_bold": {
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{LABEL}}" },
+          "annotations": { "bold": true }
+        },
+        {
+          "type": "text",
+          "text": { "content": " {{CONTENT}}" }
+        }
+      ]
+    }
+  },
+  
+  "image": {
+    "type": "image",
+    "image": {
+      "type": "external",
+      "external": {
+        "url": "{{IMAGE_URL}}"
+      },
+      "caption": [
+        {
+          "type": "text",
+          "text": { "content": "{{CAPTION}}" }
+        }
+      ]
+    }
+  },
+  
+  "callout_tip": {
+    "type": "callout",
+    "callout": {
+      "icon": { "type": "emoji", "emoji": "💡" },
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{CONTENT}}" }
+        }
+      ]
+    }
+  },
+  
+  "callout_warning": {
+    "type": "callout",
+    "callout": {
+      "icon": { "type": "emoji", "emoji": "⚠️" },
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{CONTENT}}" }
+        }
+      ]
+    }
+  },
+  
+  "callout_success": {
+    "type": "callout",
+    "callout": {
+      "icon": { "type": "emoji", "emoji": "✅" },
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{CONTENT}}" }
+        }
+      ]
+    }
+  },
+  
+  "bulleted_list": {
+    "type": "bulleted_list_item",
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{CONTENT}}" }
+        }
+      ]
+    }
+  },
+  
+  "numbered_list": {
+    "type": "numbered_list_item",
+    "numbered_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "text": { "content": "{{CONTENT}}" }
+        }
+      ]
+    }
+  },
+  
+  "divider": {
+    "type": "divider",
+    "divider": {}
+  },
+  
+  "step_complete": [
+    {
+      "type": "heading_3",
+      "heading_3": {
+        "rich_text": [{"type": "text", "text": {"content": "{{STEP_TITLE}}"}}]
+      }
+    },
+    {
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [{"type": "text", "text": {"content": "{{DESCRIPTION}}"}}]
+      }
+    },
+    {
+      "type": "paragraph",
+      "paragraph": {
+        "rich_text": [
+          {"type": "text", "text": {"content": "Ví dụ: "}, "annotations": {"bold": true}},
+          {"type": "text", "text": {"content": "{{EXAMPLE}}"}}
+        ]
+      }
+    },
+    {
+      "type": "image",
+      "image": {
+        "type": "external",
+        "external": {"url": "{{IMAGE_URL}}"},
+        "caption": [{"type": "text", "text": {"content": "{{IMAGE_CAPTION}}"}}]
+      }
+    }
+  ]
+}
