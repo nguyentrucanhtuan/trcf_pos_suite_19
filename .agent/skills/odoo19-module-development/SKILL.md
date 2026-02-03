@@ -98,16 +98,53 @@ trcf_[module_name]/
 | Viết OWL Component? | [OWL_GUIDE.md](references/OWL_GUIDE.md) |
 | Tạo Views XML? | [VIEWS_REFERENCE.md](references/VIEWS_REFERENCE.md) |
 | Viết Controllers/Routes? | [CONTROLLERS_REFERENCE.md](references/CONTROLLERS_REFERENCE.md) |
+| Test module đầy đủ? | [TESTING_CHECKLIST.md](references/TESTING_CHECKLIST.md) |
 | Gặp lỗi? | [TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) |
 | Cần best practices? | [BEST_PRACTICES.md](references/BEST_PRACTICES.md) |
 
-## ⚙️ Verification
+## ⚙️ Verification & Testing
+
+### Quick Verification Commands
 
 ```bash
-./odoo-bin -c odoo19.conf -u <tên_module> --stop-after-init
+# Install module mới
+./odoo-bin -c odoo19.conf -d <database> -i <tên_module> --stop-after-init
+
+# Update module sau khi sửa code
+./odoo-bin -c odoo19.conf -d <database> -u <tên_module> --stop-after-init
+
+# Development mode - auto reload XML/CSS/JS
+./odoo-bin -c odoo19.conf -d <database> --dev=xml,css,js
+
+# Debug mode với Python debugger
+./odoo-bin -c odoo19.conf -d <database> --dev=all
+
+# Enable SQL query logging (check performance)
+./odoo-bin -c odoo19.conf -d <database> --log-sql
+
+# Shell mode để test code trực tiếp
+./odoo-bin shell -c odoo19.conf -d <database>
 ```
 
-Kiểm tra log không có `ERROR` hoặc `CRITICAL`.
+### Log Checking
+
+Sau khi chạy lệnh, kiểm tra:
+- ✅ Không có `ERROR` hoặc `CRITICAL` trong log
+- ✅ Thấy message: `Module <tên_module>: successfully installed/updated`
+- ✅ Không có warning về missing dependencies
+- ✅ Views load thành công (check browser console)
+
+### Comprehensive Testing
+
+Xem chi tiết: [TESTING_CHECKLIST.md](references/TESTING_CHECKLIST.md)
+
+**Quick checklist:**
+- [ ] Module install/upgrade thành công
+- [ ] All views render correctly
+- [ ] Business logic hoạt động
+- [ ] JavaScript components function
+- [ ] Security/access rights đúng
+- [ ] Performance acceptable
 
 ## ✅ Checklist Sạch Code
 

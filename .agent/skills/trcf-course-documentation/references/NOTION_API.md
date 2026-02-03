@@ -211,6 +211,142 @@ Tool: mcp_notion-mcp-server_API-get-block-children
 }
 ```
 
+### Table Block
+
+**⭐ QUAN TRỌNG**: Tables là thành phần cốt lõi trong tài liệu hướng dẫn TRCF.
+
+**Cấu trúc table:**
+```json
+{
+  "type": "table",
+  "table": {
+    "table_width": 3,
+    "has_column_header": true,
+    "has_row_header": false,
+    "children": [
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Trường"}}],
+            [{"type": "text", "text": {"content": "Ví dụ"}}],
+            [{"type": "text", "text": {"content": "Giải thích"}}]
+          ]
+        }
+      },
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Tên sản phẩm"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "Cà phê đen đá"}, "annotations": {"code": true}}],
+            [{"type": "text", "text": {"content": "Tên hiển thị cho khách hàng"}}]
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+**Ví dụ table giải thích trường:**
+```json
+{
+  "type": "table",
+  "table": {
+    "table_width": 4,
+    "has_column_header": true,
+    "has_row_header": false,
+    "children": [
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Trường"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "Bắt buộc"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "Ý nghĩa"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "Ví dụ"}, "annotations": {"bold": true}}]
+          ]
+        }
+      },
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Tên sản phẩm"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "✅"}}],
+            [{"type": "text", "text": {"content": "Tên hiển thị cho khách hàng"}}],
+            [{"type": "text", "text": {"content": "Cà phê đen đá"}, "annotations": {"code": true}}]
+          ]
+        }
+      },
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Giá bán"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "✅"}}],
+            [{"type": "text", "text": {"content": "Giá bán lẻ"}}],
+            [{"type": "text", "text": {"content": "35,000 đ"}, "annotations": {"code": true}}]
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+**Ví dụ table hướng dẫn từng bước:**
+```json
+{
+  "type": "table",
+  "table": {
+    "table_width": 3,
+    "has_column_header": true,
+    "has_row_header": false,
+    "children": [
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Trường"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "Ví dụ"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "Giải thích"}, "annotations": {"bold": true}}]
+          ]
+        }
+      },
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Ngày nhập hàng"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "01/02/2026"}, "annotations": {"code": true}}],
+            [{"type": "text", "text": {"content": "Tự động điền ngày hiện tại"}}]
+          ]
+        }
+      },
+      {
+        "type": "table_row",
+        "table_row": {
+          "cells": [
+            [{"type": "text", "text": {"content": "Mã tham chiếu"}, "annotations": {"bold": true}}],
+            [{"type": "text", "text": {"content": "PO0281"}, "annotations": {"code": true}}],
+            [{"type": "text", "text": {"content": "Mã đơn mua hàng (nếu có)"}}]
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+**Lưu ý khi tạo table:**
+- `table_width`: Số cột trong bảng
+- `has_column_header: true`: Dòng đầu tiên là header
+- Mỗi `cells` là array của arrays (mỗi cell là một array rich_text)
+- Header cells nên có `annotations: {"bold": true}`
+- Giá trị ví dụ nên có `annotations: {"code": true}`
+
 ### Divider Block
 
 ```json

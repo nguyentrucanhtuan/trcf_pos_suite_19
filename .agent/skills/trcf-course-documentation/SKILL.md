@@ -28,17 +28,47 @@ Tạo tài liệu hướng dẫn sử dụng **chuẩn TRCF** với cấu trúc 
 
 ## 📋 Cấu trúc tài liệu chuẩn
 
-Mỗi tài liệu **BẮT BUỘC** có 5 phần:
+> ⚠️ **QUAN TRỌNG**: Tài liệu Notion phải **ĐẦY ĐỦ VÀ CHI TIẾT** như file markdown gốc. Không được rút gọn hoặc bỏ qua bất kỳ phần nào.
 
-| # | Phần | Nội dung |
-|---|------|----------|
-| 1 | **Giới thiệu** | Mục đích + Ý nghĩa của tính năng |
-| 2 | **Truy cập** | Đường dẫn `Menu → Submenu → Action` |
-| 3 | **Hướng dẫn từng bước** | Bước 1, 2, 3... với ảnh minh họa |
-| 4 | **Giải thích trường** | Bảng giải thích fields quan trọng |
-| 5 | **FAQ** | Câu hỏi thường gặp và cách xử lý |
+Mỗi tài liệu **BẮT BUỘC** có các phần sau:
+
+| # | Phần | Nội dung | Yêu cầu |
+|---|------|----------|---------|
+| 1 | **📌 Giới thiệu** | Mục đích + Ý nghĩa của tính năng | Giải thích TẠI SAO cần tính năng này |
+| 2 | **🔗 Cách truy cập** | Đường dẫn URL + Menu path | Hướng dẫn rõ ràng cách tìm tính năng |
+| 3 | **📋 Hướng dẫn từng bước** | Bước 1, 2, 3... với ảnh minh họa | Mỗi bước có: Heading + Mô tả + Bảng chi tiết + Ảnh |
+| 4 | **📝 Bảng tham khảo nhanh** | Bảng giải thích các trường dữ liệu | Trường | Bắt buộc | Ví dụ | Ghi chú |
+| 5 | **❓ FAQ** | Câu hỏi thường gặp và cách xử lý | Tối thiểu 3 câu hỏi thực thực tế |
+
+> ❌ **LƯU Ý QUAN TRỌNG**: **KHÔNG** bao gồm mục "Mục lục" hoặc "Tóm tắt quy trình" (Mermaid diagram). Tài liệu cần tập trung vào nội dung trực tiếp, tiêu đề rõ ràng và hình ảnh minh họa trực quan.
+
+### 🎯 Yêu cầu chi tiết cho mỗi phần
+
+#### Phần Hướng dẫn từng bước
+**BẮT BUỘC** mỗi bước phải có:
+- ✅ Heading: `### Bước X: [Hành động]`
+- ✅ Mô tả chi tiết hành động
+- ✅ **Bảng chi tiết** (nếu có nhiều trường): Trường | Ví dụ | Giải thích
+- ✅ Hình ảnh minh họa
+- ✅ Callout (💡 Mẹo hoặc ⚠️ Lưu ý) nếu cần
+
+#### Phần Bảng chi tiết
+**Format chuẩn:**
+```
+| Trường | Ví dụ | Giải thích |
+|--------|-------|------------|
+| **Tên trường** | `Giá trị mẫu` | Mô tả ý nghĩa |
+```
+
+Hoặc với trường bắt buộc:
+```
+| Trường | Bắt buộc | Ý nghĩa | Ví dụ |
+|--------|----------|---------|-------|
+| **Tên** | ✅/❌ | Mô tả | `Giá trị` |
+```
 
 **Template chi tiết:** Xem [templates/basic_guide.md](templates/basic_guide.md)
+**Ví dụ mẫu:** Xem [7.2_nhap_hang_tu_ncc.md](../../../docs/khoa_hoc/chuong_7/7.2_nhap_hang_tu_ncc.md)
 
 ---
 
@@ -60,6 +90,14 @@ Mỗi tài liệu **BẮT BUỘC** có 5 phần:
 | Chụp screenshot | [IMAGE_CAPTURE.md](references/IMAGE_CAPTURE.md) |
 | Đồng bộ Notion | [NOTION_API.md](references/NOTION_API.md) |
 | Quy tắc viết nội dung | [WRITING_STYLE.md](references/WRITING_STYLE.md) |
+
+## 📖 Best Practice Examples
+
+| Bài mẫu | Mô tả |
+|---------|-------|
+| [2.2 Thiết lập UoM](examples/2.2_thiet_lap_don_vi_tinh_uom.md) | ✅ Cấu trúc đầy đủ: Giới thiệu, Truy cập, Hướng dẫn bước, Quy tắc đặt tên, FAQ |
+| [Hướng dẫn thêm sản phẩm](examples/huong_dan_them_san_pham.md) | Ví dụ về tạo sản phẩm mới |
+| [Notion Full Example](examples/notion_full_example.md) | ⭐ **MỚI**: Ví dụ đầy đủ cách tạo Notion documentation với tables, callouts, FAQ, checklist |
 
 ---
 
@@ -103,6 +141,26 @@ Quy tắc:
 
 ### 5. Đồng bộ Notion
 
+**Script tổng quát:** `scripts/sync_to_notion.py`
+
+```bash
+cd /Users/tuan/coffeetree_odoo19_dev/custom_addons/.agent/skills/trcf-course-documentation/scripts
+
+# Upload bất kỳ file markdown nào
+python3 sync_to_notion.py ../../../docs/khoa_hoc/chuong_X/bai_Y.md
+```
+
+**Tính năng:**
+- ✅ Tự động parse Markdown → Notion blocks
+- ✅ Hỗ trợ tables, callouts (💡⚠️), images
+- ✅ Bold, code formatting
+- ✅ Headings, lists, dividers
+
+**Lưu ý:**
+- Images phải là external URLs (upload lên ImgBB trước)
+- Tables phải đúng format Markdown
+- Callouts dùng `> 💡` hoặc `> ⚠️`
+
 | Markdown | Notion Block |
 |----------|--------------|
 | `## H2` | `heading_2` |
@@ -110,6 +168,7 @@ Quy tắc:
 | `- item` | `bulleted_list_item` |
 | `> 💡 mẹo` | `callout` 💡 |
 | `![](url)` | `image` external |
+| `| table |` | `table` with formatting |
 
 ---
 
@@ -119,4 +178,4 @@ Quy tắc:
 - [ ] Mỗi bước có ví dụ cụ thể
 - [ ] Mỗi bước có ảnh minh họa
 - [ ] Ảnh đã upload ImgBB và link hoạt động
-- [ ] Đã đồng bộ Notion thành công
+- [ ] Đã đồng bộ Notion thành công bằng `sync_to_notion.py`
