@@ -46,8 +46,8 @@ export class TrcfKitchenDashboard extends Component {
             ready_count: 0,
             loadingOrders: [],
             loadingOrderLines: [],  // Track loading state cho từng món
-            showRecipe: false,  // Toggle hiển thị công thức
-            showSummary: false, // Toggle hiển thị tổng hợp món
+            showRecipe: true,   // Toggle hiển thị công thức
+            showSummary: true,  // Toggle hiển thị tổng hợp món
         });
 
         self.setupAudio();

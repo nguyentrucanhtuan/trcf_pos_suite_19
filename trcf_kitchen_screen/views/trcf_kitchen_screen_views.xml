@@ -21,6 +21,16 @@
                 <field name="screen_name"/>
                 <field name="pos_config_id"/>
                 <field name="is_active"/>
+                <button name="%(kitchen_dashboard_action)d"
+                    type="action"
+                    string="Màn hình bếp"
+                    icon="fa-television"
+                    />
+                <button name="%(trcf_unified_dashboard_action)d"
+                    type="action"
+                    string="Màn hình tổng hợp"
+                    icon="fa-list-alt"
+                    />
             </list>
         </field>
     </record>

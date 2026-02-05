@@ -48,7 +48,6 @@
                 height: 100vh;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
-                zoom: 90%;
             }
             .line-completed .item-content {
                 text-decoration: line-through;
@@ -63,7 +62,7 @@
         </style>
 
         <div class="kitchen-body overflow-auto">
-            <div class="relative flex w-full flex-col pb-4">
+            <div class="relative flex w-full flex-col min-h-full pb-[env(safe-area-inset-bottom)]">
                 <!-- Header -->
                 <header class="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/80 backdrop-blur-sm">
                     <div class="flex items-center justify-between p-4">
@@ -98,7 +97,7 @@
                 </header>
 
                 <!-- Main Content -->
-                <main class="w-full p-2">
+                <main class="w-full p-2 flex-1">
                     <!-- Orders Grid (Responsive: <=1024px: 2 cols, >1024px: 3 cols) -->
                     <div class="grid grid-cols-2 gap-4 lg:grid-cols-3">
                         <t t-foreach="getOrdersByStatus('draft')" t-as="order" t-key="order.id">
@@ -111,11 +110,17 @@
                                             <!-- Order Header -->
                                             <div class="flex items-center justify-between gap-3">
                                                 <p class="text-3xl font-bold leading-tight tracking-tight text-gray-800">
+                                                    <!-- Prefix: Preset Name > Pricelist Name > Default -->
+                                                    <t t-if="order.preset_id">
+                                                        <t t-esc="order.preset_id[1]"/>
+                                                    </t>
+                                                    - 
+                                                    <!-- Suffix: Table Name or Order Ref -->
                                                     <t t-if="order.table_id">
                                                         <t t-esc="order.table_id[1]"/>
                                                     </t>
                                                     <t t-else="">
-                                                        Đơn #<t t-esc="order.id"/>
+                                                        <t t-esc="order.pos_reference or order.name"/>
                                                     </t>
                                                 </p>
                                                 <p t-att-class="'text-lg font-medium leading-normal ' + getTimeClass(order)">
@@ -136,7 +141,7 @@
                                                                     <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-2xl font-black text-white shadow-sm ring-2 ring-orange-200">
                                                                         <t t-esc="line.qty"/>
                                                                     </span>
-                                                                    <p class="text-xl font-bold leading-tight text-gray-800 flex-1">
+                                                                    <p class="text-base font-bold leading-tight text-gray-800 flex-1">
                                                                         <t t-esc="line.full_product_name || line.product_id[1]"/>
                                                                     </p>
                                                                 </div>
@@ -205,7 +210,7 @@
 
                 <!-- Summary Footer -->
                 <footer t-if="state.showSummary and aggregatedSummary.length > 0" 
-                        class="sticky bottom-0 z-20 w-full border-t border-gray-200 bg-white/95 p-4 shadow-2xl backdrop-blur-sm">
+                        class="sticky bottom-0 z-20 w-full border-t border-gray-200 bg-white/95 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl backdrop-blur-sm">
                     <div class="mb-3 flex items-center justify-between">
                         <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
                             <span class="material-symbols-outlined text-orange-600">analytics</span>

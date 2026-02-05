@@ -60,6 +60,8 @@ class TrcfPosOrder(models.Model):
                     'trcf_order_status': order.trcf_order_status,
                     'amount_total': order.amount_total,
                     'partner_id': [order.partner_id.id, order.partner_id.name] if order.partner_id else False,
+                    'table_id': [order.table_id.id, order.table_id.display_name] if getattr(order, 'table_id', False) else False,
+                    'preset_id': [order.preset_id.id, order.preset_id.display_name] if getattr(order, 'preset_id', False) else False,
                 },
                 'order_lines': order_lines_data,
                 'timestamp': datetime.now().isoformat(),  # ✅ Thêm timestamp để tracking
