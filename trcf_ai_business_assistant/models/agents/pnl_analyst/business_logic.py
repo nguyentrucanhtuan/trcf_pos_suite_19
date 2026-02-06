@@ -50,6 +50,11 @@ def get_pnl_report(env, period: str = 'month') -> str:
         revenue = sum(pos_orders.mapped('amount_total'))
         order_count = len(pos_orders)
         
+        # Đếm số lượng sản phẩm bán ra
+        product_count = 0
+        for order in pos_orders:
+            product_count += sum(order.lines.mapped('qty'))
+        
         # 2. Giá vốn (COGS - Purchase)
         purchases = env['purchase.order'].sudo().search([
             ('date_approve', '>=', fields.Datetime.to_string(datetime.combine(start_date, datetime.min.time()))),
@@ -75,25 +80,34 @@ def get_pnl_report(env, period: str = 'month') -> str:
         gross_margin = (gross_profit / revenue * 100) if revenue > 0 else 0
         net_margin = (net_profit / revenue * 100) if revenue > 0 else 0
         
-        # Format output
-        currency = env.company.currency_id.symbol or 'VND'
+        # Format output - Đơn giản hóa để AI dễ chuyển đổi sang checklist
+        currency = env.company.currency_id.symbol or 'đ'
+        
+        period_label = 'ngày'
+        if period == 'week':
+            period_label = 'tuần'
+        elif period == 'month':
+            period_label = 'tháng'
+            
         lines = [
-            f"📊 **Báo cáo P&L ({'Tháng này' if period == 'month' else period})**",
-            f"📅 Từ {start_date.strftime('%d/%m/%Y')} đến {end_date.strftime('%d/%m/%Y')}",
-            "",
-            f"💰 **Doanh thu**: {revenue:,.0f} {currency} ({order_count} đơn)",
-            f"📦 **Giá vốn (COGS)**: {cogs:,.0f} {currency}",
-            f"🛠 **Chi phí (Opex)**: {opex:,.0f} {currency}",
-            "---",
-            f"📈 **Lợi nhuận gộp**: {gross_profit:,.0f} {currency} (BM: {gross_margin:.1f}%)",
-            f"🏆 **Lợi nhuận ròng**: **{net_profit:,.0f} {currency}** (BM: {net_margin:.1f}%)",
+            f"Kỳ báo cáo: {period_label} từ {start_date.strftime('%d/%m/%Y')} đến {end_date.strftime('%d/%m/%Y')}",
+            f"Tổng doanh thu: {revenue:,.0f}{currency}",
+            f"Số lượng bán: {int(product_count)} sản phẩm",
+            f"Số đơn hàng: {order_count} đơn hàng",
+            f"Giá vốn (COGS): {cogs:,.0f}{currency}",
+            f"Chi phí (Opex): {opex:,.0f}{currency}",
+            f"Lợi nhuận gộp: {gross_profit:,.0f}{currency} (Biên lợi nhuận: {gross_margin:.1f}%)",
+            f"Lợi nhuận ròng: {net_profit:,.0f}{currency} (Biên lợi nhuận: {net_margin:.1f}%)",
         ]
         
         if net_profit < 0:
-            lines.append("\n⚠️ **Cảnh báo**: Hoạt động kinh doanh đang ghi nhận lỗ trong kỳ này.")
+            lines.append("⚠️ Cảnh báo: Hoạt động kinh doanh đang ghi nhận lỗ trong kỳ này.")
+        elif net_margin < 10:
+            lines.append("⚠️ Lưu ý: Biên lợi nhuận ròng thấp hơn 10%, cần xem xét tối ưu chi phí.")
             
         return "\n".join(lines)
         
     except Exception as e:
         _logger.error(f"Error in get_pnl_report: {e}", exc_info=True)
         return f"⚠️ Lỗi khi trích xuất báo cáo P&L: {str(e)}"
+

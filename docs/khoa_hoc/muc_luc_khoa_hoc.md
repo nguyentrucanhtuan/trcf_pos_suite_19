@@ -10,7 +10,7 @@
 |:----:|-----|:------:|:----------:|------------|
 | **1** | Thiết Lập Ban Đầu | 15 bài | 11/15 | 🟢 73% |
 | **2** | Vận Hành Ca Hàng Ngày | 10 bài | 6/10 | 🟡 60% |
-| **3** | Quản Lý Nhân Viên & Báo Cáo | 9 bài | 1/9 | 🔵 11% |
+| **3** | Quản Lý Nhân Viên & Báo Cáo | 10 bài | 3/10 | 🟡 30% |
 | **4** | Nâng Cao | 3 bài | 0/3 | ⚪ 0% |
 
 **Chú thích trạng thái bài giảng:**
@@ -142,9 +142,10 @@
 
 | Mã bài | Tiêu đề bài giảng | Trạng thái |
 |--------|-------------------|------------|
-| 3.3.1 | Báo cáo Lãi Lỗ (P&L Dashboard) | 📝 Cần viết |
-| 3.3.2 | Báo cáo tồn kho | 📝 Cần viết |
-| 3.3.3 | Báo cáo chấm công nhân viên | 📝 Cần viết |
+| 3.3.1 | Đọc hiểu Báo cáo Bán hàng | ✅ [Đã có](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/docs/khoa_hoc/chuong_10/10.1_doc_hieu_bao_cao_ban_hang.md) · [Notion](https://www.notion.so/2fe172c2951e81f78789dfa5779f2274) |
+| 3.3.2 | Đọc hiểu Báo cáo Lãi Lỗ (P&L) | ✅ [Đã có](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/docs/khoa_hoc/chuong_10/10.2_doc_hieu_bao_cao_pnl.md) · [Notion](https://www.notion.so/2fe172c2951e814fa51dda55c31ad1ac) |
+| 3.3.3 | Báo cáo tồn kho | 📝 Cần viết |
+| 3.3.4 | Báo cáo chấm công nhân viên | 📝 Cần viết |
 
 ---
 
@@ -165,9 +166,9 @@
 
 | Trạng thái | Số bài | Tỷ lệ |
 |------------|:------:|:-----:|
-| ✅ Đã hoàn thành | 18 | 58% |
-| 📝 Cần viết | 13 | 42% |
-| **Tổng** | **31** | 100% |
+| ✅ Đã hoàn thành | 20 | 63% |
+| 📝 Cần viết | 12 | 37% |
+| **Tổng** | **32** | 100% |
 
 ## Danh sách bài đã hoàn thành (18/31)
 
@@ -198,11 +199,13 @@
 | 2.3.5 | Xử lý hàng hỏng | `7.5_nhap_lieu_hong_huy.md` |
 | 2.3.6 | Kiểm kê tồn kho | `7.6_kiem_ke_ton_kho.md` |
 
-### Phần 3: Quản Lý Nhân Viên & Báo Cáo (1/9)
+### Phần 3: Quản Lý Nhân Viên & Báo Cáo (3/10)
 
 | Mã | Bài giảng | File |
 |----|-----------|------|
 | 3.1.0 | Tạo nhân viên | `6.1_tao_nhan_vien.md` |
+| 3.3.1 | Đọc hiểu Báo cáo Bán hàng | `10.1_doc_hieu_bao_cao_ban_hang.md` |
+| 3.3.2 | Đọc hiểu Báo cáo P&L | `10.2_doc_hieu_bao_cao_pnl.md` |
 
 ---
 

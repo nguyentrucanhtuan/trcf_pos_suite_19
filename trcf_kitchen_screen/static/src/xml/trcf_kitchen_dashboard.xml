@@ -110,7 +110,7 @@
                                             <!-- Order Header -->
                                             <div class="flex items-center justify-between gap-3">
                                                 <p class="text-3xl font-bold leading-tight tracking-tight text-gray-800">
-                                                    <!-- Prefix: Preset Name > Pricelist Name > Default -->
+                                                    <!-- Prefix: Preset Name -->
                                                     <t t-if="order.preset_id">
                                                         <t t-esc="order.preset_id[1]"/>
                                                     </t>
