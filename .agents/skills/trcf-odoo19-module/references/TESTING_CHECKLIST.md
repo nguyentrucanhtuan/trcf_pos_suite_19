@@ -9,9 +9,7 @@ Sử dụng checklist này sau mỗi lần tạo/cập nhật module để đả
 ## 1️⃣ Module Installation & Upgrade
 
 ### Installation Testing
-```bash
-# Test cài đặt module mới
-./odoo-bin -c odoo19.conf -d test_db -i trcf_module_name --stop-after-init
+Xem `SKILL.md` > **Quick Verification Commands** để biết lệnh install/upgrade.
 
 # Kiểm tra log
 # ✅ Không có ERROR hoặc CRITICAL
@@ -24,10 +22,7 @@ Sử dụng checklist này sau mỗi lần tạo/cập nhật module để đả
 - [ ] Không có warning về missing dependencies
 
 ### Upgrade Testing
-```bash
-# Test nâng cấp module
-./odoo-bin -c odoo19.conf -d test_db -u trcf_module_name --stop-after-init
-```
+
 
 - [ ] Module upgrade thành công
 - [ ] Data migration không bị mất dữ liệu
@@ -80,8 +75,7 @@ Sử dụng checklist này sau mỗi lần tạo/cập nhật module để đả
 
 ### Model Methods
 ```python
-# Test trong Odoo shell
-./odoo-bin shell -c odoo19.conf -d test_db
+Xem `SKILL.md` > **Quick Verification Commands** (Shell mode).
 
 # Trong shell:
 record = env['trcf.model'].create({'name': 'Test'})
@@ -230,10 +224,7 @@ cron.method_direct_trigger()  # Chạy ngay không đợi schedule
 ## 🔟 Development Mode Testing
 
 ### Debug Mode
-```bash
-# Chạy với development mode
-./odoo-bin -c odoo19.conf --dev=xml,css,js
-```
+Xem `SKILL.md` > **Quick Verification Commands** (Development mode).
 
 - [ ] XML changes reload tự động
 - [ ] CSS changes apply ngay

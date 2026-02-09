@@ -54,14 +54,16 @@ company_id = fields.Many2one(
 from odoo.tools import timezone
 from pytz import timezone as pytz_tz
 
-# Lấy timezone user
+# 1. Lấy timezone user (quan trọng: handle trường hợp user không set tz)
 user_tz = self.env.user.tz or 'UTC'
 local_tz = pytz_tz(user_tz)
 
-# Convert UTC to local
+# 2. Convert UTC to local (để tính toán, hiển thị)
 local_dt = utc_dt.astimezone(local_tz)
+local_date = local_dt.date() # Lấy ngày theo giờ địa phương
 
-# Convert local to UTC
+# 3. Convert local to UTC (để lưu vào DB)
+# Lưu ý: Luôn dùng localize() cho naive datetime
 utc_dt = local_tz.localize(naive_dt).astimezone(pytz_tz('UTC'))
 ```
 
@@ -87,11 +89,15 @@ self.sudo().with_context(no_check=True).action()
 
 ## 6. Performance Patterns
 
-### Prefetch
+### Prefetch (Tránh N+1 Queries)
 ```python
-# Force prefetch nhiều records
+# Force prefetch nhiều records cùng lúc
+# Odoo tự động prefetch, nhưng đôi khi cần manual nếu tách context
 orders.mapped('partner_id')  # Prefetch partners
 orders.mapped('line_ids')     # Prefetch lines
+
+# Dùng search_read / read_group thay vì loop search
+data = self.env['model'].search_read(domain, ['field1', 'field2'])
 ```
 
 ### Batch Processing

@@ -9,19 +9,7 @@ Catalog lỗi thường gặp và cách khắc phục trong Odoo 19.
 
 ## 🔍 Quick Debug Commands
 
-```bash
-# Development mode - auto reload XML/CSS/JS
-./odoo-bin -c odoo19.conf --dev=xml,css,js
-
-# Enable SQL query logging
-./odoo-bin -c odoo19.conf --log-sql
-
-# Debug mode với pdb
-./odoo-bin -c odoo19.conf --dev=all
-
-# Shell mode để test code
-./odoo-bin shell -c odoo19.conf -d database_name
-```
+Xem `SKILL.md` > **Quick Verification Commands** để biết cách chạy server, debug, và shell mode.
 
 ---
 
@@ -129,20 +117,7 @@ value = self.env.context.get('key')
 
 ### Error: "KeyError: '2025-12-15'" (Date operations)
 - **Cause**: Timezone mismatch giữa UTC và local time
-- **Solution**:
-
-```python
-from pytz import timezone, UTC
-
-# Get user timezone
-user_tz = timezone(self.env.user.tz or 'UTC')
-
-# Convert UTC datetime to local date
-utc_datetime = fields.Datetime.now()
-local_date = utc_datetime.astimezone(user_tz).date()
-
-# Use local_date for comparisons
-```
+- **Solution**: Xem `BEST_PRACTICES.md` > **4. Xử lý Timezone** để biết cách convert chuẩn.
 
 ### Error: "AccessError: Record does not exist or was deleted"
 - **Cause**: Multi-company access restriction
@@ -349,25 +324,7 @@ cron.write({'nextcall': utc_time})
 
 ### Error: "Request timeout" hoặc slow loading
 - **Cause**: N+1 queries hoặc missing database indexes
-- **Solution**:
-
-```bash
-# Enable SQL logging
-./odoo-bin -c odoo19.conf --log-sql
-
-# Check for repeated queries (N+1 problem)
-# Look for same query executed multiple times
-```
-
-```python
-# Fix N+1: Use prefetch
-records = self.env['model'].search([])
-# Prefetch related fields
-records.mapped('related_field.name')
-
-# Or use read() for specific fields
-data = records.read(['field1', 'field2'])
-```
+- **Solution**: Xem `BEST_PRACTICES.md` > **6. Performance Patterns** (Prefetch & Batch Processing).
 
 ---
 
@@ -375,22 +332,7 @@ data = records.read(['field1', 'field2'])
 
 ### Error: "Shift không match với attendance"
 - **Cause**: UTC vs Local timezone mismatch
-- **Solution**:
-
-```python
-from pytz import timezone
-
-# Get user timezone
-user_tz = timezone(self.env.user.tz or 'UTC')
-
-# Convert UTC to local
-utc_datetime = fields.Datetime.now()
-local_datetime = utc_datetime.astimezone(user_tz)
-
-# Convert local to UTC for storage
-local_time = user_tz.localize(datetime(2025, 1, 1, 7, 0))
-utc_time = local_time.astimezone(timezone('UTC'))
-```
+- **Solution**: Xem `BEST_PRACTICES.md` > **4. Xử lý Timezone**.
 
 ---
 
