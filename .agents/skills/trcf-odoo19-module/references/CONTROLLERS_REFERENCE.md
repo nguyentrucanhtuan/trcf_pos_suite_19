@@ -1,6 +1,19 @@
 # Odoo 19 Controllers & Routes Reference
 
 Hướng dẫn viết Controllers (HTTP routes) trong Odoo 19.
+Validation Status: Verified (aligned with Odoo 19 HTTP/route conventions, including `jsonrpc` routes).
+
+## Table of Contents
+- 1. Basic Controller Structure
+- 2. Route Parameters
+- 3. Auth Types
+- 4. HTTP Routes (type='http')
+- 5. JSON Routes (type='jsonrpc')
+- 6. Request Object
+- 7. Error Handling
+- 8. File Upload
+- 9. Website Integration
+- 10. CORS & Security
 
 ## 1. Basic Controller Structure
 
@@ -26,7 +39,7 @@ class TrcfController(http.Controller):
 ```python
 @http.route(
     '/trcf/api/orders',
-    type='json',           # 'http' or 'json'
+    type='jsonrpc',        # 'http' or 'jsonrpc'
     auth='user',           # 'public', 'user', 'none'
     methods=['GET', 'POST'],
     cors='*',              # CORS policy
@@ -103,10 +116,10 @@ return request.make_response(
 return Response("Plain text", content_type='text/plain')
 ```
 
-## 5. JSON Routes (type='json')
+## 5. JSON Routes (type='jsonrpc')
 
 ```python
-@http.route('/trcf/api/orders', type='json', auth='user', methods=['POST'])
+@http.route('/trcf/api/orders', type='jsonrpc', auth='user', methods=['POST'])
 def get_orders(self, domain=None, limit=100):
     """
     Called via: rpc('/trcf/api/orders', {domain: [...], limit: 50})
@@ -119,7 +132,7 @@ def get_orders(self, domain=None, limit=100):
     )
     return {'orders': orders, 'count': len(orders)}
 
-@http.route('/trcf/api/create', type='json', auth='user')
+@http.route('/trcf/api/create', type='jsonrpc', auth='user')
 def create_order(self, name, amount, partner_id=None):
     order = request.env['trcf.order'].create({
         'name': name,
@@ -151,7 +164,7 @@ param = request.params.get('param_name')
 # Form data (POST)
 data = request.httprequest.form.get('field_name')
 
-# JSON body (type='json')
+# JSON body (type='jsonrpc')
 # Params are passed as function arguments
 
 # Session
@@ -181,7 +194,7 @@ def get_order(self, order_id):
     return request.render('template', {'order': order})
 
 # JSON error response
-@http.route('/api/action', type='json', auth='user')
+@http.route('/api/action', type='jsonrpc', auth='user')
 def api_action(self, **kwargs):
     try:
         result = self._process(kwargs)
@@ -245,13 +258,13 @@ def product_page(self, product_id, **kwargs):
 
 ```python
 # Enable CORS for all origins
-@http.route('/api/public', type='json', auth='public', cors='*', csrf=False)
+@http.route('/api/public', type='jsonrpc', auth='public', cors='*', csrf=False)
 
 # Specific origin
-@http.route('/api/partner', type='json', auth='user', cors='https://partner.com')
+@http.route('/api/partner', type='jsonrpc', auth='user', cors='https://partner.com')
 
 # Webhook (no CSRF, no auth)
-@http.route('/webhook/payment', type='json', auth='none', csrf=False)
+@http.route('/webhook/payment', type='jsonrpc', auth='none', csrf=False)
 def payment_webhook(self, **data):
     # Verify signature
     if not self._verify_signature(data):

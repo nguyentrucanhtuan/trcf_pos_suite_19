@@ -1,6 +1,21 @@
 # Odoo 19 Troubleshooting & Debug Guide
 
 Catalog lỗi thường gặp và cách khắc phục trong Odoo 19.
+Validation Status: Verified with caveat (some entries require runtime verification on target Odoo minor/saas build).
+
+## Table of Contents
+- 1. Lỗi Installation & Upgrade
+- 2. Lỗi Views & XML
+- 3. Lỗi Python/ORM
+- 4. Lỗi JavaScript/OWL
+- 5. Lỗi Security & Access Rights
+- 6. Lỗi Controllers & Routes
+- 7. Lỗi Cron Jobs
+- 8. Lỗi Performance
+- 9. Lỗi Timezone & Datetime
+- 10. Lỗi Database & Migration
+- Emergency Debug Techniques
+- Related References
 
 > [!TIP]
 > **Quy tắc**: Mỗi khi giải quyết xong lỗi phức tạp, cập nhật ngay vào file này theo format **Error → Cause → Solution**.
@@ -9,7 +24,7 @@ Catalog lỗi thường gặp và cách khắc phục trong Odoo 19.
 
 ## 🔍 Quick Debug Commands
 
-Xem `SKILL.md` > **Quick Verification Commands** để biết cách chạy server, debug, và shell mode.
+Xem `SKILL.md` > **Command Baseline** để biết cách chạy install/upgrade/debug.
 
 ---
 
@@ -29,7 +44,7 @@ Xem `SKILL.md` > **Quick Verification Commands** để biết cách chạy serve
   2. Install dependency: `./odoo-bin -i dependency_module`
   3. Verify XML ID tồn tại: Settings → Technical → External Identifiers
 
-### Error: "Invalid field 'numbercall' on model 'ir.cron'"
+### Error: "Invalid field 'numbercall' on model 'ir.cron'" [Needs verification on target runtime]
 - **Cause**: Field `numbercall` đã bị remove trong Odoo 19
 - **Solution**: Xóa dòng `<field name="numbercall">` trong XML cron definition
 
@@ -54,16 +69,11 @@ Xem `SKILL.md` > **Quick Verification Commands** để biết cách chạy serve
 <!-- ✅ CORRECT: Direct modifiers -->
 <field name="amount" invisible="state == 'draft'"/>
 
-<!-- ❌ WRONG: <group> in search views (Odoo 19) -->
+<!-- ✅ VALID: <group> in search views for Group By -->
 <search>
     <group expand="0" string="Group By">
-        <filter name="type" string="Type"/>
+        <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
     </group>
-</search>
-
-<!-- ✅ CORRECT: Filters at root level -->
-<search>
-    <filter name="type" string="Type"/>
 </search>
 ```
 
@@ -88,24 +98,19 @@ Xem `SKILL.md` > **Quick Verification Commands** để biết cách chạy serve
 ```
 
 ### Error: "Field 'active_id' does not exist"
-- **Cause**: `active_id` not available in form view contexts (Odoo 19)
-- **Solution**: Replace `active_id` with `id`
-
-```xml
-<!-- ❌ WRONG -->
-context="{'search_default_type_id': active_id}"
-
-<!-- ✅ CORRECT -->
-context="{'search_default_type_id': id}"
-```
+- **Cause**: Context variable not passed from action/wizard caller, or XML expression refers to undefined symbols.
+- **Solution**:
+  1. Verify the caller actually sets `active_id` / `active_ids` in context.
+  2. Use `context.get('active_id')` style access where appropriate.
+  3. Avoid hardcoded replacements (`active_id` -> `id`) without checking flow semantics.
 
 ---
 
 ## 3️⃣ Lỗi Python/ORM
 
 ### Error: "AttributeError: object has no attribute '_context'"
-- **Cause**: `self._context` deprecated
-- **Solution**: Use `self.env.context`
+- **Cause**: Accessing `_context` on an object that is not an Odoo recordset/model instance, or context propagation was lost.
+- **Solution**: Use `self.env.context` on recordsets and validate caller type/context flow before access.
 
 ```python
 # ❌ WRONG
@@ -135,9 +140,9 @@ if record.company_id != self.env.company:
 record.sudo().with_context(allowed_company_ids=[company_id]).action()
 ```
 
-### Error: "cannot import name 'slug' from 'odoo.http'"
-- **Cause**: Import location changed in Odoo 18+
-- **Solution**: Add compatibility wrapper
+### Error: "cannot import name 'slug' from 'odoo.http'" [Needs verification on target runtime]
+- **Cause**: `slug` utility is not exported from `odoo.http` in current runtime.
+- **Solution**: Use `ir.http` helper methods via `request.env` compatibility wrapper.
 
 ```python
 from odoo.http import request
@@ -163,16 +168,16 @@ def unslug(value):
 ## 4️⃣ Lỗi JavaScript/OWL
 
 ### Error: "Service rpc is not available"
-- **Cause**: `useService("rpc")` không còn available trong Odoo 19
-- **Solution**: Use direct import
+- **Cause**: Service registration/load issue in current web client context, not a global removal of RPC capability.
+- **Solution**: Use one of the supported patterns based on context.
 
 ```javascript
-// ❌ WRONG
+// Pattern A: Service style
 import { useService } from "@web/core/utils/hooks";
-this.rpc = useService("rpc");
-await this.rpc("/api/endpoint", params);
+const rpcService = useService("rpc");
+await rpcService("/api/endpoint", params);
 
-// ✅ CORRECT
+// Pattern B: Direct helper import
 import { rpc } from "@web/core/network/rpc";
 await rpc("/api/endpoint", params);
 ```

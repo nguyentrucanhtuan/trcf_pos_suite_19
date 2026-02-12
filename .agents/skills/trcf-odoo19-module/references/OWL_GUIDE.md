@@ -1,6 +1,19 @@
 # Odoo 19 OWL Guide (Full Structure)
 
 Hướng dẫn chi tiết cách viết OWL Component chuẩn ESM trong Odoo 19.
+Validation Status: Verified (compatible with OWL + web client patterns for Odoo 19).
+
+## Table of Contents
+- 1. Cấu trúc Component File (`.js`)
+- 2. Template File (`.xml`)
+- 3. Lifecycle Hooks
+- 4. Props và Events
+- 5. ORM Service Methods
+- 6. RPC (Non-ORM calls)
+- 7. Notifications
+- 8. Dialogs
+- 9. Manifest Setup
+- 10. Common Patterns
 
 ## 1. Cấu trúc Component File (`.js`)
 

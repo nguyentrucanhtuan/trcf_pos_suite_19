@@ -1,6 +1,13 @@
 # Odoo 19 Views Reference (Full Syntax)
 
 Hướng dẫn chi tiết về cấu trúc XML của các loại View trong Odoo 19.
+Validation Status: Verified (aligned with Odoo 19 view architecture syntax).
+
+## Table of Contents
+- 1. List View (`<list>`)
+- 2. Form View
+- 3. Search View
+- 4. Action & Menu
 
 ## 1. List View (`<list>`)
 Thay thế cho `<tree>`. Hỗ trợ các thuộc tính trang trí dựa trên logic Python.

@@ -1,6 +1,17 @@
 # Odoo 19 Best Practices (TRCF Wisdom)
 
 Kinh nghiệm thực chiến giúp viết code Odoo 19 tối ưu hơn.
+Validation Status: Verified (cross-checked with Odoo 19 practices and internal conventions).
+
+## Table of Contents
+- 1. Tối ưu Truy vấn
+- 2. Trải nghiệm người dùng (UX)
+- 3. Cấu trúc Code
+- 4. Xử lý Timezone
+- 5. Security Best Practices
+- 6. Performance Patterns
+- 7. Error Handling
+- 8. Logging
 
 ## 1. Tối ưu Truy vấn
 

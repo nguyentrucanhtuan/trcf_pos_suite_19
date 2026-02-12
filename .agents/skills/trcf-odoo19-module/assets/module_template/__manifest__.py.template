@@ -2,7 +2,7 @@
 {
     'name': 'TRCF ${description}',
     'summary': '${summary}',
-    'version': '1.0',
+    'version': '19.0.1.0.0',
     'category': 'Sales/Sales',
     'author': 'Tuấn Rang Cà Phê',
     'website': 'https://coffeetree.vn',
@@ -13,7 +13,7 @@
     ],
     'data': [
         'security/ir.model.access.csv',
-        'views/${name}_views.xml',
+        'views/${model_name}_views.xml',
         'views/menus.xml',
     ],
     'installable': True,

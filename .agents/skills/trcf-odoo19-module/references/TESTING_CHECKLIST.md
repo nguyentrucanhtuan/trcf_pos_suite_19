@@ -1,4 +1,19 @@
 # Testing Checklist cho Module Odoo 19
+Validation Status: Verified with caveat (performance thresholds depend on project baseline and infrastructure).
+
+## Table of Contents
+- 1. Module Installation & Upgrade
+- 2. Views & UI Testing
+- 3. Business Logic Testing
+- 4. JavaScript/OWL Components Testing
+- 5. API Endpoints & Controllers
+- 6. Scheduled Actions (Cron Jobs)
+- 7. Reports & Printing
+- 8. Performance Testing
+- 9. Integration Testing
+- 10. Development Mode Testing
+- Final Checklist
+- Red Flags
 
 ## 📋 Checklist Tổng Quan
 
@@ -9,8 +24,9 @@ Sử dụng checklist này sau mỗi lần tạo/cập nhật module để đả
 ## 1️⃣ Module Installation & Upgrade
 
 ### Installation Testing
-Xem `SKILL.md` > **Quick Verification Commands** để biết lệnh install/upgrade.
+Xem `SKILL.md` > **Command Baseline** để biết lệnh install/upgrade.
 
+```bash
 # Kiểm tra log
 # ✅ Không có ERROR hoặc CRITICAL
 # ✅ Thấy "Module trcf_module_name: successfully installed"
@@ -75,7 +91,8 @@ Xem `SKILL.md` > **Quick Verification Commands** để biết lệnh install/upg
 
 ### Model Methods
 ```python
-Xem `SKILL.md` > **Quick Verification Commands** (Shell mode).
+# Chạy odoo shell theo Command Baseline trong SKILL.md
+# sau đó test method trực tiếp.
 
 # Trong shell:
 record = env['trcf.model'].create({'name': 'Test'})
@@ -167,7 +184,7 @@ cron.method_direct_trigger()  # Chạy ngay không đợi schedule
 
 - [ ] Cron job chạy thành công
 - [ ] Nextcall time update đúng
-- [ ] Numbercall giảm đúng (nếu có limit)
+- [ ] Repeat/limit behavior đúng theo cấu hình cron hiện tại
 - [ ] Error handling không crash server
 - [ ] Log ghi lại execution
 
@@ -184,7 +201,7 @@ cron.method_direct_trigger()  # Chạy ngay không đợi schedule
 
 ---
 
-## 8️⃣ Performance Testing
+## 8️⃣ Performance Testing [Needs verification per project baseline]
 
 ### Query Performance
 ```bash
@@ -194,8 +211,7 @@ cron.method_direct_trigger()  # Chạy ngay không đợi schedule
 
 - [ ] Không có N+1 queries
 - [ ] Queries có index đúng
-- [ ] Load time < 2s cho list view
-- [ ] Load time < 1s cho form view
+- [ ] Load time target theo baseline đã chốt của dự án (ví dụ: list/form không regress so với bản trước)
 - [ ] Memory usage hợp lý
 
 ### Large Dataset Testing
@@ -224,7 +240,7 @@ cron.method_direct_trigger()  # Chạy ngay không đợi schedule
 ## 🔟 Development Mode Testing
 
 ### Debug Mode
-Xem `SKILL.md` > **Quick Verification Commands** (Development mode).
+Xem `SKILL.md` > **Command Baseline** (Development mode).
 
 - [ ] XML changes reload tự động
 - [ ] CSS changes apply ngay

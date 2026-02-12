@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_trcf_${name}" model="ir.actions.act_window">
+        <field name="name">${description}</field>
+        <field name="res_model">trcf.${model_name}</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_trcf_${name}_root" name="${description}" sequence="10"/>
+    <menuitem id="menu_trcf_${name}" parent="menu_trcf_${name}_root" action="action_trcf_${name}" sequence="1"/>
+</odoo>

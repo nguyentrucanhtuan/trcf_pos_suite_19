@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- List View -->
-    <record id="view_trcf_${name}_list" model="ir.ui.view">
-        <field name="name">trcf.${name}.list</field>
-        <field name="model">trcf.${name}</field>
+    <record id="view_trcf_${model_name}_list" model="ir.ui.view">
+        <field name="name">trcf.${model_name}.list</field>
+        <field name="model">trcf.${model_name}</field>
         <field name="arch" type="xml">
             <list decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancel'">
                 <field name="name"/>
@@ -15,9 +15,9 @@
     </record>
 
     <!-- Form View -->
-    <record id="view_trcf_${name}_form" model="ir.ui.view">
-        <field name="name">trcf.${name}.form</field>
-        <field name="model">trcf.${name}</field>
+    <record id="view_trcf_${model_name}_form" model="ir.ui.view">
+        <field name="name">trcf.${model_name}.form</field>
+        <field name="model">trcf.${model_name}</field>
         <field name="arch" type="xml">
             <form>
                 <header>
@@ -51,9 +51,9 @@
     </record>
 
     <!-- Search View -->
-    <record id="view_trcf_${name}_search" model="ir.ui.view">
-        <field name="name">trcf.${name}.search</field>
-        <field name="model">trcf.${name}</field>
+    <record id="view_trcf_${model_name}_search" model="ir.ui.view">
+        <field name="name">trcf.${model_name}.search</field>
+        <field name="model">trcf.${model_name}</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>

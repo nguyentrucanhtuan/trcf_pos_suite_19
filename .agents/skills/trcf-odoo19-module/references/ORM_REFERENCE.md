@@ -1,6 +1,18 @@
 # Odoo 19 ORM Reference (Full Syntax)
 
 Bản hướng dẫn đầy đủ về cú pháp Model và Fields trong Odoo 19.
+Validation Status: Verified (compatible with Odoo 19 ORM patterns).
+
+## Table of Contents
+- 1. Định nghĩa Model
+- 2. Các loại Fields thông dụng
+- 3. Compute, Depends, Onchange
+- 4. Constraints
+- 5. API Methods (CRUD)
+- 6. Search & Domain
+- 7. Environment
+- 8. Recordset Operations
+- 9. Translations
 
 ## 1. Định nghĩa Model
 
