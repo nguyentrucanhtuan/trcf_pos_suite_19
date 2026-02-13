@@ -198,3 +198,89 @@ Use these commands as the default verification entry points.
 - When a new recurring operation appears, promote it to `scripts/`.
 - When creating new module scaffolding assets, update `assets/module_template/` and document usage in `Resource Map`.
 - For any `references/*.md` file longer than 100 lines, maintain a concise table of contents at the top.
+
+## Prompt Snippets
+
+Use these copy-ready Vietnamese prompts for daily execution.
+
+### 1) Prompt tạo module (new_module)
+
+```text
+Dùng skill trcf-odoo19-module.
+
+Execution path: new_module
+Mục tiêu:
+- Tạo module mới `trcf_customer_profile` trên Odoo 19 Community để quản lý thông tin khách hàng.
+- Tạo model `trcf.customer.profile` gồm các field: `name`, `code`, `phone`, `email`, `address`, `birthday`, `gender`, `note`, `active`, `state`.
+- Tạo list view, form view, search view, action, menu, và `ir.model.access.csv` cho `base.group_user`.
+
+Ràng buộc:
+- Tuân thủ chuẩn đặt tên TRCF.
+- Code gọn, không thêm chức năng ngoài phạm vi.
+- Không kết luận hoàn thành nếu còn ERROR/CRITICAL hoặc warning chưa xử lý.
+
+Yêu cầu xác minh:
+- Chạy install module.
+- Báo cáo PASS/FAIL theo Testing & Verification Gates.
+- Trả output theo 7 mục trong Output Contract.
+```
+
+Run:
+
+```bash
+./odoo-bin -c odoo19.conf -d <database> -i trcf_customer_profile --stop-after-init
+```
+
+### 2) Prompt chỉnh sửa module (modify_module)
+
+```text
+Dùng skill trcf-odoo19-module.
+
+Execution path: modify_module
+Mục tiêu:
+- Chỉnh sửa module `trcf_customer_profile`.
+- Bổ sung field `customer_level` (Bronze/Silver/Gold) và `last_contact_date`.
+- Cập nhật list/form/search view để lọc nhóm theo `customer_level`.
+- Cập nhật `ir.model.access.csv` và record rules (nếu cần).
+
+Ràng buộc:
+- Giữ backward compatibility, không làm hỏng dữ liệu cũ.
+- Không refactor ngoài phạm vi yêu cầu.
+
+Yêu cầu xác minh:
+- Chạy upgrade module bằng command baseline.
+- Báo rõ log summary và gate status PASS/FAIL.
+```
+
+Run:
+
+```bash
+./odoo-bin -c odoo19.conf -d <database> -u trcf_customer_profile --stop-after-init
+```
+
+### 3) Prompt tối ưu module (algorithm_optimization)
+
+```text
+Dùng skill trcf-odoo19-module.
+
+Execution path: algorithm_optimization
+Mục tiêu:
+- Tối ưu truy vấn và thuật toán trong module `trcf_customer_profile` (model `trcf.customer.profile`).
+- Giảm query count ở màn hình list/search và loại bỏ pattern N+1.
+
+Ràng buộc:
+- Không thay đổi kết quả nghiệp vụ.
+- Ưu tiên ORM-native batching/grouping trước micro-optimization.
+
+Yêu cầu xác minh:
+- Chạy upgrade module.
+- Chạy log SQL để so sánh before/after.
+- Báo Gate 6 (Performance sanity) với bằng chứng cụ thể.
+```
+
+Run:
+
+```bash
+./odoo-bin -c odoo19.conf -d <database> -u trcf_customer_profile --stop-after-init
+./odoo-bin -c odoo19.conf -d <database> --log-sql
+```
