@@ -144,4 +144,41 @@ _logger.warning("Stock low for product %s", product.name)
 _logger.error("Payment failed: %s", error_msg)
 ```
 
-*(Tiếp tục cập nhật trong quá trình làm việc...)*
+## 9. Odoo 19 Migration Patterns
+
+> ⚠️ **Checklist bắt buộc** trước khi viết code. AI thường viết theo pattern cũ!
+
+| Pattern cũ | Odoo 19 | Ghi chú |
+|---|---|---|
+| `_sql_constraints = [...]` | `_name = models.Constraint(...)` | Class attribute, bắt đầu `_` |
+| `<tree>` | `<list>` | Cả root và embedded |
+| `attrs="{'invisible': [...]}"` | `invisible="expr"` | Inline Python expression |
+| `attrs="{'readonly': [...]}"` | `readonly="expr"` | Inline Python expression |
+| `point_of_sale.assets` | `point_of_sale._assets_pos` | POS asset bundle |
+| `type='json'` (controller) | `type='jsonrpc'` | [Đã verified] |
+| `fields.Date.today()` | `fields.Date.context_today(self)` | Cho timezone aware |
+
+### Khi nào dùng `precompute=True`
+```python
+# ✅ Dùng: field phụ thuộc vào data có sẵn lúc create
+currency_id = fields.Many2one(
+    compute='_compute_currency_id',
+    store=True, precompute=True,
+)
+
+# ❌ KHÔNG dùng: field phụ thuộc vào One2many
+total = fields.Float(
+    compute='_compute_total',  # depends order_line (One2many)
+    store=True,  # KHÔNG precompute vì One2many chưa tồn tại lúc create
+)
+```
+
+### Khi nào dùng `compute_sudo=True`
+```python
+# Dùng khi user không có quyền truy cập model phụ thuộc
+# nhưng vẫn cần hiển thị giá trị computed
+amount_paid = fields.Float(
+    compute='_compute_amount_paid',
+    compute_sudo=True,  # Cần truy cập payment.transaction
+)
+```

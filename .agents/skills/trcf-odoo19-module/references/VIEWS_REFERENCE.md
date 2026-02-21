@@ -7,7 +7,10 @@ Validation Status: Verified (aligned with Odoo 19 view architecture syntax).
 - 1. List View (`<list>`)
 - 2. Form View
 - 3. Search View
-- 4. Action & Menu
+- 4. Kanban View
+- 5. View Inheritance (Quan trọng!)
+- 6. Odoo 19 Modifiers
+- 7. Action & Menu
 
 ## 1. List View (`<list>`)
 Thay thế cho `<tree>`. Hỗ trợ các thuộc tính trang trí dựa trên logic Python.
@@ -96,7 +99,87 @@ Gồm `<field>` (tìm kiếm text/mã), `<filter>` (lọc điều kiện), `<gro
 </search>
 ```
 
-## 4. Action & Menu
+## 4. Kanban View (Odoo 19)
+
+> Odoo 19 dùng `t-name="card"` thay vì `<div class="oe_kanban_card">`.
+
+```xml
+<kanban default_group_by="state">
+    <templates>
+        <t t-name="card">
+            <field name="name" class="fw-bold fs-5"/>
+            <field name="partner_id"/>
+            <div class="d-flex justify-content-between">
+                <field name="amount" widget="monetary"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'done'"/>
+            </div>
+        </t>
+    </templates>
+</kanban>
+```
+
+## 5. View Inheritance (Quan trọng!)
+
+Đây là pattern dùng nhiều nhất khi mở rộng module có sẵn.
+
+```xml
+<!-- Thêm field vào form view có sẵn -->
+<record id="view_partner_form_inherit_trcf" model="ir.ui.view">
+    <field name="name">res.partner.form.inherit.trcf</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+        <!-- Thêm field sau field phone -->
+        <field name="phone" position="after">
+            <field name="x_custom_field"/>
+        </field>
+
+        <!-- Thay thế nội dung -->
+        <field name="website" position="replace">
+            <field name="website" widget="url" placeholder="https://..."/>
+        </field>
+
+        <!-- Thêm vào trong element -->
+        <xpath expr="//notebook" position="inside">
+            <page string="Thông tin TRCF">
+                <group>
+                    <field name="x_trcf_note"/>
+                </group>
+            </page>
+        </xpath>
+    </field>
+</record>
+```
+
+**Các `position` hợp lệ**: `before`, `after`, `inside`, `replace`, `attributes`
+
+```xml
+<!-- Sửa attributes của element -->
+<field name="name" position="attributes">
+    <attribute name="string">Tên mới</attribute>
+    <attribute name="required">True</attribute>
+</field>
+```
+
+## 6. Odoo 19 Modifiers (Breaking Change)
+
+> ⚠️ **`attrs={}` đã bị deprecated!** Dùng inline modifiers trực tiếp.
+
+```xml
+<!-- ❌ DEPRECATED (Odoo 16) -->
+<field name="amount" attrs="{'invisible': [('state', '!=', 'draft')], 'readonly': [('state', '=', 'done')]}"/>
+
+<!-- ✅ ĐÚNG (Odoo 19) -->
+<field name="amount" invisible="state != 'draft'" readonly="state == 'done'"/>
+
+<!-- Nhiều điều kiện dùng and/or -->
+<field name="discount" invisible="state != 'draft' or not partner_id"/>
+<button name="action_confirm" invisible="state != 'draft' and state != 'sent'"/>
+```
+
+## 7. Action & Menu
 ```xml
 <record id="action_trcf_order" model="ir.actions.act_window">
     <field name="name">Đơn hàng</field>

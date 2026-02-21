@@ -48,6 +48,28 @@ Xem `SKILL.md` > **Command Baseline** để biết cách chạy install/upgrade/
 - **Cause**: Field `numbercall` đã bị remove trong Odoo 19
 - **Solution**: Xóa dòng `<field name="numbercall">` trong XML cron definition
 
+### WARNING: "_sql_constraints is no longer supported"
+- **Cause**: Odoo 19 deprecate `_sql_constraints`, thay bằng `models.Constraint`
+- **Solution**:
+```python
+# ❌ CŨ
+_sql_constraints = [('code_unique', 'UNIQUE(code)', 'Mã phải là duy nhất!')]
+
+# ✅ MỚI (Odoo 19)
+_code_unique = models.Constraint('UNIQUE(code)', 'Mã phải là duy nhất!')
+```
+
+### WARNING: POS assets not loading / custom JS not executed
+- **Cause**: Dùng sai asset bundle name
+- **Solution**:
+```python
+# ❌ CŨ (Odoo 16)
+'point_of_sale.assets': [...]
+
+# ✅ ĐÚNG (Odoo 17+/19)
+'point_of_sale._assets_pos': [...]
+```
+
 ---
 
 ## 2️⃣ Lỗi Views & XML
@@ -360,10 +382,11 @@ cron.write({'nextcall': utc_time})
 - **Solution**:
 
 ```python
-# Add SQL constraint in model
-_sql_constraints = [
-    ('unique_field', 'UNIQUE(field_name)', 'Field must be unique!'),
-]
+# Add SQL constraint in model (Odoo 19)
+_unique_field = models.Constraint(
+    'UNIQUE(field_name)',
+    'Field must be unique!',
+)
 
 # Or check before create
 existing = self.search([('field', '=', value)])

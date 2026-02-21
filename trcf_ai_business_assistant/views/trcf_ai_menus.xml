@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action: mở dashboard vận hành -->
+        <record id="action_trcf_ai_ops_dashboard" model="ir.actions.act_url">
+            <field name="name">Dashboard Vận Hành</field>
+            <field name="url">/trcf_ai/ops_dashboard</field>
+            <field name="target">self</field>
+        </record>
+
+        <!-- Root menu của app (nếu chưa có) -->
+        <menuitem id="trcf_ai_root_menu"
+                  name="TRCF AI Assistant"
+                  sequence="50"/>
+
+        <!-- Menu: Dashboard Vận Hành -->
+        <menuitem id="trcf_ai_ops_dashboard_menu"
+                  name="Dashboard Vận Hành"
+                  parent="trcf_ai_root_menu"
+                  action="action_trcf_ai_ops_dashboard"
+                  sequence="1"/>
+    </data>
+</odoo>

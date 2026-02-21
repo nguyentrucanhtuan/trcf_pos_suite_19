@@ -9,6 +9,21 @@ description: >
 
 # Phát triển Module Odoo 19
 
+## ⚠️ Odoo 19 Breaking Changes (Kiểm tra TRƯỚC khi viết code)
+
+AI thường viết code theo pattern Odoo 16/17. **Bắt buộc kiểm tra** danh sách này:
+
+| Viết sai | Viết đúng (Odoo 19) |
+|---|---|
+| `_sql_constraints = [...]` | `_name = models.Constraint('SQL', 'msg')` |
+| `<tree>` | `<list>` |
+| `attrs="{'invisible': [...]}"` | `invisible="python_expr"` |
+| `point_of_sale.assets` | `point_of_sale._assets_pos` |
+| `type='json'` (controller) | `type='jsonrpc'` |
+| Thiếu `precompute=True` | Thêm cho stored compute phụ thuộc data có sẵn lúc create |
+
+> Chi tiết: `references/BEST_PRACTICES.md` section 9 và `references/ORM_REFERENCE.md` section 4.
+
 ## Core Workflow
 
 1. Capture requirements and constraints.
@@ -171,6 +186,14 @@ Keep changes scoped to requirement boundaries, preserve backward-compatible beha
 - OWL/frontend discipline.
 Use service-based architecture, explicit state transitions, and predictable component lifecycle handling for maintainable UI behavior.
 
+## Common Mistakes (AI hay mắc)
+
+1. **Dùng `_sql_constraints`** → Phải dùng `models.Constraint` (class attribute, bắt đầu `_`).
+2. **Dùng `<tree>` trong view** → Phải dùng `<list>` (kể cả embedded trong form).
+3. **Dùng `attrs={}`** → Phải dùng `invisible="expr"`, `readonly="expr"` inline.
+4. **Thiếu View Inheritance khi modify module** → Luôn dùng `inherit_id` + `position`.
+5. **Sai POS asset bundle** → Dùng `point_of_sale._assets_pos` (không phải `point_of_sale.assets`).
+
 ## Command Baseline
 
 Use these commands as the default verification entry points.
@@ -201,86 +224,9 @@ Use these commands as the default verification entry points.
 
 ## Prompt Snippets
 
-Use these copy-ready Vietnamese prompts for daily execution.
+Các prompt mẫu bằng tiếng Việt — chỉ cần thay tên module/model/field:
 
-### 1) Prompt tạo module (new_module)
-
-```text
-Dùng skill trcf-odoo19-module.
-
-Execution path: new_module
-Mục tiêu:
-- Tạo module mới `trcf_customer_profile` trên Odoo 19 Community để quản lý thông tin khách hàng.
-- Tạo model `trcf.customer.profile` gồm các field: `name`, `code`, `phone`, `email`, `address`, `birthday`, `gender`, `note`, `active`, `state`.
-- Tạo list view, form view, search view, action, menu, và `ir.model.access.csv` cho `base.group_user`.
-
-Ràng buộc:
-- Tuân thủ chuẩn đặt tên TRCF.
-- Code gọn, không thêm chức năng ngoài phạm vi.
-- Không kết luận hoàn thành nếu còn ERROR/CRITICAL hoặc warning chưa xử lý.
-
-Yêu cầu xác minh:
-- Chạy install module.
-- Báo cáo PASS/FAIL theo Testing & Verification Gates.
-- Trả output theo 7 mục trong Output Contract.
-```
-
-Run:
-
-```bash
-./odoo-bin -c odoo19.conf -d <database> -i trcf_customer_profile --stop-after-init
-```
-
-### 2) Prompt chỉnh sửa module (modify_module)
-
-```text
-Dùng skill trcf-odoo19-module.
-
-Execution path: modify_module
-Mục tiêu:
-- Chỉnh sửa module `trcf_customer_profile`.
-- Bổ sung field `customer_level` (Bronze/Silver/Gold) và `last_contact_date`.
-- Cập nhật list/form/search view để lọc nhóm theo `customer_level`.
-- Cập nhật `ir.model.access.csv` và record rules (nếu cần).
-
-Ràng buộc:
-- Giữ backward compatibility, không làm hỏng dữ liệu cũ.
-- Không refactor ngoài phạm vi yêu cầu.
-
-Yêu cầu xác minh:
-- Chạy upgrade module bằng command baseline.
-- Báo rõ log summary và gate status PASS/FAIL.
-```
-
-Run:
-
-```bash
-./odoo-bin -c odoo19.conf -d <database> -u trcf_customer_profile --stop-after-init
-```
-
-### 3) Prompt tối ưu module (algorithm_optimization)
-
-```text
-Dùng skill trcf-odoo19-module.
-
-Execution path: algorithm_optimization
-Mục tiêu:
-- Tối ưu truy vấn và thuật toán trong module `trcf_customer_profile` (model `trcf.customer.profile`).
-- Giảm query count ở màn hình list/search và loại bỏ pattern N+1.
-
-Ràng buộc:
-- Không thay đổi kết quả nghiệp vụ.
-- Ưu tiên ORM-native batching/grouping trước micro-optimization.
-
-Yêu cầu xác minh:
-- Chạy upgrade module.
-- Chạy log SQL để so sánh before/after.
-- Báo Gate 6 (Performance sanity) với bằng chứng cụ thể.
-```
-
-Run:
-
-```bash
-./odoo-bin -c odoo19.conf -d <database> -u trcf_customer_profile --stop-after-init
-./odoo-bin -c odoo19.conf -d <database> --log-sql
-```
+- **new_module**: `Dùng skill trcf-odoo19-module. Path: new_module. Tạo module trcf_<tên> với model trcf.<tên>, gồm fields [...]. Tạo list/form/search view, action, menu, access.csv.`
+- **modify_module**: `Dùng skill trcf-odoo19-module. Path: modify_module. Sửa module trcf_<tên>: thêm field [...], cập nhật view, giữ backward compatibility.`
+- **bug_fix**: `Dùng skill trcf-odoo19-module. Path: bug_fix. Lỗi: [mô tả]. Module: trcf_<tên>. Fix và chạy upgrade xác minh.`
+- **algorithm_optimization**: `Dùng skill trcf-odoo19-module. Path: algorithm_optimization. Tối ưu truy vấn module trcf_<tên>, giảm N+1.`

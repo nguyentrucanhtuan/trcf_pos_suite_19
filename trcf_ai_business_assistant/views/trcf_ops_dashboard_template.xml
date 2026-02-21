@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="trcf_ops_dashboard_template">
+        <html lang="vi">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>Dashboard Vận Hành | TRCF AI</title>
+                <script src="https://cdn.tailwindcss.com"/>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+                <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+                <script>
+                    tailwind.config = {
+                        theme: {
+                            extend: {
+                                fontFamily: { sans: ['Inter', 'sans-serif'] },
+                            }
+                        }
+                    }
+                </script>
+                <style>
+                    body { font-family: 'Inter', sans-serif; }
+                    .material-symbols-outlined {
+                        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                        vertical-align: middle;
+                    }
+                    .progress-bar { transition: width 0.8s ease-in-out; }
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(16px); }
+                        to   { opacity: 1; transform: translateY(0); }
+                    }
+                    .fade-in { animation: fadeInUp 0.4s ease both; }
+                    .row-hover:hover { background-color: #fef9ee; }
+                </style>
+            </head>
+            <body class="bg-slate-50 min-h-screen">
+
+                <!-- ===== TOP NAV ===== -->
+                <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-30">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-amber-500 text-3xl">monitoring</span>
+                            <div>
+                                <h1 class="text-base font-bold text-slate-800 leading-tight">Dashboard Vận Hành</h1>
+                                <p class="text-xs text-slate-400">TRCF AI Business Assistant</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="hidden sm:flex items-center gap-1 text-xs text-slate-500">
+                                <span class="material-symbols-outlined text-base">calendar_today</span>
+                                <t t-esc="today"/>
+                            </span>
+                            <a href="/odoo/action-mail.action_discuss"
+                               class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors">
+                                <span class="material-symbols-outlined text-base">smart_toy</span>
+                                Hỏi AI
+                            </a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- ===== MAIN ===== -->
+                <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+                    <!-- Summary Cards -->
+                    <section class="grid grid-cols-2 sm:grid-cols-4 gap-4 fade-in">
+
+                        <!-- Tổng sản phẩm POS -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-1">
+                            <span class="material-symbols-outlined text-blue-500 text-2xl">storefront</span>
+                            <p class="text-2xl font-extrabold text-slate-800 mt-1" t-esc="total_pos"/>
+                            <p class="text-xs text-slate-500 leading-tight">Tổng sản phẩm POS</p>
+                        </div>
+
+                        <!-- Bán thẳng (mua hàng) -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-1">
+                            <span class="material-symbols-outlined text-sky-500 text-2xl">shopping_cart</span>
+                            <p class="text-2xl font-extrabold text-sky-600 mt-1" t-esc="total_direct"/>
+                            <p class="text-xs text-slate-500 leading-tight">Bán thẳng (mua hàng)</p>
+                        </div>
+
+                        <!-- Sản phẩm sản xuất -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-1">
+                            <span class="material-symbols-outlined text-purple-500 text-2xl">precision_manufacturing</span>
+                            <p class="text-2xl font-extrabold text-purple-600 mt-1" t-esc="total_manufactured"/>
+                            <p class="text-xs text-slate-500 leading-tight">Sản phẩm sản xuất</p>
+                        </div>
+
+                        <!-- Thiếu công thức -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col gap-1">
+                            <span class="material-symbols-outlined text-red-500 text-2xl">error</span>
+                            <p class="text-2xl font-extrabold text-red-600 mt-1" t-esc="total_missing"/>
+                            <p class="text-xs text-slate-500 leading-tight">Chưa có công thức (BoM)</p>
+                        </div>
+
+                    </section>
+
+                    <!-- Progress Bar -->
+                    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 fade-in">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-semibold text-slate-700">Tiến độ nhập công thức (sản phẩm sản xuất)</span>
+                            <span class="text-sm font-bold text-slate-800">
+                                <t t-esc="total_ok"/>/<t t-esc="total_manufactured"/> sản phẩm
+                            </span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                            <div class="progress-bar bg-emerald-500 h-3 rounded-full"
+                                 t-att-style="'width: ' + str(pct_complete) + '%'"/>
+                        </div>
+                        <t t-if="total_missing == 0">
+                            <p class="mt-2 text-xs text-emerald-600 font-semibold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-base">verified</span>
+                                Tất cả sản phẩm sản xuất đã có công thức. Tồn kho sẽ chính xác!
+                            </p>
+                        </t>
+                        <t t-else="">
+                            <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
+                                <span class="material-symbols-outlined text-base">warning</span>
+                                Còn <t t-esc="total_missing"/> sản phẩm sản xuất chưa có công thức — tồn kho sẽ sai khi bán hàng!
+                            </p>
+                        </t>
+                    </section>
+
+                    <!-- ===== AUDIT TABLE: Sản phẩm thiếu công thức ===== -->
+                    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden fade-in">
+
+                        <!-- Table header -->
+                        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-red-500">warning</span>
+                                <h2 class="text-sm font-bold text-slate-800">
+                                    Sản phẩm POS chưa có công thức (BoM)
+                                </h2>
+                                <t t-if="total_missing &gt; 0">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-600">
+                                        <t t-esc="total_missing"/>
+                                    </span>
+                                </t>
+                                <t t-if="total_price_anomaly &gt; 0">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-600">
+                                        <span class="material-symbols-outlined text-xs">price_change</span>
+                                        <t t-esc="total_price_anomaly"/> bất thường giá
+                                    </span>
+                                </t>
+                            </div>
+                            <a href="/odoo/manufacturing/bom"
+                               class="text-xs text-blue-600 hover:underline flex items-center gap-1">
+                                <span class="material-symbols-outlined text-base">open_in_new</span>
+                                Quản lý công thức
+                            </a>
+                        </div>
+
+                        <t t-if="not products_missing_bom">
+                            <!-- Empty state -->
+                            <div class="flex flex-col items-center justify-center py-16 text-center">
+                                <span class="material-symbols-outlined text-6xl text-emerald-400">check_circle</span>
+                                <p class="mt-3 text-slate-700 font-semibold">Tuyệt vời! Tất cả sản phẩm đã có công thức.</p>
+                                <p class="text-xs text-slate-400 mt-1">Tồn kho sẽ được trừ đúng khi bán hàng.</p>
+                            </div>
+                        </t>
+
+                        <t t-else="">
+                            <!-- Search bar -->
+                            <div class="px-5 py-3 border-b border-slate-100 bg-slate-50">
+                                <div class="relative max-w-sm">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-base">search</span>
+                                    <input id="search-input" type="text" placeholder="Tìm tên sản phẩm..."
+                                           class="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"/>
+                                </div>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm" id="product-table">
+                                    <thead>
+                                        <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wide">
+                                            <th class="px-5 py-3 text-left w-8">#</th>
+                                            <th class="px-5 py-3 text-left">
+                                                <span class="flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-base text-slate-400">check_box_outline_blank</span>
+                                                    Trạng thái
+                                                </span>
+                                            </th>
+                                            <th class="px-5 py-3 text-left">Tên sản phẩm</th>
+                                            <th class="px-5 py-3 text-left hidden sm:table-cell">Danh mục kho</th>
+                                            <th class="px-5 py-3 text-left hidden md:table-cell">Danh mục POS</th>
+                                            <th class="px-5 py-3 text-right">Chi phí (đ)</th>
+                                            <th class="px-5 py-3 text-right">Giá bán (đ)</th>
+                                            <th class="px-5 py-3 text-center">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="product-tbody">
+                                        <t t-foreach="products_missing_bom" t-as="p">
+                                            <tr class="border-t border-slate-100 row-hover transition-colors"
+                                                t-att-data-name="p['name'].lower()">
+                                                <td class="px-5 py-3 text-slate-400 text-xs font-mono">
+                                                    <t t-esc="p_index + 1"/>
+                                                </td>
+                                                <!-- Checkbox trạng thái (visual) -->
+                                                <td class="px-5 py-3">
+                                                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold">
+                                                        <span class="material-symbols-outlined text-sm">check_box_outline_blank</span>
+                                                        Chưa có công thức
+                                                    </span>
+                                                </td>
+                                                <!-- Tên sản phẩm -->
+                                                <td class="px-5 py-3 font-medium text-slate-800">
+                                                    <a t-att-href="p['product_url']"
+                                                       class="hover:text-blue-600 hover:underline">
+                                                        <t t-esc="p['name']"/>
+                                                    </a>
+                                                </td>
+                                                <!-- Danh mục kho -->
+                                                <td class="px-5 py-3 text-slate-500 hidden sm:table-cell">
+                                                    <t t-esc="p['categ']"/>
+                                                </td>
+                                                <!-- Danh mục POS -->
+                                                <td class="px-5 py-3 text-slate-500 hidden md:table-cell">
+                                                    <t t-esc="p['pos_categ']"/>
+                                                </td>
+                                                <!-- Chi phí -->
+                                                <td class="px-5 py-3 text-right font-mono text-sm">
+                                                    <t t-if="p['anomaly'] == 'no_cost'">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-xs font-semibold">
+                                                            <span class="material-symbols-outlined text-xs">error_outline</span>
+                                                            Chưa nhập
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="p['anomaly'] == 'cost_over'">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold">
+                                                            <span class="material-symbols-outlined text-xs">trending_up</span>
+                                                            <t t-esc="'{:,.0f}'.format(p['cost'])"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="text-slate-700">
+                                                            <t t-esc="'{:,.0f}'.format(p['cost'])"/>
+                                                        </span>
+                                                    </t>
+                                                </td>
+                                                <!-- Giá bán -->
+                                                <td class="px-5 py-3 text-right font-mono text-sm">
+                                                    <t t-if="p['anomaly'] == 'no_price'">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-xs font-semibold">
+                                                            <span class="material-symbols-outlined text-xs">error_outline</span>
+                                                            Chưa nhập
+                                                        </span>
+                                                    </t>
+                                                    <t t-elif="p['anomaly'] == 'cost_over'">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold">
+                                                            <span class="material-symbols-outlined text-xs">trending_down</span>
+                                                            <t t-esc="'{:,.0f}'.format(p['price'])"/>
+                                                        </span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="text-slate-700">
+                                                            <t t-esc="'{:,.0f}'.format(p['price'])"/>
+                                                        </span>
+                                                    </t>
+                                                </td>
+                                                <!-- Action -->
+                                                <td class="px-5 py-3 text-center">
+                                                    <a t-att-href="p['bom_url']"
+                                                       class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                        <span class="material-symbols-outlined text-sm">add</span>
+                                                        Thêm công thức
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 text-xs text-slate-400 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-base">info</span>
+                                Nhấn "Thêm công thức" để mở màn hình tạo Bill of Materials (BoM) trong Odoo.
+                            </div>
+                        </t>
+
+                    </section>
+
+                    <!-- ===== QUICK LINKS ===== -->
+                    <section class="grid grid-cols-2 sm:grid-cols-3 gap-4 fade-in">
+                        <a href="/trcf_fnb_inventory/dashboard"
+                           class="flex items-center gap-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition-shadow">
+                            <span class="material-symbols-outlined text-blue-500 text-2xl">inventory_2</span>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Quản lý tồn kho</p>
+                                <p class="text-xs text-slate-400">Nhập, xuất, kiểm kê</p>
+                            </div>
+                        </a>
+                        <a href="/trcf_fnb_inventory/daily_report"
+                           class="flex items-center gap-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition-shadow">
+                            <span class="material-symbols-outlined text-indigo-500 text-2xl">bar_chart</span>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Báo cáo hàng ngày</p>
+                                <p class="text-xs text-slate-400">Doanh thu, chi phí</p>
+                            </div>
+                        </a>
+                        <a href="/odoo/manufacturing/bom"
+                           class="flex items-center gap-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition-shadow">
+                            <span class="material-symbols-outlined text-amber-500 text-2xl">receipt_long</span>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Công thức (BoM)</p>
+                                <p class="text-xs text-slate-400">Quản lý hết công thức</p>
+                            </div>
+                        </a>
+                    </section>
+
+                </main>
+
+                <!-- ===== JS: Search filter ===== -->
+                <script>
+                <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const input = document.getElementById('search-input');
+                        if (!input) return;
+                        input.addEventListener('input', function () {
+                            const q = this.value.trim().toLowerCase();
+                            const rows = document.querySelectorAll('#product-tbody tr');
+                            rows.forEach(function (row) {
+                                const name = (row.dataset.name || '');
+                                row.style.display = name.includes(q) ? '' : 'none';
+                            });
+                        });
+                    });
+                ]]>
+                </script>
+
+            </body>
+        </html>
+    </template>
+</odoo>

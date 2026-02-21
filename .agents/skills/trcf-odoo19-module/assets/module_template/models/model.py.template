@@ -7,12 +7,24 @@ class ${class_name}(models.Model):
     _description = '${description}'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'id desc'
+    _check_company_auto = True
+
+    # SQL Constraints (Odoo 19 syntax)
+    _name_unique = models.Constraint(
+        'UNIQUE(name, company_id)',
+        'Tên phải là duy nhất trong cùng công ty!',
+    )
 
     name = fields.Char(string='Tên', required=True, index=True, tracking=True)
     active = fields.Boolean(default=True)
     date = fields.Date(string='Ngày', default=fields.Date.context_today)
     user_id = fields.Many2one('res.users', string='Người phụ trách', default=lambda self: self.env.user)
-    
+    company_id = fields.Many2one(
+        'res.company', string='Công ty',
+        default=lambda self: self.env.company,
+        required=True, index=True,
+    )
+
     state = fields.Selection([
         ('draft', 'Nháp'),
         ('confirmed', 'Xác nhận'),
@@ -36,3 +48,4 @@ class ${class_name}(models.Model):
 
     def action_draft(self):
         self.write({'state': 'draft'})
+

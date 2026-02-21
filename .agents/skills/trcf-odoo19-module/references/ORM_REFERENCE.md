@@ -107,8 +107,15 @@ tag_ids = fields.Many2many(
 total = fields.Float(
     string="Tổng tiền",
     compute='_compute_total',
-    store=True,  # Lưu vào DB nếu cần search/group
-    readonly=True,
+    store=True,           # Lưu vào DB nếu cần search/group
+    readonly=False,       # Cho phép user override giá trị computed
+    precompute=True,      # Tính trước khi lưu lần đầu (giảm query)
+)
+
+# compute_sudo=True khi cần truy cập dữ liệu cross-company
+credit_warning = fields.Text(
+    compute='_compute_credit_warning',
+    compute_sudo=True,
 )
 
 @api.depends('line_ids.subtotal')
@@ -116,6 +123,10 @@ def _compute_total(self):
     for order in self:
         order.total = sum(order.line_ids.mapped('subtotal'))
 ```
+
+> **Khi nào dùng `precompute=True`?**
+> - Dùng khi field phụ thuộc vào các field đã có sẵn lúc create (vd: `company_id`, `partner_id`)
+> - KHÔNG dùng khi field phụ thuộc vào One2many/Many2many (vì chúng chưa tồn tại lúc precompute)
 
 ### Inverse (Compute 2 chiều)
 ```python
@@ -159,12 +170,43 @@ def _check_positive(self):
             raise ValidationError(_("Số lượng và số tiền phải >= 0"))
 ```
 
-### SQL Constraint
+### SQL Constraint (Odoo 19 — `models.Constraint`)
+
+> ⚠️ **`_sql_constraints` đã bị deprecated trong Odoo 19!** Sử dụng sẽ sinh WARNING:
+> `Model attribute '_sql_constraints' is no longer supported, please define model.Constraint on the model.`
+
 ```python
+# ❌ DEPRECATED (Odoo 16 và cũ hơn)
 _sql_constraints = [
     ('code_unique', 'UNIQUE(code)', 'Mã phải là duy nhất!'),
-    ('amount_positive', 'CHECK(amount >= 0)', 'Số tiền phải >= 0!'),
 ]
+
+# ✅ ĐÚNG (Odoo 19+) — Khai báo như class attribute
+class TrcfOrder(models.Model):
+    _name = 'trcf.order'
+    _description = 'Đơn hàng'
+
+    _code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'Mã phải là duy nhất!',
+    )
+    _amount_positive = models.Constraint(
+        'CHECK(amount >= 0)',
+        'Số tiền phải >= 0!',
+    )
+    _conditional_required = models.Constraint(
+        "CHECK((state = 'sale' AND date_order IS NOT NULL) OR state != 'sale')",
+        'Đơn hàng đã xác nhận phải có ngày xác nhận.',
+    )
+```
+
+**Quy tắc đặt tên**: Bắt đầu bằng `_`, mô tả mục đích (vd: `_code_unique`, `_amount_positive`).
+
+### Database Index (Odoo 19 — `models.Index`)
+
+```python
+# Tạo index cho truy vấn nhanh hơn
+_date_order_id_idx = models.Index("(date_order desc, id desc)")
 ```
 
 ## 5. API Methods (CRUD)
