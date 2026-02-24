@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from . import trcf_ops_dashboard_controller
+# Controllers của ops dashboard đã chuyển sang module trcf_ops_audit

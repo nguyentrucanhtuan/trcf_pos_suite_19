@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action: mở dashboard vận hành -->
+        <record id="action_trcf_ops_audit_dashboard" model="ir.actions.act_url">
+            <field name="name">Dashboard Vận Hành</field>
+            <field name="url">/trcf_ops_audit/dashboard</field>
+            <field name="target">self</field>
+        </record>
+
+        <!-- Root menu của app -->
+        <menuitem id="trcf_ops_audit_root_menu"
+                  name="TRCF Ops Audit"
+                  sequence="55"/>
+
+        <!-- Menu: Dashboard Vận Hành -->
+        <menuitem id="trcf_ops_audit_dashboard_menu"
+                  name="Dashboard Vận Hành"
+                  parent="trcf_ops_audit_root_menu"
+                  action="action_trcf_ops_audit_dashboard"
+                  sequence="1"/>
+    </data>
+</odoo>

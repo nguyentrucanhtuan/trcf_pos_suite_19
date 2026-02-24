@@ -46,6 +46,7 @@ export class TrcfKitchenDashboard extends Component {
             ready_count: 0,
             loadingOrders: [],
             loadingOrderLines: [],  // Track loading state cho từng món
+            completingLines: [],   // Track lines đang trong animation hoàn thành
             showRecipe: true,   // Toggle hiển thị công thức
             showSummary: true,  // Toggle hiển thị tổng hợp món
         });
@@ -268,14 +269,49 @@ export class TrcfKitchenDashboard extends Component {
     async markOrderLineReady(orderLineId) {
         var self = this;
 
-        // ✅ Thêm vào loading state
-        if (!self.state.loadingOrderLines.includes(orderLineId)) {
-            self.state.loadingOrderLines.push(orderLineId);
+        const lineIndex = self.state.order_lines.findIndex(l => l.id === orderLineId);
+        const previousStatus = lineIndex !== -1 ? self.state.order_lines[lineIndex].trcf_order_status : null;
+
+        // ✅ BƯỚC 1: Bắt đầu animation "completing" - hiện flash xanh
+        if (!self.state.completingLines.includes(orderLineId)) {
+            self.state.completingLines.push(orderLineId);
         }
 
-        // ✅ Gọi API - loading state sẽ được xóa khi nhận bus message
-        await this.updateOrderLineStatus(orderLineId, 'ready');
-        // Note: Loading state được xóa trong processPendingUpdates() khi nhận bus message
+        // ✅ Gọi API nền ngay - không đợi animation
+        this.orm.call(
+            "pos.order.line",
+            "update_order_line_status",
+            [orderLineId, 'ready']
+        ).then(result => {
+            if (!result.success) {
+                // ❌ Lỗi server → rollback: xóa khỏi completing, không ẩn
+                console.error('Lỗi cập nhật:', result.message);
+                const idx = self.state.completingLines.indexOf(orderLineId);
+                if (idx > -1) self.state.completingLines.splice(idx, 1);
+            }
+        }).catch(error => {
+            // ❌ Lỗi mạng → rollback
+            console.error('Lỗi cập nhật:', error);
+            const idx = self.state.completingLines.indexOf(orderLineId);
+            if (idx > -1) self.state.completingLines.splice(idx, 1);
+        });
+
+        // ✅ BƯỚC 2: Sau 900ms → cập nhật status để ẩn khỏi visible list
+        setTimeout(() => {
+            if (lineIndex !== -1) {
+                self.state.order_lines[lineIndex].trcf_order_status = 'ready';
+            }
+            // Xóa khỏi completingLines
+            const idx = self.state.completingLines.indexOf(orderLineId);
+            if (idx > -1) self.state.completingLines.splice(idx, 1);
+            // Cập nhật counters để ẩn khung nếu hết món
+            self.updateCounters();
+        }, 900);
+    }
+
+    // Kiểm tra line đang trong animation hoàn thành
+    isLineCompleting(orderLineId) {
+        return this.state.completingLines.includes(orderLineId);
     }
 
     // Kiểm tra order line đang loading
@@ -528,9 +564,18 @@ export class TrcfKitchenDashboard extends Component {
         );
     }
 
-    // ✅ Kiểm tra order có món nào visible không
+    // ✅ Kiểm tra order có món nào visible không (chỉ tính món chưa xong)
     hasVisibleLines(orderId) {
-        return this.getOrderLines(orderId).length > 0;
+        return this.getVisibleOrderLines(orderId).length > 0;
+    }
+
+    // ✅ Lấy chỉ những order lines chưa hoàn thành (draft) - dùng để render UI
+    // Bao gồm cả completingLines để animation có thể render trước khi ẩn
+    getVisibleOrderLines(orderId) {
+        return this.state.order_lines.filter(line =>
+            line.order_id && line.order_id[0] === orderId &&
+            (line.trcf_order_status === 'draft' || this.state.completingLines.includes(line.id))
+        );
     }
 
     // Render HTML content (cho công thức)

@@ -6,12 +6,11 @@
     'summary': 'Trợ lý kinh doanh thông minh tích hợp Google ADK',
     'author': 'TRCF',
     'website': 'https://coffeetree.vn',
-    'depends': ['base', 'mail', 'point_of_sale', 'purchase', 'base_setup', 'mrp'],
+    'depends': ['base', 'mail', 'point_of_sale', 'purchase', 'base_setup'],
     'data': [
         'security/ir.model.access.csv',
         'data/bot_data.xml',
         'views/res_config_settings_views.xml',
-        'views/trcf_ops_dashboard_template.xml',
         'views/trcf_ai_menus.xml',
     ],
     'installable': True,

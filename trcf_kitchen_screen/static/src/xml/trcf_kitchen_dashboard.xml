@@ -53,7 +53,21 @@
                 text-decoration: line-through;
                 color: #6b7280;
             }
-            
+
+            /* Hiệu ứng completing: flash xanh rồi fade out */
+            @keyframes completeFlash {
+                0%   { background-color: #dcfce7; opacity: 1; transform: scale(1); }
+                30%  { background-color: #bbf7d0; opacity: 1; transform: scale(1.01); }
+                70%  { background-color: #dcfce7; opacity: 0.6; transform: scale(1); }
+                100% { background-color: #dcfce7; opacity: 0; transform: translateY(-4px); }
+            }
+            .line-completing {
+                animation: completeFlash 0.9s ease-out forwards;
+                border-radius: 8px;
+                overflow: hidden;
+                pointer-events: none;
+            }
+
             /* Mobile scrolling - only scroll the main container */
             html, body {
                 overflow: auto;
@@ -133,47 +147,64 @@
 
                                             <!-- Order Items -->
                                             <div class="flex flex-col divide-y divide-gray-200">
-                                                <t t-foreach="getOrderLines(order.id)" t-as="line" t-key="line.id">
-                                                    <div t-att-class="'relative py-3 ' + (line.trcf_order_status !== 'draft' ? 'line-completed' : '')">
-                                                        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                                                            <div class="item-content flex-1">
-                                                                <div class="flex items-center gap-3">
-                                                                    <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-2xl font-black text-white shadow-sm ring-2 ring-orange-200">
-                                                                        <t t-esc="line.qty"/>
-                                                                    </span>
-                                                                    <p class="text-base font-bold leading-tight text-gray-800 flex-1">
-                                                                        <t t-esc="line.full_product_name || line.product_id[1]"/>
-                                                                    </p>
-                                                                </div>
-                                                                <t t-if="line.note">
-                                                                    <p class="item-note text-base text-orange-600 font-medium pt-3">
-                                                                        <t t-esc="getNote(line.note)"/>
-                                                                    </p>
-                                                                </t>
+                                                <t t-foreach="getVisibleOrderLines(order.id)" t-as="line" t-key="line.id">
+                                                    <!-- Nếu đang completing: hiện flash xanh rồi biến mất -->
+                                                    <t t-if="isLineCompleting(line.id)">
+                                                        <div class="line-completing relative py-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-green-50 rounded-lg px-2">
+                                                            <div class="flex items-center gap-3">
+                                                                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-500 text-2xl font-black text-white shadow-sm ring-2 ring-green-200">
+                                                                    ✓
+                                                                </span>
+                                                                <p class="text-base font-bold leading-tight text-green-700 flex-1">
+                                                                    <t t-esc="line.full_product_name || line.product_id[1]"/>
+                                                                </p>
                                                             </div>
-                                                            <button 
-                                                                t-on-click="() => this.markOrderLineReady(line.id)"
-                                                                t-att-disabled="isOrderLineLoading(line.id) or line.trcf_order_status !== 'draft'"
-                                                                t-att-class="'rounded-lg px-4 py-2 text-sm font-bold transition-colors disabled:cursor-not-allowed ' + (line.trcf_order_status !== 'draft' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300')">
-                                                                <t t-if="isOrderLineLoading(line.id)">
-                                                                    ⏳ Đang xử lý...
-                                                                </t>
-                                                                <t t-elif="line.trcf_order_status !== 'draft'">
-                                                                    ✓ Đã xong
-                                                                </t>
-                                                                <t t-else="">
-                                                                    Xong
-                                                                </t>
-                                                            </button>
+                                                            <span class="text-sm font-bold text-green-600">Đã xong!</span>
                                                         </div>
-
-                                                        <t t-if="state.showRecipe and line.public_description">
-                                                            <div
-                                                                class="recipe-content mt-2 rounded-lg bg-blue-50 px-3 py-2 text-base text-blue-800">
-                                                                <t t-out="renderHtml(line.public_description)"/>
+                                                    </t>
+                                                    <!-- Bình thường: hiện đầy đủ -->
+                                                    <t t-else="">
+                                                        <div class="relative py-3">
+                                                            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                                                                <div class="item-content flex-1">
+                                                                    <div class="flex items-center gap-3">
+                                                                        <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-2xl font-black text-white shadow-sm ring-2 ring-orange-200">
+                                                                            <t t-esc="line.qty"/>
+                                                                        </span>
+                                                                        <p class="text-base font-bold leading-tight text-gray-800 flex-1">
+                                                                            <t t-esc="line.full_product_name || line.product_id[1]"/>
+                                                                        </p>
+                                                                    </div>
+                                                                    <t t-if="line.note">
+                                                                        <p class="item-note text-base text-orange-600 font-medium pt-3">
+                                                                            <t t-esc="getNote(line.note)"/>
+                                                                        </p>
+                                                                    </t>
+                                                                </div>
+                                                                <button 
+                                                                    t-on-click="() => this.markOrderLineReady(line.id)"
+                                                                    t-att-disabled="isOrderLineLoading(line.id) or line.trcf_order_status !== 'draft'"
+                                                                    t-att-class="'rounded-lg px-4 py-2 text-sm font-bold transition-colors disabled:cursor-not-allowed ' + (line.trcf_order_status !== 'draft' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300')">
+                                                                    <t t-if="isOrderLineLoading(line.id)">
+                                                                        ⏳ Đang xử lý...
+                                                                    </t>
+                                                                    <t t-elif="line.trcf_order_status !== 'draft'">
+                                                                        ✓ Đã xong
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        Xong
+                                                                    </t>
+                                                                </button>
                                                             </div>
-                                                        </t>
-                                                    </div>
+
+                                                            <t t-if="state.showRecipe and line.public_description">
+                                                                <div
+                                                                    class="recipe-content mt-2 rounded-lg bg-blue-50 px-3 py-2 text-base text-blue-800">
+                                                                    <t t-out="renderHtml(line.public_description)"/>
+                                                                </div>
+                                                            </t>
+                                                        </div>
+                                                    </t>
                                                 </t>
                                             </div>
                                         </div>
