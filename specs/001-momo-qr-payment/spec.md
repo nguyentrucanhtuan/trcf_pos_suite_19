@@ -7,6 +7,17 @@
 
 ---
 
+## Clarifications
+
+### Session 2026-03-02
+
+- Q: Sau 5 phút polling hết thời gian mà khách chưa thanh toán, POS làm gì? → A: Hiển thị thông báo "QR đã hết hiệu lực sau 5 phút" + nút "Tạo QR Mới" để thu ngân tạo lại QR mới cho cùng đơn hàng.
+- Q: IPN đến nhưng chữ ký HMAC-SHA256 không khớp, hệ thống xử lý như thế nào? → A: Từ chối xử lý, trả về 204 No Content (không để MoMo retry), ghi log warning; polling làm backup để recover giao dịch nếu cần.
+- Q: Khi `quickchart.io` không phản hồi, QR hiển thị thế nào? → A: Bỏ hoàn toàn phụ thuộc vào `quickchart.io` — render QR bằng thư viện local (không cần internet); đảm bảo QR hoạt động dù offline.
+- Q: Tính năng hoàn tiền MoMo có thuộc phạm vi module này không? → A: Ngoài phạm vi — module chỉ xử lý luồng nhận tiền; hoàn tiền (bao gồm MoMo Refund API) sẽ là spec riêng biệt.
+
+---
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Thu Ngân Nhận Thanh Toán MoMo QR (Priority: P1)
@@ -60,8 +71,8 @@ Admin tạo phương thức thanh toán loại "TRCF MOMO QR" trong POS Settings
 
 ### Edge Cases
 
-- QR timeout sau 5 phút (100 lần polling × 3 giây) → polling dừng tự động, QR vẫn hiển thị (khách có thể đã quét trước đó, webhook vẫn có thể đến sau).
-- MoMo IPN đến nhưng chữ ký HMAC-SHA256 không khớp → ghi log cảnh báo nhưng vẫn xử lý (để tránh mất giao dịch trong môi trường sandbox/testing).
+- QR timeout sau 5 phút (100 lần polling × 3 giây) → polling dừng tự động, màn hình hiển thị thông báo **"QR đã hết hiệu lực sau 5 phút"** kèm nút **"Tạo QR Mới"**; thu ngân nhấn nút để tạo lại QR mới. Webhook IPN vẫn có thể đến sau (nếu khách đã quét trước lúc timeout).
+- MoMo IPN đến nhưng chữ ký HMAC-SHA256 không khớp → **từ chối xử lý**, trả về 204 No Content (không retry), ghi log warning; polling tiếp tục chạy và sẽ recover giao dịch nếu đó là IPN hợp lệ bị sai format.
 - MoMo IPN đến trước khi transaction record được tạo (race condition) → IPN ghi log "not found", polling sẽ recover sau.
 - Cùng lúc IPN và polling đều báo success → đơn hàng chỉ validate 1 lần (guard kiểm tra `state !== 'draft'`).
 - Thu ngân thoát màn hình payment rồi quay lại → polling đã bị cleanup, QR không còn hiệu lực.
@@ -89,6 +100,9 @@ Admin tạo phương thức thanh toán loại "TRCF MOMO QR" trong POS Settings
 - **FR-013**: Admin PHẢI có thể cấu hình credentials M4B (Partner Code, Access Key, Secret Key) trực tiếp trong POS Payment Method form; Secret Key hiển thị dạng password field.
 - **FR-014**: Credentials PHẢI được lưu an toàn gắn với Payment Method record, không hard-code.
 - **FR-015**: Admin PHẢI có thể bật/tắt "Chế độ Test" để chuyển giữa sandbox và production MoMo.
+- **FR-016**: Khi polling hết thời gian 5 phút mà chưa nhận xác nhận, POS PHẢI hiển thị thông báo "QR đã hết hiệu lực" và nút "Tạo QR Mới" để thu ngân có thể tạo lại QR cho cùng đơn hàng.
+- **FR-017**: IPN webhook PHẢI từ chối xử lý giao dịch nếu chữ ký HMAC-SHA256 không khớp; phải trả về 204 No Content và ghi log warning. Polling là cơ chế recover dự phòng.
+- **FR-018**: Mã QR PHẢI được render bằng thư viện local (không phụ thuộc external service `quickchart.io`); hệ thống phải tạo được ảnh QR ngay cả khi không có kết nối internet.
 
 ### Key Entities
 
@@ -106,7 +120,7 @@ Admin tạo phương thức thanh toán loại "TRCF MOMO QR" trong POS Settings
 - **SC-002**: Đơn hàng được tự động validate trong vòng dưới 10 giây sau khi khách thanh toán thành công.
 - **SC-003**: Tỷ lệ giao dịch MoMo không bị duplicate (validate 2 lần) đạt 100%.
 - **SC-004**: Hệ thống hoạt động ổn định khi API MoMo không khả dụng — thu ngân luôn thấy QR (tĩnh hoặc động) để tiếp tục nhận tiền.
-- **SC-005**: 100% IPN request được xác thực chữ ký trước khi xử lý; request không hợp lệ được log và bỏ qua.
+- **SC-005**: 100% IPN request có chữ ký hợp lệ được xử lý; IPN sai chữ ký bị từ chối và ghi log — không có request trái phép nào được xử lý.
 - **SC-006**: Admin có thể hoàn tất cấu hình MoMo Payment Method trong vòng dưới 5 phút.
 
 ---
@@ -118,4 +132,10 @@ Admin tạo phương thức thanh toán loại "TRCF MOMO QR" trong POS Settings
 - Tiền tệ là VND (nguyên, không thập phân). MoMo không hỗ trợ thanh toán dưới 1,000đ.
 - Mỗi POS config chỉ có 1 phương thức thanh toán MoMo (search lấy limit=1).
 - MoMo sandbox (`test_mode=True`) dùng để phát triển và kiểm thử; production chỉ bật sau khi đã verify với MoMo.
-- QR code được render thông qua `quickchart.io/qr` (external service) để chuyển deeplink thành ảnh QR. Cần internet.
+- QR code được render bằng **thư viện JavaScript local**, không phụ thuộc `quickchart.io` hay bất kỳ external service nào. Hệ thống hoạt động ngay cả khi không có internet (ngoại trừ API call đến MoMo).
+
+## Out-of-Scope
+
+- **Hoàn tiền (Refund)**: Module chỉ xử lý luồng thanh toán một chiều (nhận tiền). Hoàn tiền MoMo (bao gồm MoMo Refund API) nằm ngoài phạm vi và sẽ là spec riêng biệt.
+- **Báo cáo giao dịch MoMo**: Thống kê, export, reconciliation tự động.
+- **Đa cửa hàng song song**: Module hỗ trợ 1 payment method MoMo per POS config; multi-store với nhiều MoMo account riêng là use case nâng cấp.
