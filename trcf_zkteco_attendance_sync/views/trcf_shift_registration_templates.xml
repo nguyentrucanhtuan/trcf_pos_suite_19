@@ -1,179 +1,400 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Template: Trang đăng ký ca làm việc -->
+    <!-- Template: Trang đăng ký ca làm việc (2 tabs) -->
     <template id="shift_registration_form" name="Đăng ký ca làm việc">
         <t t-call="web.html_container">
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
             <head>
-                <title>Đăng ký ca làm việc</title>
+                <title>Đăng ký ca &amp; Bảng giờ công</title>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
                 <link rel="stylesheet" t-att-href="'/trcf_zkteco_attendance_sync/static/src/css/shift_registration.css'"/>
             </head>
             <body class="shift-registration-body">
             <div class="shift-registration-container">
+                <!-- Header chào tên nhân viên -->
                 <div class="shift-registration-header">
-                    <h1>Đăng ký ca làm việc</h1>
+                    <h1>Quản lý ca làm việc</h1>
                     <p>Xin chào, <strong t-esc="employee.name"/>!</p>
-                    <p class="text-muted">Chọn các ca bạn muốn đăng ký trong 2 tuần tới</p>
                 </div>
-                
-                <!-- Bảng đăng ký ca -->
-                <div class="shift-registration-table-wrapper">
-                    <table class="shift-registration-table">
-                        <thead>
-                            <tr>
-                                <th class="date-header">Ngày</th>
-                                <t t-foreach="shifts" t-as="shift">
-                                    <th class="shift-header">
-                                        <div class="shift-name" t-esc="shift.name"/>
-                                        <div class="shift-time">
-                                            <t t-esc="shift.get_time_display()"/>
-                                        </div>
-                                    </th>
-                                </t>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="dates" t-as="date_info">
-                                <tr t-attf-class="#{'weekend-row' if date_info['is_weekend'] else ''}">
-                                    <td class="date-cell">
-                                        <div class="date-weekday" t-esc="date_info['weekday']"/>
-                                        <div class="date-display" t-esc="date_info['display']"/>
-                                    </td>
+
+                <!-- ===== TAB NAVIGATION ===== -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="dang-ky-ca" id="btn-tab-dang-ky-ca">
+                        <i class="fa fa-calendar-check-o"/> Đăng ký ca
+                    </button>
+                    <button class="tab-btn" data-tab="gio-cong" id="btn-tab-gio-cong">
+                        <i class="fa fa-clock-o"/> Bảng giờ công
+                    </button>
+                </div>
+
+                <!-- ===== PANEL 1: ĐĂNG KÝ CA (giữ nguyên nội dung cũ) ===== -->
+                <div id="panel-dang-ky-ca" class="tab-panel active">
+                    <p class="text-muted tab-subtitle">Chọn các ca bạn muốn đăng ký trong 2 tuần tới</p>
+
+                    <!-- Bảng đăng ký ca -->
+                    <div class="shift-registration-table-wrapper">
+                        <table class="shift-registration-table">
+                            <thead>
+                                <tr>
+                                    <th class="date-header">Ngày</th>
                                     <t t-foreach="shifts" t-as="shift">
-                                        <t t-set="cell_key" t-value="str(date_info['date_str']) + '_' + str(shift.id)"/>
-                                        <t t-set="reg_state" t-value="registered_dict.get(cell_key, '')"/>
-                                        <t t-set="is_confirmed" t-value="reg_state == 'confirmed'"/>
-                                        <t t-set="is_draft" t-value="reg_state == 'draft'"/>
-                                        <td t-attf-class="shift-cell #{'confirmed' if is_confirmed else 'registered' if is_draft else ''} #{'disabled' if is_confirmed else ''}"
-                                            t-att-data-date="date_info['date_str']"
-                                            t-att-data-shift-id="shift.id"
-                                            t-att-data-registered="'true' if (is_confirmed or is_draft) else 'false'"
-                                            t-att-data-state="reg_state">
-                                            <div class="shift-checkbox">
-                                                <t t-if="is_confirmed">
-                                                    <i class="fa fa-check-circle"></i>
-                                                    <span class="confirmed-label">Đã duyệt</span>
-                                                </t>
-                                                <t t-elif="is_draft">
-                                                    <i class="fa fa-clock-o"></i>
-                                                </t>
-                                                <t t-else="">
-                                                    <i class="fa fa-circle-o"></i>
-                                                </t>
+                                        <th class="shift-header">
+                                            <div class="shift-name" t-esc="shift.name"/>
+                                            <div class="shift-time">
+                                                <t t-esc="shift.get_time_display()"/>
                                             </div>
-                                        </td>
+                                        </th>
                                     </t>
                                 </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Nút lưu -->
-                <div class="shift-registration-actions">
-                    <button type="button" class="btn btn-primary btn-lg" id="btnSaveRegistration">
-                        <i class="fa fa-save"></i> Lưu đăng ký
-                    </button>
-                    <span class="selection-count">Đã chọn: <span id="selectedCount">0</span> ca</span>
-                </div>
-                
-                <!-- Chú thích -->
-                <div class="shift-registration-legend">
-                    <div class="legend-item">
-                        <span class="legend-box confirmed"></span>
-                        <span>Đã duyệt</span>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="dates" t-as="date_info">
+                                    <tr t-attf-class="#{'weekend-row' if date_info['is_weekend'] else ''}">
+                                        <td class="date-cell">
+                                            <div class="date-weekday" t-esc="date_info['weekday']"/>
+                                            <div class="date-display" t-esc="date_info['display']"/>
+                                        </td>
+                                        <t t-foreach="shifts" t-as="shift">
+                                            <t t-set="cell_key" t-value="str(date_info['date_str']) + '_' + str(shift.id)"/>
+                                            <t t-set="reg_state" t-value="registered_dict.get(cell_key, '')"/>
+                                            <t t-set="is_confirmed" t-value="reg_state == 'confirmed'"/>
+                                            <t t-set="is_draft" t-value="reg_state == 'draft'"/>
+                                            <td t-attf-class="shift-cell #{'confirmed' if is_confirmed else 'registered' if is_draft else ''} #{'disabled' if is_confirmed else ''}"
+                                                t-att-data-date="date_info['date_str']"
+                                                t-att-data-shift-id="shift.id"
+                                                t-att-data-registered="'true' if (is_confirmed or is_draft) else 'false'"
+                                                t-att-data-state="reg_state">
+                                                <div class="shift-checkbox">
+                                                    <t t-if="is_confirmed">
+                                                        <i class="fa fa-check-circle"></i>
+                                                        <span class="confirmed-label">Đã duyệt</span>
+                                                    </t>
+                                                    <t t-elif="is_draft">
+                                                        <i class="fa fa-clock-o"></i>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <i class="fa fa-circle-o"></i>
+                                                    </t>
+                                                </div>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="legend-item">
-                        <span class="legend-box registered"></span>
-                        <span>Đã đăng ký (chờ duyệt)</span>
+
+                    <!-- Nút lưu -->
+                    <div class="shift-registration-actions">
+                        <button type="button" class="btn btn-primary btn-lg" id="btnSaveRegistration">
+                            <i class="fa fa-save"></i> Lưu đăng ký
+                        </button>
+                        <span class="selection-count">Đã chọn: <span id="selectedCount">0</span> ca</span>
                     </div>
-                    <div class="legend-item">
-                        <span class="legend-box selected"></span>
-                        <span>Đang chọn</span>
+
+                    <!-- Chú thích -->
+                    <div class="shift-registration-legend">
+                        <div class="legend-item">
+                            <span class="legend-box confirmed"></span>
+                            <span>Đã duyệt</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box registered"></span>
+                            <span>Đã đăng ký (chờ duyệt)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box selected"></span>
+                            <span>Đang chọn</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box"></span>
+                            <span>Chưa chọn</span>
+                        </div>
                     </div>
-                    <div class="legend-item">
-                        <span class="legend-box"></span>
-                        <span>Chưa chọn</span>
+                </div><!-- end panel-dang-ky-ca -->
+
+                <!-- ===== PANEL 2: BẢNG GIỜ CÔNG ===== -->
+                <div id="panel-gio-cong" class="tab-panel">
+                    <div class="attendance-toolbar">
+                        <span class="attendance-filter-label"><i class="fa fa-filter"/> Xem tháng:</span>
+                        <select id="filter-month" class="attendance-select">
+                            <option value="1">Tháng 1</option>
+                            <option value="2">Tháng 2</option>
+                            <option value="3">Tháng 3</option>
+                            <option value="4">Tháng 4</option>
+                            <option value="5">Tháng 5</option>
+                            <option value="6">Tháng 6</option>
+                            <option value="7">Tháng 7</option>
+                            <option value="8">Tháng 8</option>
+                            <option value="9">Tháng 9</option>
+                            <option value="10">Tháng 10</option>
+                            <option value="11">Tháng 11</option>
+                            <option value="12">Tháng 12</option>
+                        </select>
+                        <select id="filter-year" class="attendance-select">
+                            <!-- Year options injected by JS -->
+                        </select>
                     </div>
-                </div>
+
+                    <!-- Bảng giờ công -->
+                    <div class="attendance-table-wrapper" id="attendance-table-wrapper">
+                        <div id="attendance-loading" class="attendance-loading" style="display:none;">
+                            <i class="fa fa-spinner fa-spin fa-2x"/> Đang tải...
+                        </div>
+                        <div id="attendance-empty" class="attendance-empty" style="display:none;">
+                            <i class="fa fa-calendar-times-o fa-3x"/>
+                            <p>Không có dữ liệu chấm công trong tháng này.</p>
+                        </div>
+                        <table class="attendance-table" id="attendance-table" style="display:none;">
+                            <thead>
+                                <tr>
+                                    <th class="att-col-date">Ngày</th>
+                                    <th class="att-col-in">Giờ vào</th>
+                                    <th class="att-col-out">Giờ ra</th>
+                                    <th class="att-col-worked">TG làm việc</th>
+                                    <th class="att-col-status">Đi</th>
+                                    <th class="att-col-status">Về</th>
+                                    <th class="att-col-salary">Lương phiên</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-body">
+                                <!-- Rows injected by JS -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="attendance-footer-row">
+                                    <td colspan="6" class="attendance-footer-label">
+                                        Tổng lương tháng
+                                        <span id="provisional-badge" class="provisional-badge">Tạm tính</span>
+                                    </td>
+                                    <td class="attendance-footer-total" id="attendance-total">–</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div><!-- end panel-gio-cong -->
+
             </div>
-            
-            <!-- JavaScript -->
+
+            <!-- ===== JAVASCRIPT ===== -->
             <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function() {
+
+                    // ============================================================
+                    // TAB SWITCHING
+                    // ============================================================
+                    let attendanceLoaded = false;
+
+                    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+                        btn.addEventListener('click', function() {
+                            const tabName = this.dataset.tab;
+                            switchTab(tabName);
+                        });
+                    });
+
+                    function switchTab(tabName) {
+                        // Toggle buttons
+                        document.querySelectorAll('.tab-btn').forEach(function(b) {
+                            b.classList.toggle('active', b.dataset.tab === tabName);
+                        });
+                        // Toggle panels
+                        document.querySelectorAll('.tab-panel').forEach(function(p) {
+                            p.classList.toggle('active', p.id === 'panel-' + tabName);
+                        });
+                        // Lazy load attendance data on first open
+                        if (tabName === 'gio-cong' &amp;&amp; !attendanceLoaded) {
+                            loadAttendanceData(currentMonth, currentYear);
+                            attendanceLoaded = true;
+                        }
+                    }
+
+                    // ============================================================
+                    // ATTENDANCE DATA — FILTER INIT
+                    // ============================================================
+                    const now = new Date();
+                    let currentMonth = now.getMonth() + 1;
+                    let currentYear = now.getFullYear();
+
+                    // Populate year dropdown (current + 2 previous years)
+                    const yearSelect = document.getElementById('filter-year');
+                    for (let y = currentYear; y >= currentYear - 2; y--) {
+                        const opt = document.createElement('option');
+                        opt.value = y;
+                        opt.textContent = 'Năm ' + y;
+                        yearSelect.appendChild(opt);
+                    }
+
+                    // Set default month/year selects
+                    document.getElementById('filter-month').value = currentMonth;
+                    yearSelect.value = currentYear;
+
+                    // Filter change listeners (US2)
+                    document.getElementById('filter-month').addEventListener('change', function() {
+                        currentMonth = parseInt(this.value);
+                        attendanceLoaded = false;
+                        loadAttendanceData(currentMonth, currentYear);
+                        attendanceLoaded = true;
+                    });
+                    yearSelect.addEventListener('change', function() {
+                        currentYear = parseInt(this.value);
+                        attendanceLoaded = false;
+                        loadAttendanceData(currentMonth, currentYear);
+                        attendanceLoaded = true;
+                    });
+
+                    // ============================================================
+                    // LOAD ATTENDANCE DATA (lazy fetch)
+                    // ============================================================
+                    function loadAttendanceData(month, year) {
+                        document.getElementById('attendance-loading').style.display = 'flex';
+                        document.getElementById('attendance-empty').style.display = 'none';
+                        document.getElementById('attendance-table').style.display = 'none';
+
+                        fetch('/dang-ky-ca/gio-cong', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {month: month, year: year}
+                            })
+                        })
+                        .then(function(response) { return response.json(); })
+                        .then(function(data) {
+                            document.getElementById('attendance-loading').style.display = 'none';
+                            if (data.result &amp;&amp; data.result.success) {
+                                renderAttendanceTable(data.result);
+                            } else {
+                                const msg = (data.result &amp;&amp; data.result.message) || 'Lỗi không xác định';
+                                showAttendanceError(msg);
+                            }
+                        })
+                        .catch(function(err) {
+                            document.getElementById('attendance-loading').style.display = 'none';
+                            showAttendanceError('Lỗi kết nối: ' + err);
+                        });
+                    }
+
+                    // ============================================================
+                    // RENDER ATTENDANCE TABLE
+                    // ============================================================
+                    function renderAttendanceTable(data) {
+                        const tbody = document.getElementById('attendance-body');
+                        tbody.innerHTML = '';
+
+                        if (!data.records || data.records.length === 0) {
+                            document.getElementById('attendance-empty').style.display = 'block';
+                            document.getElementById('attendance-table').style.display = 'none';
+                            document.getElementById('attendance-total').textContent = '–';
+                            return;
+                        }
+
+                        data.records.forEach(function(rec) {
+                            const tr = document.createElement('tr');
+
+                            const checkOutDisplay = rec.check_out || '<span class="working-now">Đang làm</span>';
+
+                            // Build cells using textContent to prevent XSS
+                            const cells = [
+                                {text: rec.date, html: false},
+                                {text: rec.check_in, html: false},
+                                {text: rec.check_out, html: true, fallback: '<span class="working-now">Đang làm</span>'},
+                                {text: rec.worked_hours_display, html: false},
+                                {text: rec.check_in_status, html: false, cls: getStatusClass(rec.check_in_status)},
+                                {text: rec.check_out_status, html: false, cls: getStatusClass(rec.check_out_status)},
+                                {text: rec.salary_display + ' đ', html: false, cls: 'att-salary-cell'},
+                            ];
+
+                            cells.forEach(function(cell) {
+                                const td = document.createElement('td');
+                                if (cell.cls) td.className = cell.cls;
+                                if (cell.html &amp;&amp; !cell.text) {
+                                    td.innerHTML = cell.fallback || '–';
+                                } else {
+                                    td.textContent = cell.text || '–';
+                                }
+                                tr.appendChild(td);
+                            });
+
+                            tbody.appendChild(tr);
+                        });
+
+                        // Update footer
+                        const totalEl = document.getElementById('attendance-total');
+                        totalEl.textContent = data.total_salary_display + ' đ';
+
+                        const badge = document.getElementById('provisional-badge');
+                        badge.style.display = data.is_provisional ? 'inline-block' : 'none';
+
+                        document.getElementById('attendance-table').style.display = 'table';
+                    }
+
+                    function getStatusClass(status) {
+                        if (!status || status === '–') return 'att-status-none';
+                        if (status.startsWith('Trễ')) return 'att-status-late';
+                        if (status.startsWith('Sớm')) return 'att-status-early';
+                        return 'att-status-ok';
+                    }
+
+                    function showAttendanceError(msg) {
+                        const empty = document.getElementById('attendance-empty');
+                        empty.querySelector('p').textContent = msg;
+                        empty.style.display = 'block';
+                    }
+
+                    // ============================================================
+                    // TAB 1: ĐĂNG KÝ CA (giữ nguyên logic cũ)
+                    // ============================================================
                     let newSelections = [];
-                    
-                    // Click vào ô ca
-                    document.querySelectorAll('.shift-cell').forEach(cell => {
+
+                    document.querySelectorAll('#panel-dang-ky-ca .shift-cell').forEach(cell => {
                         cell.addEventListener('click', function() {
                             const date = this.dataset.date;
                             const shiftId = this.dataset.shiftId;
                             const isRegistered = this.dataset.registered === 'true';
                             const state = this.dataset.state;
-                            
-                            // Không cho click vào ô đã duyệt
+
                             if (state === 'confirmed') {
                                 return;
                             }
-                            
+
                             if (isRegistered &amp;&amp; state === 'draft') {
-                                // Nếu đã đăng ký (draft), hỏi có muốn hủy không
                                 if (confirm('Bạn muốn hủy đăng ký ca này?')) {
                                     removeRegistration(date, shiftId, this);
                                 }
                             } else if (!isRegistered) {
-                                // Nếu chưa đăng ký, toggle selection
-                                const key = date + '_' + shiftId;
                                 const index = newSelections.findIndex(s => s.date === date &amp;&amp; s.shift_id === shiftId);
-                                
+
                                 if (index > -1) {
-                                    // Đã chọn, bỏ chọn
                                     newSelections.splice(index, 1);
                                     this.classList.remove('selected');
                                 } else {
-                                    // Chưa chọn, thêm vào
                                     newSelections.push({date: date, shift_id: shiftId});
                                     this.classList.add('selected');
                                 }
-                                
+
                                 updateSelectionCount();
                             }
                         });
                     });
-                    
-                    function updateIcon(cell) {
-                        const icon = cell.querySelector('i');
-                        if (cell.classList.contains('selected')) {
-                            icon.className = 'fa fa-check-square';
-                        } else if (cell.dataset.registered === 'true') {
-                            icon.className = 'fa fa-check-circle';
-                        } else {
-                            icon.className = 'fa fa-circle-o';
-                        }
-                    }
-                    
-                    function updateCount() {
+
+                    function updateSelectionCount() {
                         document.getElementById('selectedCount').textContent = newSelections.length;
                     }
-                    
-                    // Lưu đăng ký
+
                     document.getElementById('btnSaveRegistration').addEventListener('click', function() {
                         if (newSelections.length === 0) {
                             alert('Vui lòng chọn ít nhất một ca!');
                             return;
                         }
-                        
+
                         this.disabled = true;
                         this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...';
-                        
+
                         fetch('/dang-ky-ca/save', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
+                            headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 jsonrpc: '2.0',
                                 method: 'call',
@@ -197,14 +418,11 @@
                             this.innerHTML = '<i class="fa fa-save"></i> Lưu đăng ký';
                         });
                     });
-                    
-                    // Hủy đăng ký
+
                     function removeRegistration(date, shiftId, cell) {
                         fetch('/dang-ky-ca/remove', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
+                            headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 jsonrpc: '2.0',
                                 method: 'call',
@@ -222,7 +440,8 @@
                             }
                         });
                     }
-                });
+
+                }); // end DOMContentLoaded
             </script>
             </body>
         </t>

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import http
+from odoo import http, fields
 from odoo.http import request
 from datetime import datetime, timedelta
+import calendar
 import json
 
 
@@ -134,6 +135,74 @@ class TrcfShiftRegistrationController(http.Controller):
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
+    @http.route('/dang-ky-ca/gio-cong', type='json', auth='user', methods=['POST'])
+    def get_attendance_data(self, month=None, year=None, **kwargs):
+        """Trả về dữ liệu giờ công tháng của nhân viên đang đăng nhập.
+
+        Args:
+            month (int, optional): Tháng cần xem (1-12). Mặc định: tháng hiện tại.
+            year (int, optional):  Năm cần xem. Mặc định: năm hiện tại.
+
+        Returns:
+            dict: {success, month, year, records[], total_salary_display, is_provisional}
+        """
+        employee = request.env.user.employee_id
+        if not employee:
+            return {'success': False, 'message': 'Không tìm thấy thông tin nhân viên'}
+
+        today = datetime.now()
+        month = int(month) if month else today.month
+        year = int(year) if year else today.year
+
+        # Tính khoảng thời gian đầu/cuối tháng
+        first_day = datetime(year, month, 1)
+        last_day_num = calendar.monthrange(year, month)[1]
+        next_month_first = datetime(year, month, last_day_num) + timedelta(days=1)
+
+        # Query với domain chặt chẽ — không dùng sudo() để enforce security
+        attendances = request.env['hr.attendance'].search([
+            ('employee_id', '=', employee.id),
+            ('check_in', '>=', first_day),
+            ('check_in', '<', next_month_first),
+        ], order='check_in asc')
+
+        records = []
+        total_salary = 0.0
+        for att in attendances:
+            # Chuyển sang giờ địa phương
+            local_in = fields.Datetime.context_timestamp(att, att.check_in)
+            local_out = (
+                fields.Datetime.context_timestamp(att, att.check_out)
+                if att.check_out else None
+            )
+
+            worked = att.worked_hours or 0.0
+            h = int(worked)
+            m = int(round((worked - h) * 60))
+            worked_display = f'{h}h{m:02d}m' if worked else '–'
+
+            salary = att.trcf_hourly_salary_sum or 0.0
+            total_salary += salary
+
+            records.append({
+                'date': local_in.strftime('%d/%m/%Y'),
+                'check_in': local_in.strftime('%H:%M'),
+                'check_out': local_out.strftime('%H:%M') if local_out else '',
+                'worked_hours_display': worked_display,
+                'check_in_status': att.check_in_status or '–',
+                'check_out_status': att.check_out_status or '–',
+                'salary_display': '{:,.0f}'.format(salary).replace(',', '.'),
+            })
+
+        return {
+            'success': True,
+            'month': month,
+            'year': year,
+            'records': records,
+            'total_salary_display': '{:,.0f}'.format(total_salary).replace(',', '.'),
+            'is_provisional': True,
+        }
+
     def _get_weekday_name(self, weekday):
         """Trả về tên thứ trong tuần"""
         weekdays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']

@@ -11,7 +11,7 @@
         <!-- Root menu của app -->
         <menuitem id="trcf_ops_audit_root_menu"
                   name="TRCF Ops Audit"
-                  sequence="55"/>
+                  sequence="28"/>
 
         <!-- Menu: Dashboard Vận Hành -->
         <menuitem id="trcf_ops_audit_dashboard_menu"

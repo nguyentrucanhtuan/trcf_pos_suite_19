@@ -263,3 +263,235 @@
         gap: 15px;
     }
 }
+
+/* ===== TAB NAVIGATION ===== */
+.tab-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 24px;
+}
+
+.tab-btn {
+    padding: 12px 28px;
+    border: none;
+    background: none;
+    font-size: 15px;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.tab-btn i {
+    margin-right: 6px;
+}
+
+.tab-btn:hover {
+    color: #2c3e50;
+    background: #f8f9fa;
+}
+
+.tab-btn.active {
+    color: #1976d2;
+    border-bottom-color: #1976d2;
+    font-weight: 600;
+}
+
+/* ===== TAB PANELS ===== */
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.tab-subtitle {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+/* ===== ATTENDANCE TOOLBAR ===== */
+.attendance-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 14px 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.attendance-filter-label {
+    font-weight: 600;
+    color: #444;
+    font-size: 14px;
+}
+
+.attendance-select {
+    padding: 7px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    color: #333;
+}
+
+.attendance-select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+/* ===== ATTENDANCE TABLE WRAPPER ===== */
+.attendance-table-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    overflow-x: auto;
+}
+
+/* ===== ATTENDANCE LOADING / EMPTY ===== */
+.attendance-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 16px;
+}
+
+.attendance-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.attendance-empty i {
+    display: block;
+    margin-bottom: 16px;
+    color: #ccc;
+}
+
+.attendance-empty p {
+    font-size: 15px;
+    margin: 0;
+}
+
+/* ===== ATTENDANCE TABLE ===== */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 14px;
+}
+
+.attendance-table th {
+    background: #2c3e50;
+    color: white;
+    padding: 13px 14px;
+    text-align: center;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.attendance-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.attendance-table tbody tr:hover {
+    background: #f5f9ff;
+}
+
+.att-col-date { min-width: 100px; }
+.att-col-in,
+.att-col-out  { min-width: 80px; }
+.att-col-worked { min-width: 110px; }
+.att-col-status { min-width: 90px; }
+.att-col-salary { min-width: 120px; }
+
+/* Status color coding */
+.att-status-late  { color: #c62828; font-weight: 600; }
+.att-status-early { color: #e65100; font-weight: 600; }
+.att-status-ok    { color: #2e7d32; font-weight: 600; }
+.att-status-none  { color: #9e9e9e; }
+
+.att-salary-cell {
+    font-weight: 600;
+    color: #1565c0;
+}
+
+.working-now {
+    color: #f57c00;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* ===== ATTENDANCE FOOTER ===== */
+.attendance-footer-row {
+    background: #e8eaf6;
+    font-weight: 700;
+}
+
+.attendance-footer-label {
+    text-align: right;
+    padding: 14px 20px;
+    color: #3949ab;
+    font-size: 15px;
+}
+
+.attendance-footer-total {
+    text-align: center;
+    color: #1a237e;
+    font-size: 15px;
+    padding: 14px;
+}
+
+/* Provisional badge */
+.provisional-badge {
+    display: inline-block;
+    background: #ff8f00;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+/* ===== RESPONSIVE — ATTENDANCE ===== */
+@media (max-width: 768px) {
+    .tab-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .attendance-toolbar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .attendance-table {
+        font-size: 12px;
+    }
+
+    .attendance-table th,
+    .attendance-table td {
+        padding: 9px 8px;
+    }
+
+    .attendance-footer-label {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+}
