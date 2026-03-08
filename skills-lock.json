@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "content-strategy": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "c07914262b7fb32e0a379fd5b8b2d0dc92078c543af2d0914006f2e1d61bc1b4"
+    },
+    "odoo-19": {
+      "source": "unclecatvn/agent-skills",
+      "sourceType": "github",
+      "computedHash": "08c3ff0f0dcd92101ec32b24ac616de99a98fe525a1f764012f3f1895a2d4660"
+    },
+    "odoo-dev": {
+      "source": "grupoyacck/gy-agent-skills",
+      "sourceType": "github",
+      "computedHash": "cd7862c5e12a4f626cc524f2250428e3e5a97d41f5e8ea07fdd66aa891e02fe8"
+    },
+    "social-content": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "85ffbc05cf88939ba3ff643a315928185af16181470349dfbaad2880047c9900"
+    }
+  }
+}

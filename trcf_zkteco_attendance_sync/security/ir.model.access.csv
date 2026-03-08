@@ -14,3 +14,5 @@ access_trcf_shift_task_template_hr_officer,trcf.shift.task.template.hr.officer,m
 access_trcf_shift_task_user,trcf.shift.task.user,model_trcf_shift_task,base.group_user,1,1,0,0
 access_trcf_shift_task_hr_officer,trcf.shift.task.hr.officer,model_trcf_shift_task,hr.group_hr_user,1,1,1,1
 access_trcf_generate_week_tasks_wizard,trcf.generate.week.tasks.wizard,model_trcf_generate_week_tasks_wizard,hr.group_hr_user,1,1,1,1
+access_trcf_geo_location_user,trcf.geo.location.user,model_trcf_geo_location,base.group_user,1,0,0,0
+access_trcf_geo_location_hr_manager,trcf.geo.location.hr.manager,model_trcf_geo_location,hr.group_hr_manager,1,1,1,1

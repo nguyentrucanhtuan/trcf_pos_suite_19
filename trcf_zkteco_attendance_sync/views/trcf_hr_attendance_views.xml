@@ -9,20 +9,32 @@
         <field name="arch" type="xml">
             <!-- Thêm các cột mới -->
             <xpath expr="//field[@name='check_out']" position="after">
+                <field name="attendance_source" optional="show"
+                       decoration-info="attendance_source == 'geo'"
+                       decoration-muted="attendance_source == 'manual'"/>
+                <field name="geo_location_id" optional="show" string="C&#417; s&#7903;"/>
                 <field name="shift_name" optional="show"/>
-                <field name="shift_time_display" string="Thời gian đăng ký" optional="show"/>
+                <field name="shift_time_display" string="Th&#7901;i gian &#273;&#259;ng k&#253;" optional="show"/>
             </xpath>
             
             <xpath expr="//field[@name='worked_hours']" position="after">
                 <field name="check_in_status" optional="show" decoration-danger="is_late == True" decoration-success="is_late == False"/>
-                <field name="check_out_status" optional="show" decoration-danger="early_leave_minutes > 0" decoration-success="is_overtime == True"/>
+                <field name="check_out_status" optional="show" decoration-danger="early_leave_minutes &gt; 0" decoration-success="is_overtime == True"/>
                 <field name="is_late" column_invisible="1"/>
                 <field name="is_overtime" column_invisible="1"/>
                 <field name="early_leave_minutes" column_invisible="1"/>
-                <field name="late_minutes" optional="hide" decoration-danger="late_minutes > 0"/>
-                <field name="overtime_minutes" optional="hide" decoration-success="overtime_minutes > 0"/>
+                <field name="late_minutes" optional="hide" decoration-danger="late_minutes &gt; 0"/>
+                <field name="overtime_minutes" optional="hide" decoration-success="overtime_minutes &gt; 0"/>
                 <field name="trcf_hourly_salary_display" optional="show"/>
-                <field name="trcf_hourly_salary_sum" sum="Tổng tiền lương"/>
+                <field name="trcf_hourly_salary_sum" sum="T&#7893;ng ti&#7873;n l&#432;&#417;ng"/>
+                <!-- Geo suspicious badges -->
+                <field name="geo_suspicious" optional="show" string="GPS ?" widget="boolean"
+                       decoration-danger="geo_suspicious == True"
+                       decoration-muted="geo_suspicious == False"/>
+                <field name="ip_suspicious" optional="show" string="IP ?" widget="boolean"
+                       decoration-danger="ip_suspicious == True"
+                       decoration-muted="ip_suspicious == False"/>
+                <field name="request_ip" optional="hide" string="IP Check-in"/>
             </xpath>
         </field>
     </record>
@@ -34,14 +46,14 @@
         <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='worked_hours']" position="after">
-                <group string="Thông tin ca làm việc" col="4">
+                <group string="Th&#244;ng tin ca l&#224;m vi&#7879;c" col="4">
                     <field name="shift_registration_id" readonly="1"/>
                     <field name="shift_name" readonly="1"/>
                     <field name="shift_start_time" widget="float_time" readonly="1"/>
                     <field name="shift_end_time" widget="float_time" readonly="1"/>
                 </group>
                 
-                <group string="Phân tích chấm công" col="4">
+                <group string="Ph&#226;n t&#237;ch ch&#7845;m c&#244;ng" col="4">
                     <field name="late_minutes" readonly="1"/>
                     <field name="early_leave_minutes" readonly="1"/>
                     <field name="overtime_minutes" readonly="1"/>
@@ -49,10 +61,51 @@
                     <field name="is_overtime" invisible="1"/>
                 </group>
                 
-                <group string="Lương" col="2">
+                <group string="L&#432;&#417;ng" col="2">
                     <field name="trcf_hourly_salary_display" readonly="1"/>
                     <field name="trcf_hourly_salary_sum" readonly="1"/>
                 </group>
+
+                <group string="Geo Attendance" col="2"
+                      invisible="attendance_source != 'geo'">
+                    <field name="attendance_source" readonly="1"/>
+                    <field name="geo_location_id" readonly="1"/>
+                    <field name="geo_check_in_lat" readonly="1" string="Lat v&#224;o"/>
+                    <field name="geo_check_in_lon" readonly="1" string="Lon v&#224;o"/>
+                    <field name="geo_check_in_accuracy" readonly="1" string="Accuracy v&#224;o (m)"/>
+                    <field name="geo_check_out_lat" readonly="1" string="Lat ra"/>
+                    <field name="geo_check_out_lon" readonly="1" string="Lon ra"/>
+                    <field name="geo_check_out_accuracy" readonly="1" string="Accuracy ra (m)"/>
+                    <field name="request_ip" readonly="1"/>
+                    <field name="geo_suspicious" readonly="1"
+                           decoration-danger="geo_suspicious == True"/>
+                    <field name="geo_suspicious_reason" readonly="1"
+                           invisible="not geo_suspicious"/>
+                    <field name="ip_suspicious" readonly="1"
+                           decoration-danger="ip_suspicious == True"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search View: filter by suspicious flags and source -->
+    <record id="view_attendance_search_geo" model="ir.ui.view">
+        <field name="name">hr.attendance.search.geo</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="Đáng ngờ GPS" name="geo_suspicious"
+                        domain="[('geo_suspicious', '=', True)]"/>
+                <filter string="Đáng ngờ IP" name="ip_suspicious"
+                        domain="[('ip_suspicious', '=', True)]"/>
+                <filter string="Mọi nghi ngờ" name="any_suspicious"
+                        domain="['|', ('geo_suspicious', '=', True), ('ip_suspicious', '=', True)]"/>
+                <separator/>
+                <filter string="Geo (Web)" name="source_geo"
+                        domain="[('attendance_source', '=', 'geo')]"/>
+                <filter string="ZKTeco" name="source_zkteco"
+                        domain="[('attendance_source', '=', 'zkteco')]"/>
             </xpath>
         </field>
     </record>
@@ -80,6 +133,29 @@
               parent="trcf_shift_management_menu_root"
               action="trcf_attendance_payroll_action"
               sequence="50"/>
+
+    <!-- T038: Action "Bản ghi đáng ngờ" — shortcut cho HR Manager -->
+    <record id="action_attendance_suspicious" model="ir.actions.act_window">
+        <field name="name">Điều tra bản ghi đáng ngờ</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">['|', ('geo_suspicious', '=', True), ('ip_suspicious', '=', True)]</field>
+        <field name="context">{'search_default_any_suspicious': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Không có bản ghi đáng ngờ nào &#9786;
+            </p>
+            <p>Các bản ghi có cờ GPS hoặc IP bất thường sẽ xuất hiện ở đây.</p>
+        </field>
+    </record>
+
+    <!-- Menu: Điều tra đáng ngờ -->
+    <menuitem id="menu_attendance_suspicious"
+              name="Điều tra đáng ngờ"
+              parent="trcf_shift_management_menu_root"
+              action="action_attendance_suspicious"
+              sequence="55"
+              groups="hr.group_hr_manager"/>
 
     <!-- Server Action: Liên kết ca làm việc -->
     <record id="action_attendance_recompute_shift" model="ir.actions.server">

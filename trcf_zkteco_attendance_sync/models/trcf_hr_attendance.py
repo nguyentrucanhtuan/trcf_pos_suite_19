@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.models import Index
 
 
 class TrcfHrAttendance(models.Model):
@@ -124,6 +125,84 @@ class TrcfHrAttendance(models.Model):
         default=0.0,
         compute='_compute_hourly_salary_sum',
         store=True
+    )
+
+    # ===== GEO ATTENDANCE FIELDS =====
+    attendance_source = fields.Selection(
+        selection=[
+            ('zkteco', 'ZKTeco'),
+            ('geo', 'Geolocation (Web)'),
+            ('manual', 'Thủ công'),
+        ],
+        string='Nguồn chấm công',
+        default='zkteco',
+        index=True,
+        help='Nguồn gốc của bản ghi chấm công'
+    )
+
+    geo_location_id = fields.Many2one(
+        'trcf.geo.location',
+        string='Cơ sở check-in',
+        ondelete='set null',
+        help='Cơ sở gần nhất khớp GPS tại thời điểm check-in'
+    )
+
+    geo_check_in_lat = fields.Float(
+        string='Latitude Check-in',
+        digits=(10, 7),
+        help='Vĩ độ GPS tại thời điểm check-in'
+    )
+
+    geo_check_in_lon = fields.Float(
+        string='Longitude Check-in',
+        digits=(10, 7),
+        help='Kinh độ GPS tại thời điểm check-in'
+    )
+
+    geo_check_in_accuracy = fields.Float(
+        string='GPS Accuracy Check-in (m)',
+        help='Độ chính xác GPS lúc check-in (mét). < 5m có thể là giả mạo.'
+    )
+
+    geo_check_out_lat = fields.Float(
+        string='Latitude Check-out',
+        digits=(10, 7),
+        help='Vĩ độ GPS tại thời điểm check-out'
+    )
+
+    geo_check_out_lon = fields.Float(
+        string='Longitude Check-out',
+        digits=(10, 7),
+        help='Kinh độ GPS tại thời điểm check-out'
+    )
+
+    geo_check_out_accuracy = fields.Float(
+        string='GPS Accuracy Check-out (m)',
+        help='Độ chính xác GPS lúc check-out (mét)'
+    )
+
+    geo_suspicious = fields.Boolean(
+        string='Nghi ngờ GPS?',
+        default=False,
+        index=True,
+        help='True nếu phát hiện dấu hiệu bất thường: accuracy < 5m hoặc velocity > 500km/h'
+    )
+
+    geo_suspicious_reason = fields.Char(
+        string='Lý do nghi ngờ GPS',
+        help='Chi tiết lý do flag: low_accuracy, impossible_velocity hoặc kết hợp'
+    )
+
+    request_ip = fields.Char(
+        string='IP Check-in/out',
+        help='Public IP của thiết bị tại thời điểm check-in/check-out (do server đọc)'
+    )
+
+    ip_suspicious = fields.Boolean(
+        string='IP đáng ngờ?',
+        default=False,
+        index=True,
+        help='True nếu IP không thuộc danh sách allowed_ips của cơ sở (chế độ cảnh báo)'
     )
 
     # ===== COMPUTE METHODS =====

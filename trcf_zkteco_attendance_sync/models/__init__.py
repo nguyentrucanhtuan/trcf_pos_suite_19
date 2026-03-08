@@ -6,3 +6,4 @@ from . import trcf_shift_registration
 from . import trcf_shift_task_template
 from . import trcf_shift_task
 from . import res_config_settings
+from . import trcf_geo_location

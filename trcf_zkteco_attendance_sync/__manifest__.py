@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'TRCF ZKTeco Attendance Sync',
-    'version': '1.5.0',
+    'version': '1.6.0',
     'category': 'Human Resources/Attendances',
-    'summary': 'Đồng bộ dữ liệu chấm công từ thiết bị ZKTeco và quản lý ca làm việc',
+    'summary': 'Đồng bộ dữ liệu chấm công từ thiết bị ZKTeco và chấm công Geolocation qua trình duyệt',
     'description': """
         Module đồng bộ dữ liệu chấm công từ thiết bị ZKTeco
         =====================================================
@@ -44,6 +44,7 @@
         'views/trcf_shift_task_template_views.xml',
         'views/trcf_shift_task_views.xml',
         'views/trcf_task_template.xml',
+        'views/trcf_geo_location_views.xml',
         'wizard/trcf_generate_week_tasks_wizard_views.xml',
         'views/res_config_settings_views.xml',
         'data/trcf_shift_task_cron.xml',
@@ -51,9 +52,12 @@
     'assets': {
         'web.assets_backend': [
             'trcf_zkteco_attendance_sync/static/src/js/shift_schedule_grid_action.js',
+            'trcf_zkteco_attendance_sync/static/src/js/geo_map_admin.js',
         ],
         'web.assets_frontend': [
             'trcf_zkteco_attendance_sync/static/src/css/shift_registration.css',
+            'trcf_zkteco_attendance_sync/static/src/css/geo_attendance.css',
+            'trcf_zkteco_attendance_sync/static/src/js/geo_attendance.js',
         ],
     },
     'demo': [],

@@ -27,6 +27,9 @@
                     <button class="tab-btn" data-tab="gio-cong" id="btn-tab-gio-cong">
                         <i class="fa fa-clock-o"/> Bảng giờ công
                     </button>
+                    <button class="tab-btn" data-tab="cham-cong" id="btn-tab-cham-cong">
+                        <i class="fa fa-map-marker"/> Chấm Công
+                    </button>
                 </div>
 
                 <!-- ===== PANEL 1: ĐĂNG KÝ CA (giữ nguyên nội dung cũ) ===== -->
@@ -157,6 +160,7 @@
                                     <th class="att-col-status">Đi</th>
                                     <th class="att-col-status">Về</th>
                                     <th class="att-col-salary">Lương phiên</th>
+                                    <th class="att-col-source" title="Nguồn chấm công"><i class="fa fa-map-marker"/></th>
                                 </tr>
                             </thead>
                             <tbody id="attendance-body">
@@ -164,7 +168,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="attendance-footer-row">
-                                    <td colspan="6" class="attendance-footer-label">
+                                    <td colspan="7" class="attendance-footer-label">
                                         Tổng lương tháng
                                         <span id="provisional-badge" class="provisional-badge">Tạm tính</span>
                                     </td>
@@ -175,7 +179,81 @@
                     </div>
                 </div><!-- end panel-gio-cong -->
 
-            </div>
+                <!-- ===== PANEL 3: CHẤM CÔNG GEOLOCATION ===== -->
+                <div id="panel-cham-cong" class="tab-panel">
+                    <!-- Toast container (floating notifications) -->
+                    <div id="geo-toast-container" style="position:fixed;top:16px;right:16px;z-index:9999;min-width:260px;"/>
+
+                    <!-- GPS unsupported message -->
+                    <div id="geo-unsupported-msg" class="geo-warning-accuracy" style="display:none;text-align:center;padding:20px;">
+                        <i class="fa fa-exclamation-triangle"/> Trình duyệt của bạn không hỗ trợ GPS.
+                        Vui lòng dùng trình duyệt hiện đại (Chrome / Safari / Firefox).
+                    </div>
+                    <!-- GPS error/denied message -->
+                    <div id="geo-error-msg" class="geo-warning-accuracy" style="display:none;text-align:center;padding:20px;"/>
+
+                    <!-- ===== IDLE PANEL ===== -->
+                    <div id="geo-idle-panel" class="geo-status-panel">
+                        <!-- GPS Status Badge -->
+                        <div id="geo-status-badge" class="geo-status-badge loading">
+                            <span class="geo-loading-spinner"/>Đang xác định vị trí...
+                        </div>
+                        <div id="geo-distance-text" class="geo-distance-display"/>
+                        <div id="geo-location-name" class="geo-location-name"/>
+
+                        <!-- Accuracy warning -->
+                        <div id="geo-accuracy-warning" class="geo-warning-accuracy" style="display:none;">
+                            <i class="fa fa-exclamation-triangle"/> Độ chính xác GPS rất cao (&lt; 5m).
+                            Có thể dùng GPS giả lập. Hệ thống sẽ ghi nhận cảnh báo.
+                        </div>
+
+                        <!-- Check-in button -->
+                        <div style="margin-top:20px;">
+                            <button id="geo-checkin-btn" class="geo-action-btn geo-checkin-btn"
+                                    onclick="GeoAttendance.doCheckIn()" disabled="disabled">
+                                <i class="fa fa-sign-in"/> Check-In
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== CHECKED IN PANEL ===== -->
+                    <div id="geo-checked-in-panel" class="geo-status-panel" style="display:none;">
+                        <div class="geo-status-badge valid">
+                            <i class="fa fa-check-circle"/> Đang trong ca
+                        </div>
+                        <div id="geo-distance-text-out" class="geo-distance-display"/>
+                        <div id="geo-location-name-out" class="geo-location-name"/>
+
+                        <div class="geo-session-info">
+                            <div class="session-label">Giờ vào</div>
+                            <div class="session-value" id="geo-checkin-time-display">–</div>
+                        </div>
+
+                        <!-- Check-out button -->
+                        <div style="margin-top:20px;">
+                            <button id="geo-checkout-btn" class="geo-action-btn geo-checkout-btn"
+                                    onclick="GeoAttendance.doCheckOut()" disabled="disabled">
+                                <i class="fa fa-sign-out"/> Check-Out
+                            </button>
+                        </div>
+                        <div class="geo-distance-display" id="geo-checkout-gps-warning"
+                             style="display:none;margin-top:8px;color:#dc3545;">
+                            <i class="fa fa-exclamation-triangle"/> B&#x1EA1;n &#x111;ang n&#x1EB1;m ngo&#xE0;i v&#xF9;ng cho ph&#xE9;p. Check-out s&#x1EBD; b&#x1ECB; t&#x1EEB; ch&#x1ED1;i.
+                        </div>
+                    </div>
+
+                    <!-- ===== DONE PANEL ===== -->
+                    <div id="geo-done-panel" class="geo-done-panel" style="display:none;">
+                        <div class="geo-done-icon"><i class="fa fa-check-circle"/></div>
+                        <div class="geo-done-summary">
+                            <div>Tổng giờ làm hôm nay:</div>
+                            <div class="summary-hours" id="geo-done-hours">–</div>
+                            <div style="margin-top:8px;">Lương tạm tính: <strong id="geo-done-salary">–</strong></div>
+                        </div>
+                    </div>
+                </div><!-- end panel-cham-cong -->
+
+            </div><!-- end shift-registration-container -->
 
             <!-- ===== JAVASCRIPT ===== -->
             <script type="text/javascript">
@@ -185,6 +263,15 @@
                     // TAB SWITCHING
                     // ============================================================
                     let attendanceLoaded = false;
+                    let geoChamCongInitialized = false;
+
+                    // GEO DATA from server (injected by controller)
+                    var geoLocationsData = <t t-out="geo_locations_json or '[]'"/>;
+                    var currentAttendanceData = {
+                        status: '<t t-esc="current_attendance.get('status', 'idle') if current_attendance else 'idle'"/>',
+                        check_in_display: '<t t-esc="current_attendance.get('check_in_display', '') if current_attendance else ''"/>',
+                        location_name: '<t t-esc="current_attendance.get('location_name', '') if current_attendance else ''"/>',
+                    };
 
                     document.querySelectorAll('.tab-btn').forEach(function(btn) {
                         btn.addEventListener('click', function() {
@@ -206,6 +293,13 @@
                         if (tabName === 'gio-cong' &amp;&amp; !attendanceLoaded) {
                             loadAttendanceData(currentMonth, currentYear);
                             attendanceLoaded = true;
+                        }
+                        // Initialize Geo Attendance on first open
+                        if (tabName === 'cham-cong' &amp;&amp; !geoChamCongInitialized) {
+                            if (typeof GeoAttendance !== 'undefined') {
+                                GeoAttendance.init(geoLocationsData, currentAttendanceData.status);
+                                geoChamCongInitialized = true;
+                            }
                         }
                     }
 
@@ -304,6 +398,7 @@
                                 {text: rec.check_in_status, html: false, cls: getStatusClass(rec.check_in_status)},
                                 {text: rec.check_out_status, html: false, cls: getStatusClass(rec.check_out_status)},
                                 {text: rec.salary_display + ' đ', html: false, cls: 'att-salary-cell'},
+                                {text: null, html: true, fallback: getSourceIcon(rec.attendance_source), cls: 'att-source-cell'},
                             ];
 
                             cells.forEach(function(cell) {
@@ -335,6 +430,13 @@
                         if (status.startsWith('Trễ')) return 'att-status-late';
                         if (status.startsWith('Sớm')) return 'att-status-early';
                         return 'att-status-ok';
+                    }
+
+                    function getSourceIcon(source) {
+                        if (source === 'geo') {
+                            return '<i class="fa fa-map-marker" style="color:#007bff;" title="Geolocation (Web)"></i>';
+                        }
+                        return '<i class="fa fa-barcode" style="color:#adb5bd;" title="ZKTeco"></i>';
                     }
 
                     function showAttendanceError(msg) {

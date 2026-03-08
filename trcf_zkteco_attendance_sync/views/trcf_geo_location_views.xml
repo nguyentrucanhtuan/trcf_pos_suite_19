@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================================
+             TRCF Geo Location — List View
+             ============================================================ -->
+        <record id="trcf_geo_location_list_view" model="ir.ui.view">
+            <field name="name">trcf.geo.location.list</field>
+            <field name="model">trcf.geo.location</field>
+            <field name="arch" type="xml">
+                <list string="Vị trí Geofence">
+                    <field name="name"/>
+                    <field name="latitude" string="Vĩ độ" digits="4"/>
+                    <field name="longitude" string="Kinh độ" digits="4"/>
+                    <field name="radius" string="Bán kính (m)"/>
+                    <field name="ip_check_mode" string="Chế độ IP"/>
+                    <field name="active" string="Đang hoạt động"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             TRCF Geo Location — Form View (with Leaflet.js map)
+             ============================================================ -->
+        <record id="trcf_geo_location_form_view" model="ir.ui.view">
+            <field name="name">trcf.geo.location.form</field>
+            <field name="model">trcf.geo.location</field>
+            <field name="arch" type="xml">
+                <form string="Vị trí Geofence">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Tên cơ sở / chi nhánh"/>
+                            </h1>
+                        </div>
+
+                        <group col="2">
+                            <group string="Tọa độ &amp; Geofence">
+                                <field name="latitude" string="Vĩ độ (Latitude)"
+                                       widget="float" digits="7"
+                                       help="Nhấp trên bản đồ để điền tự động"/>
+                                <field name="longitude" string="Kinh độ (Longitude)"
+                                       widget="float" digits="7"
+                                       help="Nhấp trên bản đồ để điền tự động"/>
+                                <field name="radius" string="Bán kính (mét)"
+                                       help="Kéo rìa vòng tròn trên bản đồ để thay đổi"/>
+                                <field name="active"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group string="Xác thực IP WiFi">
+                                <field name="ip_check_mode" string="Chế độ kiểm tra IP"/>
+                                <field name="allowed_ips"
+                                       string="Danh sách IP WiFi văn phòng"
+                                       widget="text"
+                                       placeholder="203.113.1.1, 14.178.2.2"
+                                       invisible="ip_check_mode == 'none'"/>
+                            </group>
+                        </group>
+
+                        <group string="Ghi chú">
+                            <field name="description" nolabel="1"/>
+                        </group>
+
+                        <!-- Leaflet.js Interactive Map -->
+                        <div class="o_geo_map_container" style="margin-top: 16px;">
+                            <!-- Address search -->
+                            <div style="display:flex; gap:6px; margin-bottom:8px;">
+                                <input id="geo-address-search"
+                                       type="text"
+                                       class="o_input"
+                                       placeholder="Tìm địa chỉ... (vd: 123 Lê Lợi, TP.HCM)"
+                                       style="flex:1;"
+                                       onkeydown="if(event.key==='Enter'){event.preventDefault();window.geoMapSearchAddress &amp;&amp; window.geoMapSearchAddress();}"/>
+                                <button type="button" class="btn btn-primary btn-sm"
+                                        onclick="window.geoMapSearchAddress &amp;&amp; window.geoMapSearchAddress()">
+                                    <i class="fa fa-search"/> Tìm
+                                </button>
+                            </div>
+                            <!-- GPS + hint -->
+                            <div style="display:flex; gap:8px; margin-bottom:8px;">
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                        onclick="window.geoMapUseCurrentLocation &amp;&amp; window.geoMapUseCurrentLocation()">
+                                    <i class="fa fa-crosshairs"/> Dùng vị trí hiện tại
+                                </button>
+                                <span class="text-muted" style="font-size:0.85rem; line-height:2rem;">
+                                    Hoặc nhấp trên bản đồ để đặt tâm geofence
+                                </span>
+                            </div>
+                            <div id="geo-map-picker" style="height:400px; border:1px solid #dee2e6; border-radius:4px;"/>
+                        </div>
+
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             Action + Menu
+             ============================================================ -->
+        <record id="action_trcf_geo_location" model="ir.actions.act_window">
+            <field name="name">Vị trí Geofence</field>
+            <field name="res_model">trcf.geo.location</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Chưa có cơ sở nào được cấu hình
+                </p>
+                <p>Thêm cơ sở và kéo bản đồ để thiết lập vùng geofence chấm công.</p>
+            </field>
+        </record>
+
+        <!-- Menu item under TRCF → Cấu hình -->
+        <menuitem id="menu_trcf_geo_location"
+                  name="Vị trí Geofence"
+                  parent="trcf_zkteco_attendance_sync.trcf_shift_config_menu"
+                  action="action_trcf_geo_location"
+                  sequence="20"
+                  groups="hr.group_hr_manager"/>
+
+    </data>
+</odoo>
