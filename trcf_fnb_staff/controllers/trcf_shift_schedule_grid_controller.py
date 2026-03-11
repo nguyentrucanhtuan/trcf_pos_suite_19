@@ -13,7 +13,7 @@ class TrcfShiftScheduleGridController(http.Controller):
         
         # Kiểm tra quyền HR
         if not request.env.user.has_group('hr.group_hr_user'):
-            return request.render('trcf_zkteco_attendance_sync.shift_schedule_access_denied')
+            return request.render('trcf_fnb_staff.shift_schedule_access_denied')
         
         # Tính toán tuần
         if not start_date:
@@ -98,7 +98,7 @@ class TrcfShiftScheduleGridController(http.Controller):
             'grid_data': grid_data,
         }
         
-        return request.render('trcf_zkteco_attendance_sync.shift_schedule_grid', {
+        return request.render('trcf_fnb_staff.shift_schedule_grid', {
             'schedule_data': schedule_data,
             'employees': employees_list,
             'schedule_data_json': json.dumps(schedule_data),

@@ -17,7 +17,7 @@
 
 **Purpose**: Khởi tạo cấu trúc module và scaffold.
 
-- [ ] T001 Tạo thư mục `tests/` trong `trcf_zkteco_attendance_sync/` và file `tests/__init__.py`
+- [ ] T001 Tạo thư mục `tests/` trong `trcf_fnb_staff/` và file `tests/__init__.py`
 - [ ] T002 [P] Tạo file `models/trcf_geo_location.py` với skeleton class (chưa có fields) và import vào `models/__init__.py`
 - [ ] T003 [P] Tạo file `static/src/js/geo_attendance.js` với skeleton module (empty functions stubs)
 - [ ] T004 [P] Tạo file `static/src/css/geo_attendance.css` với skeleton styles
@@ -38,7 +38,7 @@
 - [ ] T010 [P] Cập nhật `__manifest__.py`: thêm `views/trcf_geo_location_views.xml` vào `data`, thêm `static/src/js/geo_attendance.js` và `static/src/css/geo_attendance.css` vào `assets` (`web.assets_frontend`)
 - [ ] T011 Nâng cấp `GET /dang-ky-ca` trong `controllers/trcf_shift_registration_controller.py`: query `trcf.geo.location` active, serialize thành JSON, truyền `geo_locations` và `current_attendance` vào template context
 
-**Checkpoint**: `python odoo-bin -d <db> -u trcf_zkteco_attendance_sync --stop-after-init` không có ERROR/CRITICAL — model `trcf.geo.location` accessible trong Odoo backend.
+**Checkpoint**: `python odoo-bin -d <db> -u trcf_fnb_staff --stop-after-init` không có ERROR/CRITICAL — model `trcf.geo.location` accessible trong Odoo backend.
 
 ---
 
@@ -155,12 +155,12 @@
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T043 [P] Viết `README.md` cho module `trcf_zkteco_attendance_sync`: mô tả tính năng Geo Attendance mới, hướng dẫn cài, cấu hình IP WiFi
+- [ ] T043 [P] Viết `README.md` cho module `trcf_fnb_staff`: mô tả tính năng Geo Attendance mới, hướng dẫn cài, cấu hình IP WiFi
 - [ ] T044 [P] Thêm translations (i18n) cho tất cả string mới: labels UI (tab "Chấm Công", thông báo error), field labels trong views — dùng chuẩn `_("...")` Odoo
 - [ ] T045 Chạy `flake8` trên toàn bộ Python files mới/sửa: `models/trcf_geo_location.py`, `models/trcf_hr_attendance.py`, `controllers/trcf_shift_registration_controller.py`, `tests/test_geo_attendance.py` → fix mọi warning
 - [ ] T046 [P] Chạy `xmllint` trên `views/trcf_geo_location_views.xml` và `views/trcf_shift_registration_templates.xml` → fix mọi XML error
-- [ ] T047 Run full test suite: `python odoo-bin -d <test_db> --test-enable --stop-after-init -u trcf_zkteco_attendance_sync` → xác nhận tất cả 14 tests pass, không có ERROR/CRITICAL
-- [ ] T048 Kiểm tra log install/upgrade lần cuối: `python odoo-bin -d <db> -u trcf_zkteco_attendance_sync --stop-after-init --log-level=info` → xác nhận không có CRITICAL/ERROR
+- [ ] T047 Run full test suite: `python odoo-bin -d <test_db> --test-enable --stop-after-init -u trcf_fnb_staff` → xác nhận tất cả 14 tests pass, không có ERROR/CRITICAL
+- [ ] T048 Kiểm tra log install/upgrade lần cuối: `python odoo-bin -d <db> -u trcf_fnb_staff --stop-after-init --log-level=info` → xác nhận không có CRITICAL/ERROR
 
 ---
 

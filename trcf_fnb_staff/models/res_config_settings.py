@@ -8,7 +8,7 @@ class TrcfShiftConfigSettings(models.TransientModel):
 
     trcf_auto_generate_weekly_tasks = fields.Boolean(
         string='Tự động tạo công việc tuần',
-        config_parameter='trcf_zkteco_attendance_sync.trcf_auto_generate_weekly_tasks',
+        config_parameter='trcf_fnb_staff.trcf_auto_generate_weekly_tasks',
         help='Nếu bật, hệ thống sẽ tự động tạo danh sách công việc cho tuần kế tiếp.'
     )
 
@@ -21,13 +21,13 @@ class TrcfShiftConfigSettings(models.TransientModel):
         ('5', 'Thứ 7'),
         ('6', 'Chủ nhật'),
     ], string='Ngày chạy hàng tuần', 
-       config_parameter='trcf_zkteco_attendance_sync.trcf_weekly_tasks_day',
+       config_parameter='trcf_fnb_staff.trcf_weekly_tasks_day',
        default='6',
        help='Chọn ngày trong tuần để tự động tạo công việc cho tuần sau.')
 
     trcf_weekly_tasks_time = fields.Float(
         string='Giờ chạy',
-        config_parameter='trcf_zkteco_attendance_sync.trcf_weekly_tasks_time',
+        config_parameter='trcf_fnb_staff.trcf_weekly_tasks_time',
         default=23.0,
         help='Chọn giờ trong ngày để chạy tác vụ tự động (tính theo giờ địa phương).')
 
@@ -41,7 +41,7 @@ class TrcfShiftConfigSettings(models.TransientModel):
         super(TrcfShiftConfigSettings, self).set_values()
         
         # Cập nhật Cron Job
-        cron = self.env.ref('trcf_zkteco_attendance_sync.trcf_cron_generate_weekly_tasks', raise_if_not_found=False)
+        cron = self.env.ref('trcf_fnb_staff.trcf_cron_generate_weekly_tasks', raise_if_not_found=False)
         if cron:
             cron.sudo().write({
                 'active': self.trcf_auto_generate_weekly_tasks,

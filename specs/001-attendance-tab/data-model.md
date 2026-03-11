@@ -7,7 +7,7 @@
 
 ## Entities
 
-### hr.attendance (extended by trcf_zkteco_attendance_sync)
+### hr.attendance (extended by trcf_fnb_staff)
 
 > Model nguồn dữ liệu chính cho bảng giờ công. Không cần thêm field mới.
 

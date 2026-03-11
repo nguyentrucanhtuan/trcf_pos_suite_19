@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'TRCF - MInvoice VAT',
+    'name': 'TRCF MInvoice VAT',
     'version': '19.0.1.0.0',
     'category': 'Point of Sale',
     'summary': 'Xuất hóa đơn điện tử qua MInvoice API',

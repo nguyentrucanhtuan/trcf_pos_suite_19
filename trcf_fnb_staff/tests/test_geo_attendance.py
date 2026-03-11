@@ -7,7 +7,7 @@ Bao gồm:
 - Regression tests: backward compatibility, tab 1 & 2 không bị ảnh hưởng
 
 Chạy bằng:
-    python odoo-bin -d <db> --test-enable --stop-after-init -u trcf_zkteco_attendance_sync
+    python odoo-bin -d <db> --test-enable --stop-after-init -u trcf_fnb_staff
 """
 
 from odoo.tests import TransactionCase, tagged
@@ -36,7 +36,7 @@ class TestGeoAttendanceUnit(TransactionCase):
         """Tính khoảng cách Haversine giữa 2 điểm đã biết."""
         # Tâm Q1 đến điểm cách 50m
         # Đây là unit test — dùng method từ controller
-        from odoo.addons.trcf_zkteco_attendance_sync.controllers.trcf_shift_registration_controller import (
+        from odoo.addons.trcf_fnb_staff.controllers.trcf_shift_registration_controller import (
             TrcfShiftRegistrationController,
         )
         ctrl = TrcfShiftRegistrationController()

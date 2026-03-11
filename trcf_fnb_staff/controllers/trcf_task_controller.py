@@ -32,7 +32,7 @@ class TrcfTaskController(http.Controller):
                 } for t in emp_tasks]
             })
 
-        return request.render('trcf_zkteco_attendance_sync.task_dashboard_page', {
+        return request.render('trcf_fnb_staff.task_dashboard_page', {
             'title': 'Bảng công việc chung',
             'subtitle': 'Tất cả nhân viên',
             'is_team_view': True,
@@ -94,14 +94,14 @@ class TrcfTaskController(http.Controller):
         """Trang công việc của nhân viên hiện tại"""
         employee = request.env.user.employee_id
         if not employee:
-            return request.render('trcf_zkteco_attendance_sync.task_no_employee', {
+            return request.render('trcf_fnb_staff.task_no_employee', {
                 'message': 'Tài khoản của bạn chưa được liên kết với nhân viên.'
             })
         
         TaskModel = request.env['trcf.shift.task'].sudo()
         today = fields.Date.context_today(TaskModel)
         
-        return request.render('trcf_zkteco_attendance_sync.task_dashboard_page', {
+        return request.render('trcf_fnb_staff.task_dashboard_page', {
             'title': 'Công việc của tôi',
             'subtitle': employee.name,
             'is_team_view': False,

@@ -97,7 +97,7 @@ Sau khi thêm tab mới, chức năng đăng ký ca (tab cũ) không bị ảnh 
 
 ### Key Entities *(include if feature involves data)*
 
-- **Bản ghi chấm công (hr.attendance extended)**: Mô hình `hr.attendance` đã được mở rộng trong module `trcf_zkteco_attendance_sync`. Chứa: nhân viên, ngày, giờ vào (`check_in`), giờ ra (`check_out`), thời gian làm việc (`worked_hours`), `check_in_status` (Đi), `check_out_status` (Về), `trcf_hourly_salary_sum` (tiền lương phiên).
+- **Bản ghi chấm công (hr.attendance extended)**: Mô hình `hr.attendance` đã được mở rộng trong module `trcf_fnb_staff`. Chứa: nhân viên, ngày, giờ vào (`check_in`), giờ ra (`check_out`), thời gian làm việc (`worked_hours`), `check_in_status` (Đi), `check_out_status` (Về), `trcf_hourly_salary_sum` (tiền lương phiên).
 - **Ca làm việc đã đăng ký (trcf.shift.registration)**: Ca nhân viên đăng ký, dùng để tính trễ/về sớm qua so sánh `shift_start_time` / `shift_end_time` với giờ thực tế.
 - **Thông tin nhân viên (hr.employee)**: Chứa field `trcf_hourly_salary` — đơn giá lương theo giờ, dùng để tính `trcf_hourly_salary_sum`.
 

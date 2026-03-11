@@ -2,7 +2,7 @@
 
 **Branch**: `001-attendance-tab`  
 **Input**: `specs/001-attendance-tab/` (spec.md, plan.md, research.md, data-model.md)  
-**Module**: `trcf_zkteco_attendance_sync`
+**Module**: `trcf_fnb_staff`
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -15,9 +15,9 @@
 
 **Purpose**: Chuẩn bị cấu trúc CSS, xem lại các file sẽ thay đổi
 
-- [x] T001 Đọc hiểu toàn bộ template hiện tại `trcf_zkteco_attendance_sync/views/trcf_shift_registration_templates.xml` (246 dòng) để nắm cấu trúc HTML
-- [x] T002 [P] Đọc toàn bộ controller `trcf_zkteco_attendance_sync/controllers/trcf_shift_registration_controller.py` để nắm pattern xử lý route hiện tại
-- [x] T003 [P] Kiểm tra CSS hiện có `trcf_zkteco_attendance_sync/static/src/css/shift_registration.css` để biết selector và variable đang dùng
+- [x] T001 Đọc hiểu toàn bộ template hiện tại `trcf_fnb_staff/views/trcf_shift_registration_templates.xml` (246 dòng) để nắm cấu trúc HTML
+- [x] T002 [P] Đọc toàn bộ controller `trcf_fnb_staff/controllers/trcf_shift_registration_controller.py` để nắm pattern xử lý route hiện tại
+- [x] T003 [P] Kiểm tra CSS hiện có `trcf_fnb_staff/static/src/css/shift_registration.css` để biết selector và variable đang dùng
 
 ---
 
@@ -27,7 +27,7 @@
 
 **⚠️ CRITICAL**: US1 và US2 không thể test được nếu route này chưa có
 
-- [x] T004 Thêm route `GET/POST /dang-ky-ca/gio-cong` vào controller `trcf_zkteco_attendance_sync/controllers/trcf_shift_registration_controller.py`:
+- [x] T004 Thêm route `GET/POST /dang-ky-ca/gio-cong` vào controller `trcf_fnb_staff/controllers/trcf_shift_registration_controller.py`:
   - Import `fields` từ `odoo`
   - Query `hr.attendance` với domain `employee_id`, `check_in >= first_day`, `check_in < next_month`
   - Format từng record: `date`, `check_in`, `check_out`, `worked_hours_display` (Xh Ym), `check_in_status` (fallback "–"), `check_out_status` (fallback "–"), `salary_display`
@@ -47,10 +47,10 @@
 
 ### Implementation cho User Story 1
 
-- [x] T005 [US1] Thêm tab navigation HTML vào template `trcf_zkteco_attendance_sync/views/trcf_shift_registration_templates.xml`
+- [x] T005 [US1] Thêm tab navigation HTML vào template `trcf_fnb_staff/views/trcf_shift_registration_templates.xml`
 - [x] T006 [US1] Bọc toàn bộ nội dung bảng đăng ký ca hiện tại vào `<div id="panel-dang-ky-ca" class="tab-panel active">`
 - [x] T007 [US1] Thêm panel "Bảng giờ công" với bộ lọc tháng/năm, bảng 7 cột, tbody để JS render động, footer tổng lương + nhãn "Tạm tính", empty state
-- [x] T008 [US1] Thêm CSS cho tab UI vào `trcf_zkteco_attendance_sync/static/src/css/shift_registration.css`
+- [x] T008 [US1] Thêm CSS cho tab UI vào `trcf_fnb_staff/static/src/css/shift_registration.css`
 - [x] T009 [US1] Thêm JavaScript tab switching vào `<script>` trong template
 - [x] T010 [US1] Thêm hàm `loadAttendanceData(month, year)` với fetch + loading spinner
 - [x] T011 [US1] Thêm hàm `renderAttendanceTable(data)` với XSS-safe textContent rendering

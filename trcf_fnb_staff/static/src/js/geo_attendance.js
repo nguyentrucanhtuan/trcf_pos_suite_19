@@ -1,6 +1,6 @@
 // geo_attendance.js
 // Geolocation attendance check-in/check-out logic
-// Module: trcf_zkteco_attendance_sync
+// Module: trcf_fnb_staff
 // GPS polling: every 5 seconds using setInterval
 
 (function () {

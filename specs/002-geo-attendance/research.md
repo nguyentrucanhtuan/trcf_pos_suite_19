@@ -166,7 +166,7 @@ Odoo tự xử lý qua `_columns` migration khi upgrade module. Không cần scr
 
 ## 10. Không có Test Suite hiện tại
 
-**Finding**: Module `trcf_zkteco_attendance_sync` không có thư mục `tests/`. Cần tạo mới.
+**Finding**: Module `trcf_fnb_staff` không có thư mục `tests/`. Cần tạo mới.
 
 **Decision**: Tạo `tests/test_geo_attendance.py` với các test cases cho:
 - Haversine calculation (unit test)

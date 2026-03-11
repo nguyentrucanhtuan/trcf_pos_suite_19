@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'TRCF ZKTeco Attendance Sync',
+    'name': 'TRCF FnB Staff Management',
     'version': '1.6.0',
     'category': 'Human Resources/Attendances',
-    'summary': 'Đồng bộ dữ liệu chấm công từ thiết bị ZKTeco và chấm công Geolocation qua trình duyệt',
+    'summary': 'Quản lý nhân viên, ca làm việc và chấm công FnB',
     'description': """
         Module đồng bộ dữ liệu chấm công từ thiết bị ZKTeco
         =====================================================
@@ -51,13 +51,13 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'trcf_zkteco_attendance_sync/static/src/js/shift_schedule_grid_action.js',
-            'trcf_zkteco_attendance_sync/static/src/js/geo_map_admin.js',
+            'trcf_fnb_staff/static/src/js/shift_schedule_grid_action.js',
+            'trcf_fnb_staff/static/src/js/geo_map_admin.js',
         ],
         'web.assets_frontend': [
-            'trcf_zkteco_attendance_sync/static/src/css/shift_registration.css',
-            'trcf_zkteco_attendance_sync/static/src/css/geo_attendance.css',
-            'trcf_zkteco_attendance_sync/static/src/js/geo_attendance.js',
+            'trcf_fnb_staff/static/src/css/shift_registration.css',
+            'trcf_fnb_staff/static/src/css/geo_attendance.css',
+            'trcf_fnb_staff/static/src/js/geo_attendance.js',
         ],
     },
     'demo': [],

@@ -115,7 +115,7 @@
         <!-- Menu item under TRCF → Cấu hình -->
         <menuitem id="menu_trcf_geo_location"
                   name="Vị trí Geofence"
-                  parent="trcf_zkteco_attendance_sync.trcf_shift_config_menu"
+                  parent="trcf_fnb_staff.trcf_shift_config_menu"
                   action="action_trcf_geo_location"
                   sequence="20"
                   groups="hr.group_hr_manager"/>

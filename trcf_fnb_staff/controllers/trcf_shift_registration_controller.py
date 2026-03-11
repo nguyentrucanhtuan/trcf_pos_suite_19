@@ -18,7 +18,7 @@ class TrcfShiftRegistrationController(http.Controller):
         # Lấy nhân viên hiện tại
         employee = request.env.user.employee_id
         if not employee:
-            return request.render('trcf_zkteco_attendance_sync.shift_registration_no_employee')
+            return request.render('trcf_fnb_staff.shift_registration_no_employee')
         
         # Lấy danh sách ca làm việc active
         shifts = request.env['trcf.work.shift'].sudo().search([
@@ -114,7 +114,7 @@ class TrcfShiftRegistrationController(http.Controller):
         else:
             current_attendance = {'status': 'idle'}
 
-        return request.render('trcf_zkteco_attendance_sync.shift_registration_form', {
+        return request.render('trcf_fnb_staff.shift_registration_form', {
             'employee': employee,
             'shifts': shifts,
             'dates': dates,

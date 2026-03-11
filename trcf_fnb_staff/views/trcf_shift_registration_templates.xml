@@ -9,7 +9,7 @@
             <head>
                 <title>Đăng ký ca &amp; Bảng giờ công</title>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-                <link rel="stylesheet" t-att-href="'/trcf_zkteco_attendance_sync/static/src/css/shift_registration.css'"/>
+                <link rel="stylesheet" t-att-href="'/trcf_fnb_staff/static/src/css/shift_registration.css'"/>
             </head>
             <body class="shift-registration-body">
             <div class="shift-registration-container">

@@ -8,13 +8,13 @@
 ## 1. Existing Route & Template Architecture
 
 ### Decision
-Trang `/dang-ky-ca` đã được triển khai dưới dạng **Odoo HTTP Controller** (không dùng portal Odoo chuẩn) trong module `trcf_zkteco_attendance_sync`. Template QWeb standalone (không extend `web.frontend_layout` ngoại trừ trang lỗi).
+Trang `/dang-ky-ca` đã được triển khai dưới dạng **Odoo HTTP Controller** (không dùng portal Odoo chuẩn) trong module `trcf_fnb_staff`. Template QWeb standalone (không extend `web.frontend_layout` ngoại trừ trang lỗi).
 
 ### Findings
-- **Controller**: `trcf_zkteco_attendance_sync/controllers/trcf_shift_registration_controller.py`  
+- **Controller**: `trcf_fnb_staff/controllers/trcf_shift_registration_controller.py`  
   - Route chính: `GET /dang-ky-ca` → render template `shift_registration_form`
   - API endpoints: `POST /dang-ky-ca/save`, `POST /dang-ky-ca/remove` (JSON-RPC)
-- **Template**: `trcf_zkteco_attendance_sync/views/trcf_shift_registration_templates.xml`  
+- **Template**: `trcf_fnb_staff/views/trcf_shift_registration_templates.xml`  
   - ID: `shift_registration_form`
   - Trang đứng độc lập với custom CSS: `static/src/css/shift_registration.css`
 

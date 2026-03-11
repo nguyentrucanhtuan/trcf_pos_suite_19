@@ -4,7 +4,7 @@
 **Created**: 2026-03-07  
 **Updated**: 2026-03-08 (bổ sung bảo mật: fake GPS, fake time, xác minh Public IP WiFi)  
 **Status**: Draft  
-**Input**: User description: "Dùng GEO LOCATION JS để làm ứng dụng chấm công, tích hợp với tab /dang-ky-ca trong module trcf_zkteco_attendance_sync"
+**Input**: User description: "Dùng GEO LOCATION JS để làm ứng dụng chấm công, tích hợp với tab /dang-ky-ca trong module trcf_fnb_staff"
 
 ---
 

@@ -4,7 +4,7 @@
 
 ## Summary
 
-Mở rộng module `trcf_zkteco_attendance_sync` với tính năng chấm công Geolocation qua browser GPS. Nhân viên mở tab "Chấm Công" tại `/dang-ky-ca` — hệ thống xác minh vị trí GPS (geofence) **và** public IP WiFi (tuỳ cấu hình cơ sở) trước khi cho check-in/check-out. Timestamp luôn là giờ server. Bổ sung model `trcf.geo.location` với giao diện bản đồ tương tác (Leaflet.js) cho admin cấu hình.
+Mở rộng module `trcf_fnb_staff` với tính năng chấm công Geolocation qua browser GPS. Nhân viên mở tab "Chấm Công" tại `/dang-ky-ca` — hệ thống xác minh vị trí GPS (geofence) **và** public IP WiFi (tuỳ cấu hình cơ sở) trước khi cho check-in/check-out. Timestamp luôn là giờ server. Bổ sung model `trcf.geo.location` với giao diện bản đồ tương tác (Leaflet.js) cho admin cấu hình.
 
 ---
 
@@ -13,7 +13,7 @@ Mở rộng module `trcf_zkteco_attendance_sync` với tính năng chấm công 
 **Language/Version**: Python 3.11 + Odoo 19 Community  
 **Primary Dependencies**: Odoo 19 ORM, QWeb, Vanilla JS, Leaflet.js 1.9.x (CDN, no API key)  
 **Storage**: PostgreSQL (qua Odoo ORM)  
-**Testing**: Odoo test runner (`python -m pytest` hoặc `odoo -d <db> --test-enable -u trcf_zkteco_attendance_sync`)  
+**Testing**: Odoo test runner (`python -m pytest` hoặc `odoo -d <db> --test-enable -u trcf_fnb_staff`)  
 **Target Platform**: Browser (Chrome, Safari, Firefox) + Odoo backend  
 **Project Type**: Odoo module extension  
 **Performance Goals**: Check-in response < 2 giây; GPS poll mỗi 5 giây  
@@ -53,7 +53,7 @@ specs/002-geo-attendance/
 ### Source Code
 
 ```text
-trcf_zkteco_attendance_sync/
+trcf_fnb_staff/
 ├── __manifest__.py              [MODIFY] thêm assets + data files mới
 ├── models/
 │   ├── __init__.py              [MODIFY] import trcf_geo_location
@@ -83,7 +83,7 @@ trcf_zkteco_attendance_sync/
 
 ---
 
-#### [MODIFY] [trcf_hr_attendance.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/models/trcf_hr_attendance.py)
+#### [MODIFY] [trcf_hr_attendance.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/models/trcf_hr_attendance.py)
 
 Thêm 12 fields vào class `TrcfHrAttendance(models.Model)`:
 
@@ -102,7 +102,7 @@ Thêm `models.Index` trên: `geo_suspicious`, `ip_suspicious`, `attendance_sourc
 
 ---
 
-#### [NEW] [trcf_geo_location.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/models/trcf_geo_location.py)
+#### [NEW] [trcf_geo_location.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/models/trcf_geo_location.py)
 
 Model mới `trcf.geo.location` với fields: `name`, `latitude`, `longitude`, `radius`, `active`, `company_id`, `description`, `allowed_ips` (Text), `ip_check_mode` (Selection: none/warning/strict).
 
@@ -114,7 +114,7 @@ SQL constraint: `radius > 0`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN 
 
 ---
 
-#### [MODIFY] [trcf_shift_registration_controller.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/controllers/trcf_shift_registration_controller.py)
+#### [MODIFY] [trcf_shift_registration_controller.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/controllers/trcf_shift_registration_controller.py)
 
 **Helper methods** (private):
 - `_get_client_ip()` — rightmost `X-Forwarded-For` hop hoặc `REMOTE_ADDR`
@@ -136,13 +136,13 @@ SQL constraint: `radius > 0`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN 
 
 ---
 
-#### [MODIFY] [trcf_shift_registration_templates.xml](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/views/trcf_shift_registration_templates.xml)
+#### [MODIFY] [trcf_shift_registration_templates.xml](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/views/trcf_shift_registration_templates.xml)
 
 - Thêm tab thứ 3: `data-tab="cham-cong"`, icon `fa-map-marker`
 - Thêm panel `#panel-cham-cong` với: GPS status display, khoảng cách, nút Check-in/Check-out, thông tin phiên
 - Inline script block gọi `geo_attendance.js` (hoặc inline pattern hiện tại)
 
-#### [NEW] [geo_attendance.js](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/static/src/js/geo_attendance.js)
+#### [NEW] [geo_attendance.js](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/static/src/js/geo_attendance.js)
 
 - `startGeoWatch()`: gọi `getCurrentPosition` ngay lập tức, sau đó `setInterval(5000)`
 - `stopGeoWatch()`: `clearInterval` khi chuyển tab hoặc tab ẩn (`visibilitychange`)
@@ -150,7 +150,7 @@ SQL constraint: `radius > 0`, `latitude BETWEEN -90 AND 90`, `longitude BETWEEN 
 - `doCheckIn() / doCheckOut()`: gọi AJAX → `/dang-ky-ca/geo-checkin` | `/geo-checkout`
 - Xử lý error codes: `out_of_range`, `ip_blocked`, `already_checked_in`, `no_open_session`
 
-#### [NEW] [geo_attendance.css](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/static/src/css/geo_attendance.css)
+#### [NEW] [geo_attendance.css](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/static/src/css/geo_attendance.css)
 
 Styles cho panel Chấm Công: status badge (valid/invalid), nút check-in lớn, loading spinner GPS.
 
@@ -160,7 +160,7 @@ Styles cho panel Chấm Công: status badge (valid/invalid), nút check-in lớn
 
 ---
 
-#### [NEW] [trcf_geo_location_views.xml](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/views/trcf_geo_location_views.xml)
+#### [NEW] [trcf_geo_location_views.xml](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/views/trcf_geo_location_views.xml)
 
 - **List view**: name, latitude, longitude, radius, ip_check_mode, active
 - **Form view**: standard Odoo form + Leaflet.js map widget (CDN, `<script>` trong template) + `allowed_ips` textarea + `ip_check_mode` selection
@@ -173,11 +173,11 @@ Styles cho panel Chấm Công: status badge (valid/invalid), nút check-in lớn
 
 ---
 
-#### [MODIFY] [ir.model.access.csv](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/security/ir.model.access.csv)
+#### [MODIFY] [ir.model.access.csv](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/security/ir.model.access.csv)
 
 Thêm access lines cho `trcf.geo.location`: read-only cho `group_user`, full CRUD cho `group_hr_manager`.
 
-#### [MODIFY] [__manifest__.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/__manifest__.py)
+#### [MODIFY] [__manifest__.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/__manifest__.py)
 
 Thêm vào `data`: `views/trcf_geo_location_views.xml`  
 Thêm vào `assets` (`web.assets_frontend`): `static/src/js/geo_attendance.js`, `static/src/css/geo_attendance.css`
@@ -188,7 +188,7 @@ Thêm vào `assets` (`web.assets_frontend`): `static/src/js/geo_attendance.js`, 
 
 ---
 
-#### [NEW] [test_geo_attendance.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_zkteco_attendance_sync/tests/test_geo_attendance.py)
+#### [NEW] [test_geo_attendance.py](file:///Users/tuan/coffeetree_odoo19_dev/custom_addons/trcf_fnb_staff/tests/test_geo_attendance.py)
 
 Test cases:
 
@@ -214,10 +214,10 @@ Test cases:
 
 ```bash
 # Chạy test suite (từ thư mục gốc Odoo)
-python odoo-bin -d <test_db> --test-enable --stop-after-init -u trcf_zkteco_attendance_sync --log-level=test
+python odoo-bin -d <test_db> --test-enable --stop-after-init -u trcf_fnb_staff --log-level=test
 
 # Hoặc dùng pytest nếu có pytest-odoo
-python -m pytest custom_addons/trcf_zkteco_attendance_sync/tests/test_geo_attendance.py -v
+python -m pytest custom_addons/trcf_fnb_staff/tests/test_geo_attendance.py -v
 ```
 
 ### Manual Verification
@@ -225,7 +225,7 @@ python -m pytest custom_addons/trcf_zkteco_attendance_sync/tests/test_geo_attend
 #### Step 1: Cài đặt module
 ```bash
 # Restart Odoo với update module
-python odoo-bin -d <db> -u trcf_zkteco_attendance_sync --stop-after-init
+python odoo-bin -d <db> -u trcf_fnb_staff --stop-after-init
 # Kiểm tra log không có ERROR/CRITICAL
 ```
 

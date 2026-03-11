@@ -6,7 +6,7 @@
     'category': 'Point of Sale',
     'author': 'Tuấn Rang Cà Phê',
     'website': 'https://coffeetree.vn',  # có thể thay đổi
-    'depends': ['point_of_sale', 'trcf_zkteco_attendance_sync'],
+    'depends': ['point_of_sale', 'trcf_fnb_staff'],
     'data': [
         'security/ir.model.access.csv',
         'views/trcf_kitchen_screen_views.xml',
