@@ -95,6 +95,207 @@
 
                     </section>
 
+                    <!-- ===== CHUỖI VẬN HÀNH (Operation Flow Pipeline) ===== -->
+                    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 fade-in">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="material-symbols-outlined text-amber-500">route</span>
+                            <h2 class="text-sm font-bold text-slate-800">Chuỗi vận hành — Kiểm tra từng khâu</h2>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-stretch gap-0 sm:gap-0">
+
+                            <!-- Step 1: Nhập công thức -->
+                            <div class="flex-1 relative">
+                                <div t-att-class="'rounded-xl border-2 p-4 text-center transition-all ' + ('border-red-300 bg-red-50' if total_missing &gt; 0 else 'border-emerald-300 bg-emerald-50')">
+                                    <div t-att-class="'w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ' + ('bg-red-500' if total_missing &gt; 0 else 'bg-emerald-500')">
+                                        <span class="material-symbols-outlined text-white text-xl">receipt_long</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-700 mb-1">BƯỚC 1</p>
+                                    <p class="text-sm font-bold text-slate-800">Nhập công thức</p>
+                                    <t t-if="total_missing &gt; 0">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">warning</span>
+                                            Thiếu <t t-esc="total_missing"/> công thức
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">check</span>
+                                            Hoàn thành
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Arrow 1→2 -->
+                            <div class="flex items-center justify-center py-1 sm:py-0 sm:px-0 w-full sm:w-8 shrink-0">
+                                <span class="material-symbols-outlined text-slate-300 text-2xl hidden sm:block">arrow_forward</span>
+                                <span class="material-symbols-outlined text-slate-300 text-2xl sm:hidden">arrow_downward</span>
+                            </div>
+
+                            <!-- Step 2: Nhập hàng -->
+                            <t t-set="nhap_kho_count" t-value="warn_purchased.get('thieu_nhap_kho', 0)"/>
+                            <div class="flex-1 relative">
+                                <div t-att-class="'rounded-xl border-2 p-4 text-center transition-all ' + ('border-red-300 bg-red-50' if nhap_kho_count &gt; 0 else 'border-emerald-300 bg-emerald-50')">
+                                    <div t-att-class="'w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ' + ('bg-red-500' if nhap_kho_count &gt; 0 else 'bg-emerald-500')">
+                                        <span class="material-symbols-outlined text-white text-xl">local_shipping</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-700 mb-1">BƯỚC 2</p>
+                                    <p class="text-sm font-bold text-slate-800">Nhập hàng</p>
+                                    <t t-if="nhap_kho_count &gt; 0">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">warning</span>
+                                            Thiếu <t t-esc="nhap_kho_count"/> nhập kho
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">check</span>
+                                            Hoàn thành
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Arrow 2→3 -->
+                            <div class="flex items-center justify-center py-1 sm:py-0 sm:px-0 w-full sm:w-8 shrink-0">
+                                <span class="material-symbols-outlined text-slate-300 text-2xl hidden sm:block">arrow_forward</span>
+                                <span class="material-symbols-outlined text-slate-300 text-2xl sm:hidden">arrow_downward</span>
+                            </div>
+
+                            <!-- Step 3: Chuyển kho -->
+                            <t t-set="chuyen_kho_count" t-value="warn_purchased.get('thieu_chuyen_kho', 0)"/>
+                            <div class="flex-1 relative">
+                                <div t-att-class="'rounded-xl border-2 p-4 text-center transition-all ' + ('border-orange-300 bg-orange-50' if chuyen_kho_count &gt; 0 else 'border-emerald-300 bg-emerald-50')">
+                                    <div t-att-class="'w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ' + ('bg-orange-500' if chuyen_kho_count &gt; 0 else 'bg-emerald-500')">
+                                        <span class="material-symbols-outlined text-white text-xl">sync_alt</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-700 mb-1">BƯỚC 3</p>
+                                    <p class="text-sm font-bold text-slate-800">Chuyển kho</p>
+                                    <t t-if="chuyen_kho_count &gt; 0">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">warning</span>
+                                            Thiếu <t t-esc="chuyen_kho_count"/> chuyển kho
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">check</span>
+                                            Hoàn thành
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Arrow 3→4 -->
+                            <div class="flex items-center justify-center py-1 sm:py-0 sm:px-0 w-full sm:w-8 shrink-0">
+                                <span class="material-symbols-outlined text-slate-300 text-2xl hidden sm:block">arrow_forward</span>
+                                <span class="material-symbols-outlined text-slate-300 text-2xl sm:hidden">arrow_downward</span>
+                            </div>
+
+                            <!-- Step 4: Chế biến -->
+                            <t t-set="che_bien_count" t-value="warn_semi.get('thieu_che_bien', 0)"/>
+                            <div class="flex-1 relative">
+                                <div t-att-class="'rounded-xl border-2 p-4 text-center transition-all ' + ('border-purple-300 bg-purple-50' if che_bien_count &gt; 0 else 'border-emerald-300 bg-emerald-50')">
+                                    <div t-att-class="'w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ' + ('bg-purple-500' if che_bien_count &gt; 0 else 'bg-emerald-500')">
+                                        <span class="material-symbols-outlined text-white text-xl">blender</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-700 mb-1">BƯỚC 4</p>
+                                    <p class="text-sm font-bold text-slate-800">Chế biến</p>
+                                    <t t-if="che_bien_count &gt; 0">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">warning</span>
+                                            Thiếu <t t-esc="che_bien_count"/> chế biến
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">check</span>
+                                            Hoàn thành
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Arrow 4→5 -->
+                            <div class="flex items-center justify-center py-1 sm:py-0 sm:px-0 w-full sm:w-8 shrink-0">
+                                <span class="material-symbols-outlined text-slate-300 text-2xl hidden sm:block">arrow_forward</span>
+                                <span class="material-symbols-outlined text-slate-300 text-2xl sm:hidden">arrow_downward</span>
+                            </div>
+
+                            <!-- Step 5: Huỷ sản phẩm -->
+                            <div class="flex-1 relative">
+                                <div t-att-class="'rounded-xl border-2 p-4 text-center transition-all ' + ('border-rose-300 bg-rose-50' if scrap_total_value &gt; 0 else 'border-emerald-300 bg-emerald-50')">
+                                    <div t-att-class="'w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ' + ('bg-rose-500' if scrap_total_value &gt; 0 else 'bg-emerald-500')">
+                                        <span class="material-symbols-outlined text-white text-xl">delete_forever</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-700 mb-1">BƯỚC 5</p>
+                                    <p class="text-sm font-bold text-slate-800">Huỷ sản phẩm</p>
+                                    <t t-if="scrap_total_value &gt; 0">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">payments</span>
+                                            <t t-esc="scrap_count"/> phiếu
+                                        </div>
+                                        <p class="text-[10px] text-rose-600 font-semibold mt-1">
+                                            <t t-esc="'{:,.0f}'.format(scrap_total_value)"/>đ
+                                        </p>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">check</span>
+                                            Chưa huỷ
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Arrow 5→6 -->
+                            <div class="flex items-center justify-center py-1 sm:py-0 sm:px-0 w-full sm:w-8 shrink-0">
+                                <span class="material-symbols-outlined text-slate-300 text-2xl hidden sm:block">arrow_forward</span>
+                                <span class="material-symbols-outlined text-slate-300 text-2xl sm:hidden">arrow_downward</span>
+                            </div>
+
+                            <!-- Step 6: Kiểm kê -->
+                            <div class="flex-1 relative">
+                                <div t-att-class="'rounded-xl border-2 p-4 text-center transition-all ' + ('border-amber-300 bg-amber-50' if inventory_net_loss &gt; 0 else 'border-emerald-300 bg-emerald-50')">
+                                    <div t-att-class="'w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center ' + ('bg-amber-500' if inventory_net_loss &gt; 0 else 'bg-emerald-500')">
+                                        <span class="material-symbols-outlined text-white text-xl">fact_check</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-700 mb-1">BƯỚC 6</p>
+                                    <p class="text-sm font-bold text-slate-800">Kiểm kê</p>
+                                    <t t-if="inventory_net_loss &gt; 0">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">trending_down</span>
+                                            Hao hụt <t t-esc="inventory_loss_rate"/>%
+                                        </div>
+                                        <p class="text-[10px] text-amber-700 font-semibold mt-1">
+                                            −<t t-esc="'{:,.0f}'.format(inventory_net_loss)"/>đ
+                                        </p>
+                                    </t>
+                                    <t t-elif="inventory_net_loss &lt; 0">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">trending_up</span>
+                                            Dư <t t-esc="'{:,.0f}'.format(abs(inventory_net_loss))"/>đ
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold">
+                                            <span class="material-symbols-outlined text-sm">check</span>
+                                            Cân bằng
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Summary line -->
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-500">
+                            <span class="material-symbols-outlined text-base">info</span>
+                            Chuỗi vận hành: Nhập công thức → Nhập hàng → Chuyển kho → Chế biến → Huỷ → Kiểm kê. Xử lý từ trái → phải.
+                        </div>
+                    </section>
+
                     <!-- Progress Bar -->
                     <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 fade-in">
                         <div class="flex items-center justify-between mb-2">
@@ -281,19 +482,45 @@
 
                     </section>
 
-                    <!-- ===== STOCK MATRIX: Tồn kho theo Kho × Sản phẩm ===== -->
+                    <!-- ===== Cảnh báo nếu chưa cấu hình kho quầy ===== -->
+                    <t t-if="not shop_wh_configured">
+                        <section class="bg-amber-50 rounded-2xl border border-amber-300 shadow-sm p-5 fade-in">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-amber-500 text-2xl">settings</span>
+                                <div>
+                                    <p class="text-sm font-bold text-amber-800">Chưa cấu hình kho quầy</p>
+                                    <p class="text-xs text-amber-700 mt-0.5">
+                                        Vào <a href="/odoo/settings" class="text-blue-600 hover:underline font-semibold">Cấu hình → TRCF Ops Audit</a> để chọn kho quầy.
+                                        Nếu chưa chọn, tất cả tồn kho âm nguyên liệu sẽ hiện "Thiếu nhập kho".
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                    </t>
+
+                    <!-- ===== BẢNG 1: Nguyên liệu mua hàng ===== -->
                     <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden fade-in">
 
                         <!-- Header -->
                         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
                             <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-blue-500">warehouse</span>
-                                <h2 class="text-sm font-bold text-slate-800">Kiểm tra tồn kho theo Kho</h2>
-                                <span class="text-xs text-slate-400">(chỉ sản phẩm có theo dõi tồn kho)</span>
-                                <t t-if="total_negative &gt; 0">
+                                <span class="material-symbols-outlined text-blue-500">shopping_cart</span>
+                                <h2 class="text-sm font-bold text-slate-800">Tồn kho: Nguyên liệu mua hàng</h2>
+                                <span class="text-xs text-slate-400">(purchase_ok = True)</span>
+                                <t t-if="total_neg_purchased &gt; 0">
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-600">
                                         <span class="material-symbols-outlined text-xs">trending_down</span>
-                                        <t t-esc="total_negative"/> ô âm
+                                        <t t-esc="total_neg_purchased"/> ô âm
+                                    </span>
+                                </t>
+                                <t t-if="warn_purchased.get('thieu_nhap_kho', 0) &gt; 0">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                                        🚚 <t t-esc="warn_purchased['thieu_nhap_kho']"/> Thiếu nhập kho
+                                    </span>
+                                </t>
+                                <t t-if="warn_purchased.get('thieu_chuyen_kho', 0) &gt; 0">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700">
+                                        📦 <t t-esc="warn_purchased['thieu_chuyen_kho']"/> Thiếu chuyển kho
                                     </span>
                                 </t>
                             </div>
@@ -304,21 +531,20 @@
                             </a>
                         </div>
 
-                        <t t-if="not stock_matrix or not warehouse_names">
+                        <t t-if="not stock_matrix_purchased or not warehouse_names">
                             <div class="flex flex-col items-center justify-center py-12 text-center">
                                 <span class="material-symbols-outlined text-5xl text-slate-300">inventory_2</span>
-                                <p class="mt-3 text-slate-500 font-medium">Chưa có dữ liệu tồn kho.</p>
-                                <p class="text-xs text-slate-400 mt-1">Không có sản phẩm storable nào có số lượng trong kho.</p>
+                                <p class="mt-3 text-slate-500 font-medium">Không có nguyên liệu mua hàng nào có tồn kho.</p>
                             </div>
                         </t>
                         <t t-else="">
                             <!-- Legend -->
                             <div class="px-5 py-2 border-b border-slate-100 bg-slate-50 flex items-center gap-4 text-xs text-slate-500">
                                 <span class="flex items-center gap-1">
-                                    <span class="inline-block w-3 h-3 rounded bg-red-500"></span> Tồn kho âm (lỗi nghiêm trọng)
+                                    <span class="inline-block w-3 h-3 rounded bg-red-500"></span> Thiếu nhập kho
                                 </span>
                                 <span class="flex items-center gap-1">
-                                    <span class="inline-block w-3 h-3 rounded bg-amber-400"></span> Hết hàng (= 0)
+                                    <span class="inline-block w-3 h-3 rounded bg-orange-400"></span> Thiếu chuyển kho
                                 </span>
                                 <span class="flex items-center gap-1">
                                     <span class="inline-block w-3 h-3 rounded bg-emerald-400"></span> Bình thường
@@ -328,11 +554,10 @@
                             <!-- Matrix Table -->
                             <div class="overflow-x-auto max-h-[60vh] overflow-y-auto">
                                 <table class="text-xs border-collapse w-full">
-                                    <!-- Header: tên kho (cột) -->
                                     <thead class="sticky top-0 z-10">
                                         <tr class="bg-slate-100">
                                             <th class="sticky left-0 z-20 bg-slate-100 px-4 py-3 text-left font-semibold text-slate-600 border-b border-r border-slate-200 min-w-[200px] whitespace-nowrap">
-                                                Sản phẩm / Kho
+                                                Nguyên liệu / Kho
                                             </th>
                                             <t t-foreach="warehouse_names" t-as="wname" t-key="wname_index">
                                                 <th class="px-3 py-3 text-center font-semibold text-slate-600 border-b border-slate-200 min-w-[110px] whitespace-nowrap"
@@ -345,11 +570,9 @@
                                             </t>
                                         </tr>
                                     </thead>
-                                    <!-- Body: mỗi hàng = 1 sản phẩm -->
                                     <tbody>
-                                        <t t-foreach="stock_matrix" t-as="row">
+                                        <t t-foreach="stock_matrix_purchased" t-as="row">
                                             <tr t-att-class="'border-b border-slate-100 ' + ('bg-red-50' if row['has_anomaly'] else 'hover:bg-slate-50')">
-                                                <!-- Tên sản phẩm (cột đầu sticky) -->
                                                 <td t-att-class="'sticky left-0 z-10 px-4 py-2.5 border-r border-slate-200 whitespace-nowrap ' + ('bg-red-50' if row['has_anomaly'] else 'bg-white')">
                                                     <div class="flex items-center gap-2">
                                                         <t t-if="row['has_anomaly']">
@@ -361,16 +584,30 @@
                                                         <span t-att-class="'font-medium ' + ('text-red-700' if row['has_anomaly'] else 'text-slate-700')">
                                                             <t t-esc="row['product_name']"/>
                                                         </span>
+                                                        <t t-if="row['uom']">
+                                                            <span class="text-slate-400 text-[10px]">(<t t-esc="row['uom']"/>)</span>
+                                                        </t>
                                                     </div>
                                                 </td>
-                                                <!-- Cells: số lượng trong từng kho -->
                                                 <t t-foreach="row['cells']" t-as="cell">
                                                     <td class="px-3 py-2.5 text-center font-mono">
                                                         <t t-if="cell['status'] == 'negative'">
-                                                            <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-red-500 text-white font-bold text-xs">
-                                                                <span class="material-symbols-outlined text-xs">arrow_downward</span>
-                                                                <t t-esc="'{:,.1f}'.format(cell['qty'])"/>
-                                                            </span>
+                                                            <div class="flex flex-col items-center gap-0.5">
+                                                                <t t-if="cell['warning_type'] == 'thieu_chuyen_kho'">
+                                                                    <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-orange-500 text-white font-bold text-xs">
+                                                                        <span class="material-symbols-outlined text-xs">arrow_downward</span>
+                                                                        <t t-esc="'{:,.1f}'.format(cell['qty'])"/>
+                                                                    </span>
+                                                                    <span class="text-[10px] text-orange-600 font-semibold mt-0.5">Thiếu chuyển kho</span>
+                                                                </t>
+                                                                <t t-else="">
+                                                                    <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-red-500 text-white font-bold text-xs">
+                                                                        <span class="material-symbols-outlined text-xs">arrow_downward</span>
+                                                                        <t t-esc="'{:,.1f}'.format(cell['qty'])"/>
+                                                                    </span>
+                                                                    <span class="text-[10px] text-red-600 font-semibold mt-0.5">Thiếu nhập kho</span>
+                                                                </t>
+                                                            </div>
                                                         </t>
                                                         <t t-elif="cell['status'] == 'zero'">
                                                             <span class="inline-flex px-2 py-0.5 rounded-lg bg-amber-100 text-amber-700 font-semibold text-xs">
@@ -390,17 +627,152 @@
                                 </table>
                             </div>
 
-                            <!-- Footer summary -->
+                            <!-- Footer -->
                             <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center gap-4 text-xs text-slate-500">
                                 <span class="flex items-center gap-1">
                                     <span class="material-symbols-outlined text-base text-slate-400">info</span>
-                                    <t t-esc="len(stock_matrix)"/> sản phẩm ×
+                                    <t t-esc="len(stock_matrix_purchased)"/> nguyên liệu ×
                                     <t t-esc="len(warehouse_names)"/> kho
                                 </span>
-                                <t t-if="total_negative &gt; 0">
+                                <t t-if="total_neg_purchased &gt; 0">
                                     <span class="flex items-center gap-1 text-red-600 font-semibold">
                                         <span class="material-symbols-outlined text-base">error</span>
-                                        <t t-esc="total_negative"/> ô tồn kho âm — cần kiểm tra ngay!
+                                        <t t-esc="total_neg_purchased"/> ô tồn kho âm — cần kiểm tra!
+                                    </span>
+                                </t>
+                                <t t-else="">
+                                    <span class="flex items-center gap-1 text-emerald-600 font-semibold">
+                                        <span class="material-symbols-outlined text-base">check_circle</span>
+                                        Không có tồn kho âm
+                                    </span>
+                                </t>
+                            </div>
+                        </t>
+                    </section>
+
+                    <!-- ===== BẢNG 2: Bán thành phẩm ===== -->
+                    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden fade-in">
+
+                        <!-- Header -->
+                        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-purple-500">blender</span>
+                                <h2 class="text-sm font-bold text-slate-800">Tồn kho: Bán thành phẩm</h2>
+                                <span class="text-xs text-slate-400">(chế biến nội bộ)</span>
+                                <t t-if="total_neg_semi &gt; 0">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                                        <span class="material-symbols-outlined text-xs">trending_down</span>
+                                        <t t-esc="total_neg_semi"/> ô âm
+                                    </span>
+                                </t>
+                                <t t-if="warn_semi.get('thieu_che_bien', 0) &gt; 0">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                                        🍳 <t t-esc="warn_semi['thieu_che_bien']"/> Thiếu chế biến
+                                    </span>
+                                </t>
+                            </div>
+                            <a href="/odoo/inventory/products"
+                               class="text-xs text-blue-600 hover:underline flex items-center gap-1">
+                                <span class="material-symbols-outlined text-base">open_in_new</span>
+                                Xem tồn kho
+                            </a>
+                        </div>
+
+                        <t t-if="not stock_matrix_semi or not warehouse_names">
+                            <div class="flex flex-col items-center justify-center py-12 text-center">
+                                <span class="material-symbols-outlined text-5xl text-emerald-400">check_circle</span>
+                                <p class="mt-3 text-slate-500 font-medium">Không có bán thành phẩm nào có tồn kho.</p>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <!-- Legend -->
+                            <div class="px-5 py-2 border-b border-slate-100 bg-slate-50 flex items-center gap-4 text-xs text-slate-500">
+                                <span class="flex items-center gap-1">
+                                    <span class="inline-block w-3 h-3 rounded bg-purple-500"></span> Thiếu chế biến
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <span class="inline-block w-3 h-3 rounded bg-emerald-400"></span> Bình thường
+                                </span>
+                            </div>
+
+                            <!-- Matrix Table -->
+                            <div class="overflow-x-auto max-h-[60vh] overflow-y-auto">
+                                <table class="text-xs border-collapse w-full">
+                                    <thead class="sticky top-0 z-10">
+                                        <tr class="bg-slate-100">
+                                            <th class="sticky left-0 z-20 bg-slate-100 px-4 py-3 text-left font-semibold text-slate-600 border-b border-r border-slate-200 min-w-[200px] whitespace-nowrap">
+                                                Bán thành phẩm / Kho
+                                            </th>
+                                            <t t-foreach="warehouse_names" t-as="wname" t-key="wname_index">
+                                                <th class="px-3 py-3 text-center font-semibold text-slate-600 border-b border-slate-200 min-w-[110px] whitespace-nowrap"
+                                                    t-att-title="wname">
+                                                    <div class="flex flex-col items-center gap-0.5">
+                                                        <span class="material-symbols-outlined text-slate-400 text-sm">warehouse</span>
+                                                        <t t-esc="wname"/>
+                                                    </div>
+                                                </th>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="stock_matrix_semi" t-as="row">
+                                            <tr t-att-class="'border-b border-slate-100 ' + ('bg-purple-50' if row['has_anomaly'] else 'hover:bg-slate-50')">
+                                                <td t-att-class="'sticky left-0 z-10 px-4 py-2.5 border-r border-slate-200 whitespace-nowrap ' + ('bg-purple-50' if row['has_anomaly'] else 'bg-white')">
+                                                    <div class="flex items-center gap-2">
+                                                        <t t-if="row['has_anomaly']">
+                                                            <span class="material-symbols-outlined text-purple-500 text-sm">warning</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="material-symbols-outlined text-slate-400 text-sm">blender</span>
+                                                        </t>
+                                                        <span t-att-class="'font-medium ' + ('text-purple-700' if row['has_anomaly'] else 'text-slate-700')">
+                                                            <t t-esc="row['product_name']"/>
+                                                        </span>
+                                                        <t t-if="row['uom']">
+                                                            <span class="text-slate-400 text-[10px]">(<t t-esc="row['uom']"/>)</span>
+                                                        </t>
+                                                    </div>
+                                                </td>
+                                                <t t-foreach="row['cells']" t-as="cell">
+                                                    <td class="px-3 py-2.5 text-center font-mono">
+                                                        <t t-if="cell['status'] == 'negative'">
+                                                            <div class="flex flex-col items-center gap-0.5">
+                                                                <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-purple-500 text-white font-bold text-xs">
+                                                                    <span class="material-symbols-outlined text-xs">arrow_downward</span>
+                                                                    <t t-esc="'{:,.1f}'.format(cell['qty'])"/>
+                                                                </span>
+                                                                <span class="text-[10px] text-purple-600 font-semibold mt-0.5">Thiếu chế biến</span>
+                                                            </div>
+                                                        </t>
+                                                        <t t-elif="cell['status'] == 'zero'">
+                                                            <span class="inline-flex px-2 py-0.5 rounded-lg bg-amber-100 text-amber-700 font-semibold text-xs">
+                                                                0
+                                                            </span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="text-emerald-700 font-semibold">
+                                                                <t t-esc="'{:,.1f}'.format(cell['qty'])"/>
+                                                            </span>
+                                                        </t>
+                                                    </td>
+                                                </t>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center gap-4 text-xs text-slate-500">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-base text-slate-400">info</span>
+                                    <t t-esc="len(stock_matrix_semi)"/> bán thành phẩm ×
+                                    <t t-esc="len(warehouse_names)"/> kho
+                                </span>
+                                <t t-if="total_neg_semi &gt; 0">
+                                    <span class="flex items-center gap-1 text-purple-600 font-semibold">
+                                        <span class="material-symbols-outlined text-base">error</span>
+                                        <t t-esc="total_neg_semi"/> ô tồn kho âm — cần chế biến!
                                     </span>
                                 </t>
                                 <t t-else="">

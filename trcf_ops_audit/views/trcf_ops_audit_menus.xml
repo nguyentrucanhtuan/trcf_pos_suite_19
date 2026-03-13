@@ -19,5 +19,20 @@
                   parent="trcf_ops_audit_root_menu"
                   action="action_trcf_ops_audit_dashboard"
                   sequence="1"/>
+
+        <!-- Action: mở Settings -->
+        <record id="action_trcf_ops_audit_settings" model="ir.actions.act_window">
+            <field name="name">Cấu hình Ops Audit</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+            <field name="context" eval="{'module': 'trcf_ops_audit'}"/>
+        </record>
+
+        <menuitem id="trcf_ops_audit_settings_menu"
+                  name="Cấu hình"
+                  parent="trcf_ops_audit_root_menu"
+                  action="action_trcf_ops_audit_settings"
+                  sequence="99"/>
     </data>
 </odoo>

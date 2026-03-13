@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_trcf_ops_audit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.trcf_ops_audit</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="TRCF Ops Audit" name="trcf_ops_audit">
+                    <block title="Cấu hình kho quầy" name="shop_warehouse_settings">
+                        <setting id="trcf_ops_shop_warehouse_setting"
+                                 string="Kho quầy (Shop)"
+                                 help="Chọn kho quầy — lưu nguyên liệu đơn vị nhỏ (gram). Các kho còn lại là kho chính (Kg, Thùng, Chai). Dùng để xác định cảnh báo trên Dashboard.">
+                            <field name="trcf_ops_shop_warehouse_id"
+                                   placeholder="Chọn kho quầy..."/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>
