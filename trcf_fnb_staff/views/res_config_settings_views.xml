@@ -38,16 +38,5 @@
         <field name="context" eval="{'module': 'trcf_fnb_staff'}"/>
     </record>
 
-    <!-- Menu Cấu hình -->
-    <menuitem id="trcf_shift_config_menu"
-              name="Cấu hình"
-              parent="trcf_shift_management_menu_root"
-              sequence="100"
-              groups="hr.group_hr_user"/>
-
-    <menuitem id="trcf_shift_config_settings_menu"
-              name="Cấu hình chung"
-              parent="trcf_shift_config_menu"
-              action="trcf_shift_config_settings_action"
-              sequence="10"/>
+    <!-- Menus đã chuyển sang trcf_menus.xml -->
 </odoo>

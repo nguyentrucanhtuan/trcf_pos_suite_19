@@ -132,11 +132,4 @@
         </field>
     </record>
 
-    <!-- ===== MENU ===== -->
-    <menuitem id="trcf_shift_task_template_menu"
-              name="Mẫu công việc"
-              parent="trcf_shift_management_menu_root"
-              action="trcf_shift_task_template_action"
-              sequence="40"/>
-
 </odoo>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================
+         TRCF FnB Staff — All Menu Items
+         Load this file LAST so all actions are already defined.
+         ================================================================ -->
+
+    <!-- Root Menu -->
+    <menuitem id="trcf_shift_management_menu_root"
+              name="TRCF Quản lý ca"
+              sequence="25"/>
+
+    <!-- Sub Menu: ZKTeco Devices -->
+    <menuitem id="menu_attendance_zkteco_devices"
+              name="ZKTeco Devices"
+              parent="trcf_shift_management_menu_root"
+              action="action_trcf_zkteco_device"
+              sequence="10"
+              groups="hr.group_hr_user"/>
+
+    <!-- Sub Menu: Ca làm việc -->
+    <menuitem id="trcf_work_shift_menu"
+              name="Ca làm việc"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_work_shift_action"
+              sequence="20"/>
+
+    <!-- Sub Menu: Đăng ký ca -->
+    <menuitem id="trcf_shift_registration_menu"
+              name="Đăng ký ca"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_shift_registration_action"
+              sequence="30"/>
+
+    <!-- Sub Menu: Xếp lịch làm -->
+    <menuitem id="trcf_shift_schedule_grid_menu"
+              name="Xếp lịch làm"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_shift_schedule_grid_client_action"
+              sequence="35"/>
+
+    <!-- Sub Menu: Mẫu công việc -->
+    <menuitem id="trcf_shift_task_template_menu"
+              name="Mẫu công việc"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_shift_task_template_action"
+              sequence="40"/>
+
+    <!-- Sub Menu: Công việc -->
+    <menuitem id="trcf_shift_task_menu"
+              name="Công việc"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_shift_task_action"
+              sequence="45"/>
+
+    <!-- Sub Menu: Tạo công việc tuần -->
+    <menuitem id="trcf_generate_week_tasks_menu"
+              name="Tạo công việc tuần"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_generate_week_tasks_wizard_action"
+              sequence="50"/>
+
+    <!-- Sub Menu: Bảng lương -->
+    <menuitem id="trcf_attendance_payroll_menu"
+              name="Bảng lương"
+              parent="trcf_shift_management_menu_root"
+              action="trcf_attendance_payroll_action"
+              sequence="60"/>
+
+    <!-- Sub Menu: Điều tra đáng ngờ -->
+    <menuitem id="menu_attendance_suspicious"
+              name="Điều tra đáng ngờ"
+              parent="trcf_shift_management_menu_root"
+              action="action_attendance_suspicious"
+              sequence="65"
+              groups="hr.group_hr_manager"/>
+
+    <!-- Sub Menu: Cấu hình -->
+    <menuitem id="trcf_shift_config_menu"
+              name="Cấu hình"
+              parent="trcf_shift_management_menu_root"
+              sequence="100"
+              groups="hr.group_hr_user"/>
+
+    <menuitem id="trcf_shift_config_settings_menu"
+              name="Cấu hình chung"
+              parent="trcf_shift_config_menu"
+              action="trcf_shift_config_settings_action"
+              sequence="10"/>
+
+    <!-- Sub Menu: Vị trí Geofence (under Cấu hình) -->
+    <menuitem id="menu_trcf_geo_location"
+              name="Vị trí Geofence"
+              parent="trcf_fnb_staff.trcf_shift_config_menu"
+              action="action_trcf_geo_location"
+              sequence="20"
+              groups="hr.group_hr_manager"/>
+
+</odoo>

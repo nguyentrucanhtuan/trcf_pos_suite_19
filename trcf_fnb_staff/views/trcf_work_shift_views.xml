@@ -81,25 +81,4 @@
         </field>
     </record>
 
-    <!-- ===== MENU STRUCTURE ===== -->
-    <!-- Root Menu: TRCF Quản lý ca (sau TRCF Phiếu kiểm hàng có sequence=20) -->
-    <menuitem id="trcf_shift_management_menu_root"
-              name="TRCF Quản lý ca"
-              sequence="25"/>
-    
-    <!-- Sub Menu: ZKTeco Devices -->
-    <menuitem id="menu_attendance_zkteco_devices"
-              name="ZKTeco Devices"
-              parent="trcf_shift_management_menu_root"
-              action="action_trcf_zkteco_device"
-              sequence="10"
-              groups="hr.group_hr_user"/>
-    
-    <!-- Sub Menu: Ca làm việc -->
-    <menuitem id="trcf_work_shift_menu"
-              name="Ca làm việc"
-              parent="trcf_shift_management_menu_root"
-              action="trcf_work_shift_action"
-              sequence="20"/>
-
 </odoo>

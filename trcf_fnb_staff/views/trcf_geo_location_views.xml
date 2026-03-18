@@ -112,13 +112,7 @@
             </field>
         </record>
 
-        <!-- Menu item under TRCF → Cấu hình -->
-        <menuitem id="menu_trcf_geo_location"
-                  name="Vị trí Geofence"
-                  parent="trcf_fnb_staff.trcf_shift_config_menu"
-                  action="action_trcf_geo_location"
-                  sequence="20"
-                  groups="hr.group_hr_manager"/>
+        <!-- Menu đã chuyển sang trcf_menus.xml -->
 
     </data>
 </odoo>

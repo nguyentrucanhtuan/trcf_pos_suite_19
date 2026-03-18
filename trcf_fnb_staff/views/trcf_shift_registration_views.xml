@@ -96,11 +96,4 @@
         </field>
     </record>
 
-    <!-- ===== MENU ===== -->
-    <menuitem id="trcf_shift_registration_menu"
-              name="Đăng ký ca"
-              parent="trcf_shift_management_menu_root"
-              action="trcf_shift_registration_action"
-              sequence="30"/>
-
 </odoo>

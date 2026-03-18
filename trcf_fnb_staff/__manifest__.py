@@ -34,9 +34,9 @@
     'data': [
         'security/ir.model.access.csv',
         'views/trcf_zkteco_device_views.xml',
+        'views/trcf_work_shift_views.xml',
         'views/trcf_hr_attendance_views.xml',
         'views/trcf_hr_employee_views.xml',
-        'views/trcf_work_shift_views.xml',
         'views/trcf_shift_registration_views.xml',
         'views/trcf_shift_registration_templates.xml',
         'views/trcf_shift_schedule_grid_template.xml',
@@ -47,6 +47,7 @@
         'views/trcf_geo_location_views.xml',
         'wizard/trcf_generate_week_tasks_wizard_views.xml',
         'views/res_config_settings_views.xml',
+        'views/trcf_menus.xml',
         'data/trcf_shift_task_cron.xml',
     ],
     'assets': {

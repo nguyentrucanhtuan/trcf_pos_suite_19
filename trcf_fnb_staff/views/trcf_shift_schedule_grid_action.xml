@@ -7,11 +7,4 @@
         <field name="tag">trcf_shift_schedule_grid_action</field>
     </record>
 
-    <!-- Menu Item -->
-    <menuitem id="trcf_shift_schedule_grid_menu"
-              name="Xếp lịch làm"
-              parent="trcf_shift_management_menu_root"
-              action="trcf_shift_schedule_grid_client_action"
-              sequence="35"/>
-
 </odoo>

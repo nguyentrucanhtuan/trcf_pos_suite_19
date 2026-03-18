@@ -127,12 +127,7 @@
         </field>
     </record>
 
-    <!-- Menu: Bảng lương (trong TRCF Quản lý ca) -->
-    <menuitem id="trcf_attendance_payroll_menu"
-              name="Bảng lương"
-              parent="trcf_shift_management_menu_root"
-              action="trcf_attendance_payroll_action"
-              sequence="50"/>
+    <!-- Menu: Bảng lương và Điều tra đáng ngờ đã chuyển sang trcf_menus.xml -->
 
     <!-- T038: Action "Bản ghi đáng ngờ" — shortcut cho HR Manager -->
     <record id="action_attendance_suspicious" model="ir.actions.act_window">
@@ -148,14 +143,6 @@
             <p>Các bản ghi có cờ GPS hoặc IP bất thường sẽ xuất hiện ở đây.</p>
         </field>
     </record>
-
-    <!-- Menu: Điều tra đáng ngờ -->
-    <menuitem id="menu_attendance_suspicious"
-              name="Điều tra đáng ngờ"
-              parent="trcf_shift_management_menu_root"
-              action="action_attendance_suspicious"
-              sequence="55"
-              groups="hr.group_hr_manager"/>
 
     <!-- Server Action: Liên kết ca làm việc -->
     <record id="action_attendance_recompute_shift" model="ir.actions.server">
