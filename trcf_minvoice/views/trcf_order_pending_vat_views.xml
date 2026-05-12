@@ -32,6 +32,7 @@
                 <field name="amount_total" sum="Total"/>
                 <field name="amount_tax" sum="Tax"/>
                 <field name="state"/>
+                <field name="trcf_first_payment_method_id" string="Phương thức TT đầu tiên" optional="show"/>
                 <field name="trcf_reference_tax_code"/>
                 <field name="trcf_is_vat_sent" string="Đã xuất VAT"/>
             </list>
