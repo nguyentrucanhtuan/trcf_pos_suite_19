@@ -72,6 +72,9 @@ class TrcfReportController(http.Controller):
         
         # Lấy chi tiết các phiên bán hàng
         sessions = self.get_session_details(current_start, current_end)
+
+        # Lấy top 10 món bán chạy nhất
+        top_products = self.get_top_products(current_start, current_end, top_n=10)
         
         # Lấy tổng kết từ đầu ngày đến hiện tại
         day_summary = self.get_day_summary(current_start, current_end)
@@ -153,6 +156,7 @@ class TrcfReportController(http.Controller):
             'day_summary': day_summary,
             'open_sessions': open_sessions,
             'anomalies': all_anomalies,
+            'top_products': top_products,
         }
 
         return request.render('trcf_fnb_inventory.daily_report_template', vals)
@@ -347,6 +351,83 @@ class TrcfReportController(http.Controller):
                 })
         
         return payment_methods
+
+    def get_top_products(self, start_date, end_date, top_n=10):
+        """Lấy top N món bán chạy nhất theo số lượng, gộp các món còn lại vào 'Món khác'"""
+        # 1. Setup Timezone
+        user_tz = pytz.timezone(request.env.user.tz or 'UTC')
+
+        dt_start = datetime.combine(start_date, time.min)
+        dt_end = datetime.combine(end_date, time.max)
+
+        # 2. Convert to UTC
+        dt_start_utc = user_tz.localize(dt_start).astimezone(pytz.utc).replace(tzinfo=None)
+        dt_end_utc = user_tz.localize(dt_end).astimezone(pytz.utc).replace(tzinfo=None)
+
+        # 3. Lấy các đơn hàng đã hoàn tất trong khoảng thời gian
+        domain_orders = [
+            ('date_order', '>=', dt_start_utc),
+            ('date_order', '<=', dt_end_utc),
+            ('state', 'in', ['paid', 'done', 'invoiced']),
+        ]
+        order_ids = request.env['pos.order'].sudo().search(domain_orders).ids
+
+        if not order_ids:
+            return {
+                'items': [],
+                'others': None,
+                'total_qty': 0,
+                'total_revenue': 0,
+                'total_revenue_formatted': request.env.company.currency_id.format(0),
+            }
+
+        # 4. Group by product trên pos.order.line, tính tổng số lượng và doanh thu
+        domain_lines = [('order_id', 'in', order_ids)]
+        result = request.env['pos.order.line']._read_group(
+            domain=domain_lines,
+            groupby=['product_id'],
+            aggregates=['qty:sum', 'price_subtotal_incl:sum'],
+            order='qty:sum desc',
+        )
+
+        currency = request.env.company.currency_id
+        all_items = []
+        for product, qty_sum, revenue_sum in result:
+            if not product:
+                continue
+            all_items.append({
+                'name': product.display_name or product.name,
+                'qty': int(qty_sum or 0),
+                'revenue': revenue_sum or 0,
+                'formatted_revenue': currency.format(revenue_sum or 0),
+            })
+
+        total_qty = sum(item['qty'] for item in all_items)
+        total_revenue = sum(item['revenue'] for item in all_items)
+
+        # 5. Chia top N và phần còn lại
+        top_items = all_items[:top_n]
+        rest_items = all_items[top_n:]
+
+        others = None
+        if rest_items:
+            others_qty = sum(item['qty'] for item in rest_items)
+            others_revenue = sum(item['revenue'] for item in rest_items)
+            others = {
+                'name': 'Món khác',
+                'qty': int(others_qty),
+                'revenue': others_revenue,
+                'formatted_revenue': currency.format(others_revenue),
+                'product_count': len(rest_items),
+            }
+
+        return {
+            'items': top_items,
+            'others': others,
+            'total_qty': int(total_qty),
+            'total_revenue': total_revenue,
+            'total_revenue_formatted': currency.format(total_revenue),
+        }
 
     def get_revenue_by_preset(self, start_date, end_date):
         """Phân loại đơn hàng theo preset (tại chỗ, mang về, delivery platforms)"""
