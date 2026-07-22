@@ -46,3 +46,8 @@ Thumbs.db
 
 # AI agent documentation (local only)
 #.agent/
+# Spec-kit / AI agent files (local only)
+specs/
+.specify/
+.agents/
+skills-lock.json

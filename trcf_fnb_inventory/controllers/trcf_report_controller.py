@@ -141,6 +141,9 @@ class TrcfReportController(http.Controller):
             'filter_type': filter_type,
             'date_from': date_from,
             'date_to': date_to,
+            # Khoảng ngày đang áp dụng (dạng chuỗi) để date picker hiển thị đúng kỳ
+            'current_start': current_start.strftime('%Y-%m-%d'),
+            'current_end': current_end.strftime('%Y-%m-%d'),
             'total_pos_revenue': formatted_total_revenue,
             'total_orders': total_orders,
             'total_qty': total_qty,

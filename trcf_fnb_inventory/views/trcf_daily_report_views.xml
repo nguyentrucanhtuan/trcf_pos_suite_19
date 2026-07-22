@@ -105,10 +105,42 @@
                     <!-- Main Content -->
                     <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto pt-16 md:pt-4">
                         <div class="max-w-screen mx-auto">
-                            <div class="flex flex-wrap justify-between items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                            <div class="flex flex-wrap justify-between items-start gap-3 md:gap-4 mb-4 md:mb-6">
                                 <div class="flex flex-col gap-1">
                                     <h1 class="text-gray-900 dark:text-white text-xl md:text-2xl lg:text-3xl font-bold leading-tight tracking-tight">Báo cáo tổng quan</h1>
-                                    <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base font-normal leading-normal">Xem nhanh hiệu suất kinh doanh của bạn.</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base font-normal leading-normal">
+                                        Kỳ báo cáo:
+                                        <span class="font-semibold text-gray-700 dark:text-gray-300">
+                                            <t t-if="current_start == current_end"><t t-esc="current_start"/></t>
+                                            <t t-else=""><t t-esc="current_start"/> → <t t-esc="current_end"/></t>
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <!-- Bộ lọc thời gian -->
+                                <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 md:gap-3 w-full md:w-auto">
+                                    <!-- Nút lọc nhanh: Hôm nay / Tuần này / Tháng này -->
+                                    <div class="inline-flex rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-1 shadow-sm">
+                                        <a href="/trcf_fnb_inventory/daily_report?filter_type=today"
+                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'today' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}">Hôm nay</a>
+                                        <a href="/trcf_fnb_inventory/daily_report?filter_type=week"
+                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'week' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}">Tuần này</a>
+                                        <a href="/trcf_fnb_inventory/daily_report?filter_type=month"
+                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'month' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}">Tháng này</a>
+                                    </div>
+
+                                    <!-- Khoảng tùy chọn: Từ ngày - Đến ngày -->
+                                    <form method="get" action="/trcf_fnb_inventory/daily_report"
+                                          class="flex flex-wrap items-center gap-2">
+                                        <input type="hidden" name="filter_type" value="custom"/>
+                                        <input type="date" name="date_from" t-att-value="date_from or current_start"
+                                               t-attf-class="rounded-md border bg-white dark:bg-slate-900 px-2 py-1.5 text-xs md:text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary #{filter_type == 'custom' and 'border-primary' or 'border-gray-200 dark:border-slate-700'}"/>
+                                        <span class="text-gray-400 text-sm">→</span>
+                                        <input type="date" name="date_to" t-att-value="date_to or current_end"
+                                               t-attf-class="rounded-md border bg-white dark:bg-slate-900 px-2 py-1.5 text-xs md:text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary #{filter_type == 'custom' and 'border-primary' or 'border-gray-200 dark:border-slate-700'}"/>
+                                        <button type="submit"
+                                                t-attf-class="px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'custom' and 'bg-primary text-white shadow' or 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-700'}">Xem</button>
+                                    </form>
                                 </div>
                             </div>
                             
