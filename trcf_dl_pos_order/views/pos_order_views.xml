@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Nút trên list view - chính là view dùng ở /odoo/pos-orders -->
+    <record id="view_pos_order_tree_hard_delete" model="ir.ui.view">
+        <field name="name">pos.order.list.hard.delete</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list/header" position="inside">
+                <button name="action_trcf_hard_delete" type="object"
+                        string="Xoá cứng"
+                        class="btn-danger"
+                        groups="trcf_dl_pos_order.group_trcf_pos_hard_delete"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Nút trên form view của một đơn -->
+    <record id="view_pos_pos_form_hard_delete" model="ir.ui.view">
+        <field name="name">pos.order.form.hard.delete</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header" position="inside">
+                <button name="action_trcf_hard_delete" type="object"
+                        string="Xoá cứng"
+                        class="btn-danger"
+                        groups="trcf_dl_pos_order.group_trcf_pos_hard_delete"
+                        invisible="not id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Lối vào thứ hai: menu bánh răng "Actions" của mọi view pos.order -->
+    <record id="action_trcf_pos_hard_delete_server" model="ir.actions.server">
+        <field name="name">Xoá cứng đơn hàng</field>
+        <field name="model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="group_ids" eval="[Command.link(ref('trcf_dl_pos_order.group_trcf_pos_hard_delete'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_trcf_hard_delete()</field>
+    </record>
+
+</odoo>

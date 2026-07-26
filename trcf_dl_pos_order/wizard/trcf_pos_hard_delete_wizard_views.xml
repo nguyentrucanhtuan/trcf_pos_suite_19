@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_trcf_pos_hard_delete_wizard_form" model="ir.ui.view">
+        <field name="name">trcf.pos.hard.delete.wizard.form</field>
+        <field name="model">trcf.pos.hard.delete.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Xoá cứng đơn hàng POS">
+                <field name="order_ids" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <div class="alert alert-danger" role="alert">
+                    <strong>Thao tác không thể hoàn tác.</strong>
+                    Đơn hàng sẽ bị xoá vĩnh viễn khỏi cơ sở dữ liệu bằng SQL,
+                    bỏ qua mọi ràng buộc của Odoo. Chỉ còn lại nhật ký xoá.
+                </div>
+                <group>
+                    <group>
+                        <field name="order_count"/>
+                        <field name="amount_total" widget="monetary"
+                               options="{'currency_field': 'currency_id'}"/>
+                    </group>
+                    <group>
+                        <field name="delete_account_move"/>
+                    </group>
+                </group>
+                <field name="warning_html" nolabel="1" readonly="1"/>
+                <notebook>
+                    <page string="Đơn hàng sẽ xoá" name="orders">
+                        <field name="order_html" nolabel="1" readonly="1"/>
+                    </page>
+                    <page string="Tác động cơ sở dữ liệu" name="impact">
+                        <field name="impact_html" nolabel="1" readonly="1"/>
+                    </page>
+                </notebook>
+                <group>
+                    <field name="reason" placeholder="Vì sao phải xoá cứng những đơn này?"/>
+                    <field name="confirm_text" placeholder="XOA"/>
+                </group>
+                <footer>
+                    <button name="action_hard_delete" type="object" string="Xoá vĩnh viễn"
+                            class="btn-danger" data-hotkey="q"/>
+                    <button string="Huỷ" class="btn-secondary" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

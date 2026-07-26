@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_trcf_pos_hard_delete_log_list" model="ir.ui.view">
+        <field name="name">trcf.pos.hard.delete.log.list</field>
+        <field name="model">trcf.pos.hard.delete.log</field>
+        <field name="arch" type="xml">
+            <list string="Nhật ký xoá cứng" create="0" edit="0" delete="0">
+                <field name="delete_date"/>
+                <field name="order_ref" decoration-bf="1"/>
+                <field name="pos_reference" optional="hide"/>
+                <field name="date_order"/>
+                <field name="config_name"/>
+                <field name="session_name" optional="hide"/>
+                <field name="partner_name" optional="hide"/>
+                <field name="amount_total" sum="Tổng tiền"/>
+                <field name="state_before"/>
+                <field name="account_move_name" optional="show"/>
+                <field name="account_move_deleted" widget="boolean_toggle" readonly="1"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="reason"/>
+                <field name="batch_uuid" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_trcf_pos_hard_delete_log_form" model="ir.ui.view">
+        <field name="name">trcf.pos.hard.delete.log.form</field>
+        <field name="model">trcf.pos.hard.delete.log</field>
+        <field name="arch" type="xml">
+            <form string="Nhật ký xoá cứng" create="0" edit="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="order_ref" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Đơn hàng">
+                            <field name="deleted_order_id"/>
+                            <field name="pos_reference"/>
+                            <field name="date_order"/>
+                            <field name="config_name"/>
+                            <field name="session_name"/>
+                            <field name="partner_name"/>
+                            <field name="amount_total"/>
+                            <field name="state_before"/>
+                        </group>
+                        <group string="Xoá">
+                            <field name="user_id"/>
+                            <field name="delete_date"/>
+                            <field name="batch_uuid"/>
+                            <field name="account_move_name"/>
+                            <field name="account_move_deleted"/>
+                            <field name="picking_names"/>
+                        </group>
+                    </group>
+                    <group string="Lý do">
+                        <field name="reason" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Snapshot đơn hàng" name="payload">
+                            <field name="payload_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                        <page string="Tác động cơ sở dữ liệu" name="impact">
+                            <field name="impact_json" widget="ace" options="{'mode': 'json'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_trcf_pos_hard_delete_log_search" model="ir.ui.view">
+        <field name="name">trcf.pos.hard.delete.log.search</field>
+        <field name="model">trcf.pos.hard.delete.log</field>
+        <field name="arch" type="xml">
+            <search string="Nhật ký xoá cứng">
+                <field name="order_ref"/>
+                <field name="pos_reference"/>
+                <field name="partner_name"/>
+                <field name="user_id"/>
+                <field name="batch_uuid"/>
+                <filter name="filter_delete_date" string="Thời điểm xoá" date="delete_date"/>
+                <filter name="filter_move_deleted" string="Có xoá hoá đơn"
+                        domain="[('account_move_deleted', '=', True)]"/>
+                <group>
+                    <filter name="group_user" string="Người thực hiện" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_config" string="Điểm bán" domain="[]" context="{'group_by': 'config_name'}"/>
+                    <filter name="group_date" string="Ngày xoá" domain="[]" context="{'group_by': 'delete_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_trcf_pos_hard_delete_log" model="ir.actions.act_window">
+        <field name="name">Nhật ký xoá cứng đơn hàng</field>
+        <field name="res_model">trcf.pos.hard.delete.log</field>
+        <field name="path">pos-hard-delete-log</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">Chưa có đơn hàng nào bị xoá cứng.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_trcf_pos_hard_delete_log"
+              name="Nhật ký xoá cứng"
+              parent="point_of_sale.menu_point_config_product"
+              action="action_trcf_pos_hard_delete_log"
+              groups="trcf_dl_pos_order.group_trcf_pos_hard_delete"
+              sequence="99"/>
+
+</odoo>

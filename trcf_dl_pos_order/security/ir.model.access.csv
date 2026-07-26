@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_trcf_pos_hard_delete_wizard,trcf.pos.hard.delete.wizard,model_trcf_pos_hard_delete_wizard,trcf_dl_pos_order.group_trcf_pos_hard_delete,1,1,1,1
+access_trcf_pos_hard_delete_log_user,trcf.pos.hard.delete.log read,model_trcf_pos_hard_delete_log,trcf_dl_pos_order.group_trcf_pos_hard_delete,1,0,0,0
+access_trcf_pos_hard_delete_log_admin,trcf.pos.hard.delete.log admin,model_trcf_pos_hard_delete_log,base.group_system,1,0,0,0
