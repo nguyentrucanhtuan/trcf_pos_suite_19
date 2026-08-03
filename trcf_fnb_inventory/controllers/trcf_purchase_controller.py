@@ -3,6 +3,7 @@ from odoo.http import request
 import pytz
 from datetime import datetime, time
 import json
+from ..i18n import get_translator
 
 class TrcfPurchaseController(http.Controller):
 
@@ -120,6 +121,7 @@ class TrcfPurchaseController(http.Controller):
             })
         
         vals = {
+            't': get_translator(request),
             'purchase_orders': orders_data,
             'total_count': len(orders_data),
         }
@@ -205,6 +207,7 @@ class TrcfPurchaseController(http.Controller):
                 default_picking_type_name = f"{warehouse_name}: {default_pt.name}"
         
         vals = {
+            't': get_translator(request),
             'suppliers': suppliers,
             'products': products,
             'reference': reference,
@@ -404,7 +407,11 @@ class TrcfPurchaseController(http.Controller):
                         
                         # Xử lý backorder wizard nếu có
                         if isinstance(res, dict) and res.get('res_model') == 'stock.backorder.confirmation':
-                            backorder_wizard = request.env['stock.backorder.confirmation'].sudo().browse(res.get('res_id'))
+                            # target='new' wizard action: there is no res_id yet,
+                            # it must be created from the action's context.
+                            backorder_wizard = request.env['stock.backorder.confirmation'].sudo().with_context(
+                                res.get('context', {})
+                            ).create({})
                             backorder_wizard.process_cancel_backorder()
                         
                         _logger.info(f"Picking {picking.name} validated successfully")

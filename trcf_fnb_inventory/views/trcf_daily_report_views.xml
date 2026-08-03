@@ -4,7 +4,7 @@
         <xpath expr="//head" position="inside">
             <meta charset="utf-8"/>
             <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-            <title>Báo cáo Lãi lỗ</title>
+            <title><t t-esc="t('Báo cáo Lãi lỗ')"/></title>
             <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
             <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -107,9 +107,9 @@
                         <div class="max-w-screen mx-auto">
                             <div class="flex flex-wrap justify-between items-start gap-3 md:gap-4 mb-4 md:mb-6">
                                 <div class="flex flex-col gap-1">
-                                    <h1 class="text-gray-900 dark:text-white text-xl md:text-2xl lg:text-3xl font-bold leading-tight tracking-tight">Báo cáo tổng quan</h1>
+                                    <h1 class="text-gray-900 dark:text-white text-xl md:text-2xl lg:text-3xl font-bold leading-tight tracking-tight"><t t-esc="t('Báo cáo tổng quan')"/></h1>
                                     <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base font-normal leading-normal">
-                                        Kỳ báo cáo:
+                                        <t t-esc="t('Kỳ báo cáo:')"/>
                                         <span class="font-semibold text-gray-700 dark:text-gray-300">
                                             <t t-if="current_start == current_end"><t t-esc="current_start"/></t>
                                             <t t-else=""><t t-esc="current_start"/> → <t t-esc="current_end"/></t>
@@ -122,11 +122,11 @@
                                     <!-- Nút lọc nhanh: Hôm nay / Tuần này / Tháng này -->
                                     <div class="inline-flex rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-1 shadow-sm">
                                         <a href="/trcf_fnb_inventory/daily_report?filter_type=today"
-                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'today' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}">Hôm nay</a>
+                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'today' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}"><t t-esc="t('Hôm nay')"/></a>
                                         <a href="/trcf_fnb_inventory/daily_report?filter_type=week"
-                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'week' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}">Tuần này</a>
+                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'week' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}"><t t-esc="t('Tuần này')"/></a>
                                         <a href="/trcf_fnb_inventory/daily_report?filter_type=month"
-                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'month' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}">Tháng này</a>
+                                           t-attf-class="flex-1 text-center px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'month' and 'bg-primary text-white shadow' or 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'}"><t t-esc="t('Tháng này')"/></a>
                                     </div>
 
                                     <!-- Khoảng tùy chọn: Từ ngày - Đến ngày -->
@@ -139,35 +139,35 @@
                                         <input type="date" name="date_to" t-att-value="date_to or current_end"
                                                t-attf-class="rounded-md border bg-white dark:bg-slate-900 px-2 py-1.5 text-xs md:text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary #{filter_type == 'custom' and 'border-primary' or 'border-gray-200 dark:border-slate-700'}"/>
                                         <button type="submit"
-                                                t-attf-class="px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'custom' and 'bg-primary text-white shadow' or 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-700'}">Xem</button>
+                                                t-attf-class="px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium rounded-md transition-colors #{filter_type == 'custom' and 'bg-primary text-white shadow' or 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-700'}"><t t-esc="t('Xem')"/></button>
                                     </form>
                                 </div>
                             </div>
                             
                             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6 mb-4 md:mb-6 lg:mb-8">
                                 <div class="flex flex-col gap-1 md:gap-2 rounded-lg md:rounded-xl p-3 md:p-4 lg:p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal">Tổng doanh thu</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal"><t t-esc="t('Tổng doanh thu')"/></p>
                                     <p class="text-gray-900 dark:text-white tracking-tight text-lg md:text-xl lg:text-3xl font-bold leading-tight"><t t-esc="total_pos_revenue"/></p>
                                     <p t-attf-class="text-xs md:text-sm font-medium leading-normal #{revenue_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or revenue_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
                                         <t t-esc="revenue_comparison['formatted']"/> <span class="hidden md:inline"><t t-esc="comparison_text"/></span>
                                     </p>
                                 </div>
                                 <div class="flex flex-col gap-1 md:gap-2 rounded-lg md:rounded-xl p-3 md:p-4 lg:p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal">Số đơn</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal"><t t-esc="t('Số đơn')"/></p>
                                     <p class="text-gray-900 dark:text-white tracking-tight text-lg md:text-xl lg:text-3xl font-bold leading-tight"><t t-esc="total_orders"/></p>
                                     <p t-attf-class="text-xs md:text-sm font-medium leading-normal #{orders_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or orders_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
                                         <t t-esc="orders_comparison['formatted']"/> <span class="hidden md:inline"><t t-esc="comparison_text"/></span>
                                     </p>
                                 </div>
                                 <div class="flex flex-col gap-1 md:gap-2 rounded-lg md:rounded-xl p-3 md:p-4 lg:p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal">Số món</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal"><t t-esc="t('Số món')"/></p>
                                     <p class="text-gray-900 dark:text-white tracking-tight text-lg md:text-xl lg:text-3xl font-bold leading-tight"><t t-esc="total_qty"/></p>
                                     <p t-attf-class="text-xs md:text-sm font-medium leading-normal #{qty_comparison['trend'] == 'up' and 'text-green-500 dark:text-green-400' or qty_comparison['trend'] == 'down' and 'text-red-500 dark:text-red-400' or 'text-gray-500 dark:text-gray-400'}">
                                         <t t-esc="qty_comparison['formatted']"/> <span class="hidden md:inline"><t t-esc="comparison_text"/></span>
                                     </p>
                                 </div>
                                 <div class="flex flex-col gap-1 md:gap-2 rounded-lg md:rounded-xl p-3 md:p-4 lg:p-6 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal">Tiền mặt</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm lg:text-base font-medium leading-normal"><t t-esc="t('Tiền mặt')"/></p>
                                     <p class="text-gray-900 dark:text-white tracking-tight text-lg md:text-xl lg:text-3xl font-bold leading-tight"><t t-esc="cash_balance"/></p>
                                     <p class="text-gray-500 dark:text-gray-400 text-xs md:text-sm font-medium leading-normal hidden md:block">
                                         <t t-esc="cash_balance_detail['pos_cash_formatted']"/> - <t t-esc="cash_balance_detail['expense_cash_formatted']"/> - <t t-esc="cash_balance_detail['purchase_cash_formatted']"/>
@@ -185,9 +185,9 @@
                                                 <span class="material-symbols-outlined text-white text-xl md:text-2xl">warning</span>
                                             </div>
                                             <div>
-                                                <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white">Cảnh Báo Bất Thường</h3>
+                                                <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white"><t t-esc="t('Cảnh Báo Bất Thường')"/></h3>
                                                 <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                                                    Phát hiện <span class="font-semibold text-yellow-700 dark:text-yellow-400"><t t-esc="len(anomalies)"/></span> đơn hàng có bất thường
+                                                    <t t-esc="t('Phát hiện')"/> <span class="font-semibold text-yellow-700 dark:text-yellow-400"><t t-esc="len(anomalies)"/></span> <t t-esc="t('đơn hàng có bất thường')"/>
                                                 </p>
                                             </div>
                                         </div>
@@ -198,11 +198,11 @@
                                         <table class="w-full text-left mobile-table min-w-[600px]">
                                             <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                 <tr>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300">Phiên</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300">Mã đơn</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300">Vấn đề</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300">Chi tiết</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right">Số tiền</th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300"><t t-esc="t('Phiên')"/></th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300"><t t-esc="t('Mã đơn')"/></th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300"><t t-esc="t('Vấn đề')"/></th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300"><t t-esc="t('Chi tiết')"/></th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right"><t t-esc="t('Số tiền')"/></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -224,27 +224,27 @@
                                                             <t t-elif="anomaly['type'] == 'discount'">
                                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-xs font-medium">
                                                                     <span class="material-symbols-outlined text-sm">percent</span>
-                                                                    Giảm giá
+                                                                    <t t-esc="t('Giảm giá')"/>
                                                                 </span>
                                                             </t>
                                                         </td>
                                                         <td class="p-3 md:p-4">
                                                             <t t-if="anomaly['type'] == 'split_payment'">
                                                                 <div class="text-xs text-gray-700 dark:text-gray-300">
-                                                                    <span class="font-semibold" t-esc="anomaly['payment_count']"/> phương thức:
+                                                                    <span class="font-semibold" t-esc="anomaly['payment_count']"/> <t t-esc="t('phương thức:')"/>
                                                                     <span class="font-mono text-yellow-700 dark:text-yellow-400" t-esc="anomaly['payment_methods']"/>
                                                                 </div>
                                                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                                    Đơn này được tính nhiều lần trong từng phương thức
+                                                                    <t t-esc="t('Đơn này được tính nhiều lần trong từng phương thức')"/>
                                                                 </div>
                                                             </t>
                                                             <t t-elif="anomaly['type'] == 'discount'">
                                                                 <div class="text-xs text-gray-700 dark:text-gray-300">
-                                                                    Sản phẩm: <span class="font-semibold" t-esc="anomaly['product_name']"/>
-                                                                    (<t t-esc="anomaly['qty']"/> món)
+                                                                    <t t-esc="t('Sản phẩm:')"/> <span class="font-semibold" t-esc="anomaly['product_name']"/>
+                                                                    (<t t-esc="anomaly['qty']"/> <t t-esc="t('món')"/>)
                                                                 </div>
                                                                 <div class="text-xs text-blue-700 dark:text-blue-400 mt-1">
-                                                                    Giảm <span class="font-semibold" t-esc="anomaly['discount_percent']"/>%:
+                                                                    <t t-esc="t('Giảm')"/> <span class="font-semibold" t-esc="anomaly['discount_percent']"/>%:
                                                                     <t t-esc="'{:,.0f}'.format(anomaly['original_price'])"/>đ
                                                                     → <t t-esc="'{:,.0f}'.format(anomaly['final_price'])"/>đ
                                                                 </div>
@@ -269,7 +269,7 @@
                                         <div class="flex items-start gap-2">
                                             <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-sm flex-shrink-0">info</span>
                                             <p class="text-xs text-yellow-800 dark:text-yellow-300">
-                                                <strong>Lưu ý:</strong> Tổng số đơn/món theo từng phương thức thanh toán có thể lớn hơn tổng thực tế do các đơn split payment được tính nhiều lần.
+                                                <strong><t t-esc="t('Lưu ý:')"/></strong> <t t-esc="t('Tổng số đơn/món theo từng phương thức thanh toán có thể lớn hơn tổng thực tế do các đơn split payment được tính nhiều lần.')"/>
                                             </p>
                                         </div>
                                     </div>
@@ -279,7 +279,7 @@
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 mb-4 md:mb-6 lg:mb-8">
 
                                 <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg md:rounded-xl p-4 md:p-6">
-                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4">Phân loại đơn hàng</h3>
+                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4"><t t-esc="t('Phân loại đơn hàng')"/></h3>
                                     <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6">
                                     <div class="relative w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48">
                                         <svg class="size-full" viewBox="0 0 36 36">
@@ -306,7 +306,7 @@
                                     <div class="flex flex-col gap-3">
                                         <t t-if="not revenue_by_presets">
                                             <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-                                                Không có dữ liệu đơn hàng
+                                                <t t-esc="t('Không có dữ liệu đơn hàng')"/>
                                             </div>
                                         </t>
                                         <!-- Calculate total revenue again for legend -->
@@ -318,7 +318,7 @@
                                                 <div class="flex justify-between w-full gap-4">
                                                     <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="preset['name']"/>
                                                     <span class="text-sm font-semibold text-gray-800 dark:text-white">
-                                                        <t t-esc="preset['formatted_revenue']"/> (<t t-esc="preset['count']"/> đơn)
+                                                        <t t-esc="preset['formatted_revenue']"/> (<t t-esc="preset['count']"/> <t t-esc="t('đơn')"/>)
                                                     </span>
                                                 </div>
                                             </div>
@@ -328,7 +328,7 @@
                                 </div>
 
                                 <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg md:rounded-xl p-4 md:p-6">
-                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4">Cơ cấu doanh thu</h3>
+                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-3 md:mb-4"><t t-esc="t('Cơ cấu doanh thu')"/></h3>
                                     <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6">
                                     <div class="relative w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48">
                                         <svg class="size-full" viewBox="0 0 36 36">
@@ -355,7 +355,7 @@
                                     <div class="flex flex-col gap-3">
                                         <t t-if="not payment_methods">
                                             <div class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-                                                Không có dữ liệu thanh toán
+                                                <t t-esc="t('Không có dữ liệu thanh toán')"/>
                                             </div>
                                         </t>
                                         <!-- Calculate total amount again for legend -->
@@ -367,7 +367,7 @@
                                                 <div class="flex justify-between w-full gap-4">
                                                     <span class="text-sm text-gray-600 dark:text-gray-400" t-esc="method['name']"/>
                                                     <span class="text-sm font-semibold text-gray-800 dark:text-white">
-                                                        <t t-esc="method['formatted_amount']"/> (<t t-esc="method['count']"/> đơn)
+                                                        <t t-esc="method['formatted_amount']"/> (<t t-esc="method['count']"/> <t t-esc="t('đơn')"/>)
                                                     </span>
                                                 </div>
                                             </div>
@@ -389,14 +389,14 @@
                                                     <span class="material-symbols-outlined text-white text-xl md:text-2xl">trophy</span>
                                                 </div>
                                                 <div>
-                                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white">Top 10 Món Bán Chạy</h3>
+                                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white"><t t-esc="t('Top 10 Món Bán Chạy')"/></h3>
                                                     <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                                                        Tổng <span class="font-semibold text-rose-700 dark:text-rose-400"><t t-esc="top_products['total_qty']"/></span> món bán ra
+                                                        <t t-esc="t('Tổng')"/> <span class="font-semibold text-rose-700 dark:text-rose-400"><t t-esc="top_products['total_qty']"/></span> <t t-esc="t('món bán ra')"/>
                                                     </p>
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <p class="text-xs text-gray-500 dark:text-gray-400">Tổng doanh thu</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Tổng doanh thu')"/></p>
                                                 <p class="text-sm md:text-lg font-bold text-gray-900 dark:text-white" t-esc="top_products['total_revenue_formatted']"/>
                                             </div>
                                         </div>
@@ -408,10 +408,10 @@
                                             <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                 <tr>
                                                     <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 w-12">#</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300">Tên món</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right">Số lượng</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right">Doanh thu</th>
-                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right hidden md:table-cell">% Tổng</th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300"><t t-esc="t('Tên món')"/></th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right"><t t-esc="t('Số lượng')"/></th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right"><t t-esc="t('Doanh thu')"/></th>
+                                                    <th class="p-3 md:p-4 text-xs font-semibold text-gray-700 dark:text-gray-300 text-right hidden md:table-cell"><t t-esc="t('% Tổng')"/></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -456,8 +456,8 @@
                                                             </span>
                                                         </td>
                                                         <td class="p-3 md:p-4">
-                                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Món khác</span>
-                                                            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">(<t t-esc="top_products['others']['product_count']"/> món)</span>
+                                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300"><t t-esc="t('Món khác')"/></span>
+                                                            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">(<t t-esc="top_products['others']['product_count']"/> <t t-esc="t('món')"/>)</span>
                                                         </td>
                                                         <td class="p-3 md:p-4 text-right">
                                                             <span class="text-sm font-bold text-gray-700 dark:text-gray-300" t-esc="top_products['others']['qty']"/>
@@ -481,9 +481,9 @@
                             <t t-if="day_summary">
                                 <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 lg:mb-8">
                                     <div class="flex flex-wrap justify-between items-center gap-3 md:gap-4 mb-3 md:mb-4">
-                                        <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white">TỔNG KẾT TRONG NGÀY</h3>
+                                        <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white"><t t-esc="t('TỔNG KẾT TRONG NGÀY')"/></h3>
                                         <div class="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                                            Từ <t t-esc="day_summary['start_time']"/> đến <t t-esc="day_summary['end_time']"/>
+                                            <t t-esc="t('Từ')"/> <t t-esc="day_summary['start_time']"/> <t t-esc="t('đến')"/> <t t-esc="day_summary['end_time']"/>
                                         </div>
                                     </div>
                                     
@@ -497,23 +497,23 @@
                                                         <span class="material-symbols-outlined text-white text-sm md:text-base">summarize</span>
                                                     </div>
                                                     <div>
-                                                        <h4 class="text-sm md:text-base font-bold text-gray-900 dark:text-white">Tổng kết trong ngày</h4>
+                                                        <h4 class="text-sm md:text-base font-bold text-gray-900 dark:text-white"><t t-esc="t('Tổng kết trong ngày')"/></h4>
                                                         <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400 hidden md:block">
-                                                            Thời gian: <t t-esc="day_summary['start_time']"/> - <t t-esc="day_summary['end_time']"/>
+                                                            <t t-esc="t('Thời gian:')"/> <t t-esc="day_summary['start_time']"/> - <t t-esc="day_summary['end_time']"/>
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div class="flex flex-wrap gap-3 md:gap-4">
                                                     <div class="text-center">
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400">Doanh thu</p>
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Doanh thu')"/></p>
                                                         <p class="text-sm md:text-lg font-bold text-gray-900 dark:text-white" t-esc="day_summary['total_revenue_formatted']"/>
                                                     </div>
                                                     <div class="text-center">
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400">Số đơn</p>
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Số đơn')"/></p>
                                                         <p class="text-sm md:text-lg font-bold text-blue-600 dark:text-blue-400" t-esc="day_summary['order_count']"/>
                                                     </div>
                                                     <div class="text-center">
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400">Số món</p>
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Số món')"/></p>
                                                         <p class="text-sm md:text-lg font-bold text-green-600 dark:text-green-400" t-esc="day_summary['total_qty']"/>
                                                     </div>
                                                 </div>
@@ -525,14 +525,14 @@
                                             <table class="w-full text-left mobile-table min-w-[600px]">
                                                 <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                     <tr>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 sticky-col bg-gray-50 dark:bg-slate-800">PT thanh toán</th>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đơn</th>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Món</th>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ngày</th>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Bán hàng</th>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Mua hàng</th>
-                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Hiện tại</th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 sticky-col bg-gray-50 dark:bg-slate-800"><t t-esc="t('PT thanh toán')"/></th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Đơn')"/></th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Món')"/></th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Đầu ngày')"/></th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Bán hàng')"/></th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Chi phí')"/></th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Mua hàng')"/></th>
+                                                        <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Hiện tại')"/></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -575,9 +575,9 @@
                             <t t-if="open_sessions">
                                 <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 lg:mb-8">
                                     <div class="flex flex-wrap justify-between items-center gap-3 md:gap-4 mb-3 md:mb-4">
-                                        <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white">PHIÊN ĐANG MỞ</h3>
+                                        <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white"><t t-esc="t('PHIÊN ĐANG MỞ')"/></h3>
                                         <div class="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                                            Tổng: <t t-esc="len(open_sessions)"/> phiên
+                                            <t t-esc="t('Tổng:')"/> <t t-esc="len(open_sessions)"/> <t t-esc="t('phiên')"/>
                                         </div>
                                     </div>
                                     
@@ -595,21 +595,21 @@
                                                             <div>
                                                                 <h4 class="text-sm md:text-base font-bold text-gray-900 dark:text-white" t-esc="session['name']"/>
                                                                 <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                                                                    <t t-esc="session['user_name']"/> • <span class="hidden md:inline"><t t-esc="session['start_at']"/> - <t t-esc="session['current_time']"/></span> (Đang mở)
+                                                                    <t t-esc="session['user_name']"/> • <span class="hidden md:inline"><t t-esc="session['start_at']"/> - <t t-esc="session['current_time']"/></span> (<t t-esc="t('Đang mở')"/>)
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         <div class="flex flex-wrap gap-3 md:gap-4">
                                                             <div class="text-center">
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Doanh thu</p>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Doanh thu')"/></p>
                                                                 <p class="text-sm md:text-lg font-bold text-gray-900 dark:text-white" t-esc="session['total_revenue_formatted']"/>
                                                             </div>
                                                             <div class="text-center">
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Số đơn</p>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Số đơn')"/></p>
                                                                 <p class="text-sm md:text-lg font-bold text-blue-600 dark:text-blue-400" t-esc="session['order_count']"/>
                                                             </div>
                                                             <div class="text-center">
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Số món</p>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Số món')"/></p>
                                                                 <p class="text-sm md:text-lg font-bold text-green-600 dark:text-green-400" t-esc="session['total_qty']"/>
                                                             </div>
                                                         </div>
@@ -623,8 +623,8 @@
                                                         <div class="flex items-start gap-2">
                                                             <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-sm flex-shrink-0">info</span>
                                                             <p class="text-xs text-yellow-800 dark:text-yellow-300">
-                                                                <strong>Lưu ý:</strong> Có <strong t-esc="session['split_payment_count']"/> đơn thanh toán kết hợp. 
-                                                                Tổng số đơn theo phương thức thanh toán có thể lớn hơn số đơn thực tế.
+                                                                <strong><t t-esc="t('Lưu ý:')"/></strong> <t t-esc="t('Có')"/> <strong t-esc="session['split_payment_count']"/> <t t-esc="t('đơn thanh toán kết hợp.')"/>
+                                                                <t t-esc="t('Tổng số đơn theo phương thức thanh toán có thể lớn hơn số đơn thực tế.')"/>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -635,14 +635,14 @@
                                                     <table class="w-full text-left mobile-table min-w-[600px]">
                                                         <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                             <tr>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 sticky-col bg-gray-50 dark:bg-slate-800">PT thanh toán</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đơn</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Món</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ca</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Bán hàng</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Mua hàng</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Hiện tại</th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 sticky-col bg-gray-50 dark:bg-slate-800"><t t-esc="t('PT thanh toán')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Đơn')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Món')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Đầu ca')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Bán hàng')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Chi phí')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Mua hàng')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Hiện tại')"/></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -686,15 +686,15 @@
                             <!-- Session Details Section -->
                             <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 lg:mb-8">
                                 <div class="flex flex-wrap justify-between items-center gap-3 md:gap-4 mb-3 md:mb-4">
-                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white">CHI TIẾT PHIÊN BÁN HÀNG</h3>
+                                    <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white"><t t-esc="t('CHI TIẾT PHIÊN BÁN HÀNG')"/></h3>
                                     <div class="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                                        Tổng: <t t-esc="len(sessions)"/> phiên
+                                        <t t-esc="t('Tổng:')"/> <t t-esc="len(sessions)"/> <t t-esc="t('phiên')"/>
                                     </div>
                                 </div>
-                                
+
                                 <t t-if="not sessions">
                                     <div class="text-xs md:text-sm text-gray-500 dark:text-gray-400 text-center py-6 md:py-8">
-                                        Không có phiên bán hàng trong kỳ này
+                                        <t t-esc="t('Không có phiên bán hàng trong kỳ này')"/>
                                     </div>
                                 </t>
                                 
@@ -719,15 +719,15 @@
                                                         </div>
                                                         <div class="flex flex-wrap gap-3 md:gap-4">
                                                             <div class="text-center">
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Doanh thu</p>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Doanh thu')"/></p>
                                                                 <p class="text-sm md:text-lg font-bold text-gray-900 dark:text-white" t-esc="session['total_revenue_formatted']"/>
                                                             </div>
                                                             <div class="text-center">
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Số đơn</p>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Số đơn')"/></p>
                                                                 <p class="text-sm md:text-lg font-bold text-blue-600 dark:text-blue-400" t-esc="session['order_count']"/>
                                                             </div>
                                                             <div class="text-center">
-                                                                <p class="text-xs text-gray-500 dark:text-gray-400">Số món</p>
+                                                                <p class="text-xs text-gray-500 dark:text-gray-400"><t t-esc="t('Số món')"/></p>
                                                                 <p class="text-sm md:text-lg font-bold text-green-600 dark:text-green-400" t-esc="session['total_qty']"/>
                                                             </div>
                                                         </div>
@@ -741,8 +741,8 @@
                                                         <div class="flex items-start gap-2">
                                                             <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-400 text-sm flex-shrink-0">info</span>
                                                             <p class="text-xs text-yellow-800 dark:text-yellow-300">
-                                                                <strong>Lưu ý:</strong> Có <strong t-esc="session['split_payment_count']"/> đơn thanh toán kết hợp. 
-                                                                Tổng số đơn theo phương thức thanh toán có thể lớn hơn số đơn thực tế.
+                                                                <strong><t t-esc="t('Lưu ý:')"/></strong> <t t-esc="t('Có')"/> <strong t-esc="session['split_payment_count']"/> <t t-esc="t('đơn thanh toán kết hợp.')"/>
+                                                                <t t-esc="t('Tổng số đơn theo phương thức thanh toán có thể lớn hơn số đơn thực tế.')"/>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -753,14 +753,14 @@
                                                     <table class="w-full text-left mobile-table min-w-[600px]">
                                                         <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                                                             <tr>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 sticky-col bg-gray-50 dark:bg-slate-800">PT thanh toán</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đơn</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Món</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Đầu ca</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Bán hàng</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Chi phí</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Mua hàng</th>
-                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right">Cuối ca</th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 sticky-col bg-gray-50 dark:bg-slate-800"><t t-esc="t('PT thanh toán')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Đơn')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Món')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Đầu ca')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Bán hàng')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Chi phí')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Mua hàng')"/></th>
+                                                                <th class="p-2 md:p-3 text-xs font-semibold text-gray-600 dark:text-gray-400 text-right"><t t-esc="t('Cuối ca')"/></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>

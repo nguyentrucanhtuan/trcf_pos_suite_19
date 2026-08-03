@@ -4,9 +4,12 @@ from odoo.http import request
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
 from datetime import datetime, timedelta
+from markupsafe import Markup
 import calendar
 import json
 import math
+
+from ..i18n import get_translator
 
 
 class TrcfShiftRegistrationController(http.Controller):
@@ -14,11 +17,12 @@ class TrcfShiftRegistrationController(http.Controller):
     @http.route('/dang-ky-ca', type='http', auth='user', website=True)
     def shift_registration_page(self, **kwargs):
         """Trang đăng ký ca làm việc cho nhân viên"""
-        
+        t = get_translator(request)
+
         # Lấy nhân viên hiện tại
         employee = request.env.user.employee_id
         if not employee:
-            return request.render('trcf_fnb_staff.shift_registration_no_employee')
+            return request.render('trcf_fnb_staff.shift_registration_no_employee', {'t': t})
         
         # Lấy danh sách ca làm việc active
         shifts = request.env['trcf.work.shift'].sudo().search([
@@ -42,7 +46,7 @@ class TrcfShiftRegistrationController(http.Controller):
                 'date': current_date,
                 'date_str': current_date.strftime('%Y-%m-%d'),
                 'display': current_date.strftime('%d/%m'),
-                'weekday': self._get_weekday_name(current_date.weekday()),
+                'weekday': self._get_weekday_name(current_date.weekday(), t),
                 'is_weekend': current_date.weekday() >= 5,
             })
         
@@ -65,13 +69,16 @@ class TrcfShiftRegistrationController(http.Controller):
             ('active', '=', True),
             ('company_id', 'in', [request.env.company.id, False]),
         ])
-        geo_locations_json = json.dumps([{
+        # Markup(): t-out HTML-escapes plain strings, which corrupts JSON
+        # embedded in a <script> tag (entities aren't decoded there) --
+        # mark this pre-serialized JSON as already-safe raw output.
+        geo_locations_json = Markup(json.dumps([{
             'id': loc.id,
             'name': loc.name,
             'lat': loc.latitude,
             'lon': loc.longitude,
             'radius': loc.radius,
-        } for loc in geo_locations_qs])
+        } for loc in geo_locations_qs]))
 
         # === GEO ATTENDANCE: Trạng thái check-in hôm nay ===
         today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -115,40 +122,43 @@ class TrcfShiftRegistrationController(http.Controller):
             current_attendance = {'status': 'idle'}
 
         return request.render('trcf_fnb_staff.shift_registration_form', {
+            't': t,
             'employee': employee,
             'shifts': shifts,
             'dates': dates,
             'registered_dict': registered_dict,
             'geo_locations_json': geo_locations_json,
             'current_attendance': current_attendance,
+            'staff_i18n_json': Markup(json.dumps(self._get_staff_i18n(t))),
         })
 
     
     @http.route('/dang-ky-ca/save', type='jsonrpc', auth='user', methods=['POST'])
     def save_shift_registration(self, **kwargs):
         """API lưu đăng ký ca"""
+        t = get_translator(request)
         try:
             employee = request.env.user.employee_id
             if not employee:
-                return {'success': False, 'message': 'Không tìm thấy thông tin nhân viên'}
-            
+                return {'success': False, 'message': t('Không tìm thấy thông tin nhân viên')}
+
             selections = kwargs.get('selections', [])
-            
+
             if not selections:
-                return {'success': False, 'message': 'Vui lòng chọn ít nhất một ca'}
-            
+                return {'success': False, 'message': t('Vui lòng chọn ít nhất một ca')}
+
             created_count = 0
             for sel in selections:
                 date_str = sel.get('date')
                 shift_id = sel.get('shift_id')
-                
+
                 # Kiểm tra đã đăng ký chưa
                 existing = request.env['trcf.shift.registration'].sudo().search([
                     ('employee_id', '=', employee.id),
                     ('shift_id', '=', int(shift_id)),
                     ('date', '=', date_str),
                 ], limit=1)
-                
+
                 if not existing:
                     request.env['trcf.shift.registration'].sudo().create({
                         'employee_id': employee.id,
@@ -157,27 +167,28 @@ class TrcfShiftRegistrationController(http.Controller):
                         'state': 'draft',
                     })
                     created_count += 1
-            
+
             return {
-                'success': True, 
-                'message': f'Đã đăng ký thành công {created_count} ca!',
+                'success': True,
+                'message': t('Đã đăng ký thành công {count} ca!').format(count=created_count),
                 'created_count': created_count
             }
-            
+
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
     @http.route('/dang-ky-ca/remove', type='jsonrpc', auth='user', methods=['POST'])
     def remove_shift_registration(self, **kwargs):
         """API hủy đăng ký ca"""
+        t = get_translator(request)
         try:
             employee = request.env.user.employee_id
             if not employee:
-                return {'success': False, 'message': 'Không tìm thấy thông tin nhân viên'}
-            
+                return {'success': False, 'message': t('Không tìm thấy thông tin nhân viên')}
+
             date_str = kwargs.get('date')
             shift_id = kwargs.get('shift_id')
-            
+
             # Tìm và xóa đăng ký
             registration = request.env['trcf.shift.registration'].sudo().search([
                 ('employee_id', '=', employee.id),
@@ -185,13 +196,13 @@ class TrcfShiftRegistrationController(http.Controller):
                 ('date', '=', date_str),
                 ('state', '=', 'draft'),  # Chỉ xóa được đăng ký nháp
             ], limit=1)
-            
+
             if registration:
                 registration.unlink()
-                return {'success': True, 'message': 'Đã hủy đăng ký!'}
+                return {'success': True, 'message': t('Đã hủy đăng ký!')}
             else:
-                return {'success': False, 'message': 'Không tìm thấy đăng ký hoặc đăng ký đã được duyệt'}
-                
+                return {'success': False, 'message': t('Không tìm thấy đăng ký hoặc đăng ký đã được duyệt')}
+
         except Exception as e:
             return {'success': False, 'message': str(e)}
     
@@ -206,9 +217,10 @@ class TrcfShiftRegistrationController(http.Controller):
         Returns:
             dict: {success, month, year, records[], total_salary_display, is_provisional}
         """
+        t = get_translator(request)
         employee = request.env.user.employee_id
         if not employee:
-            return {'success': False, 'message': 'Không tìm thấy thông tin nhân viên'}
+            return {'success': False, 'message': t('Không tìm thấy thông tin nhân viên')}
 
         today = datetime.now()
         month = int(month) if month else today.month
@@ -244,13 +256,18 @@ class TrcfShiftRegistrationController(http.Controller):
             salary = att.trcf_hourly_salary_sum or 0.0
             total_salary += salary
 
+            check_in_key, check_in_display = self._translate_status(att.check_in_status, t)
+            check_out_key, check_out_display = self._translate_status(att.check_out_status, t)
+
             records.append({
                 'date': local_in.strftime('%d/%m/%Y'),
                 'check_in': local_in.strftime('%H:%M'),
                 'check_out': local_out.strftime('%H:%M') if local_out else '',
                 'worked_hours_display': worked_display,
-                'check_in_status': att.check_in_status or '–',
-                'check_out_status': att.check_out_status or '–',
+                'check_in_status': check_in_display,
+                'check_in_status_key': check_in_key,
+                'check_out_status': check_out_display,
+                'check_out_status_key': check_out_key,
                 'salary_display': '{:,.0f}'.format(salary).replace(',', '.'),
                 'attendance_source': att.attendance_source or 'zkteco',
             })
@@ -265,10 +282,54 @@ class TrcfShiftRegistrationController(http.Controller):
             'is_provisional': True,
         }
 
-    def _get_weekday_name(self, weekday):
+    def _get_weekday_name(self, weekday, t=None):
         """Trả về tên thứ trong tuần"""
         weekdays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
-        return weekdays[weekday]
+        name = weekdays[weekday]
+        return t(name) if t else name
+
+    def _translate_status(self, status, t):
+        """Phân tích chuỗi trạng thái ('Trễ 15p' / 'Sớm 5p' / 'Đúng giờ') thành
+        (status_key, display_text) -- status_key dùng để gán CSS class ở JS
+        (không phụ thuộc ngôn ngữ), display_text đã được dịch để hiển thị.
+        """
+        if not status:
+            return 'none', '–'
+        if status == 'Đúng giờ':
+            return 'ontime', t('Đúng giờ')
+        parts = status.split(' ', 1)
+        prefix, minutes = parts[0], parts[1] if len(parts) > 1 else ''
+        if prefix == 'Trễ':
+            return 'late', t('Trễ {mins}').format(mins=minutes)
+        if prefix == 'Sớm':
+            return 'early', t('Sớm {mins}').format(mins=minutes)
+        return 'none', t(status)
+
+    def _get_staff_i18n(self, t):
+        """Chuỗi dịch dùng bởi geo_attendance.js (static asset, không thể
+        gọi t() trực tiếp) -- được nhúng vào trang qua window.TRCF_STAFF_I18N.
+        """
+        return {
+            'gps_valid': t('Hợp lệ ✓'),
+            'gps_invalid': t('Ngoài vùng ✗'),
+            'meters_from_nearest': t('mét so với cơ sở gần nhất'),
+            'km_from_nearest': t('km so với cơ sở gần nhất'),
+            'gps_error_default': t('Không thể xác định vị trí GPS.'),
+            'gps_error_permission_denied': t('Bạn đã từ chối quyền truy cập vị trí. Vui lòng bật lại trong cài đặt trình duyệt.'),
+            'gps_error_unavailable': t('Tín hiệu GPS không khả dụng. Vui lòng thử lại.'),
+            'gps_error_timeout': t('Hết thời gian chờ GPS. Đang thử lại...'),
+            'checkin_success': t('Check-in thành công lúc {time} tại {location}'),
+            'ip_suspicious_warning': t('⚠️ Cảnh báo: Thiết bị không kết nối đúng mạng WiFi văn phòng.'),
+            'checkout_success': t('Check-out thành công! Tổng giờ làm: {hours}'),
+            'connection_error': t('Lỗi kết nối. Vui lòng thử lại.'),
+            'error_out_of_range': t('Bạn đang ở ngoài vùng cho phép. Khoảng cách: {distance}m (bán kính: {radius}m)'),
+            'error_ip_blocked': t('Thiết bị không kết nối đúng mạng WiFi văn phòng.'),
+            'error_already_checked_in': t('Bạn đã check-in lúc {time}. Vui lòng check-out trước.'),
+            'error_no_open_session': t('Không có phiên làm việc đang mở. Vui lòng check-in trước.'),
+            'error_no_location_configured': t('Cơ sở chưa được cấu hình vị trí GPS. Vui lòng liên hệ quản trị.'),
+            'error_no_employee': t('Không tìm thấy thông tin nhân viên. Vui lòng liên hệ HR.'),
+            'error_default': t('Đã xảy ra lỗi. Vui lòng thử lại.'),
+        }
 
     # ===================================================================
     # GEO ATTENDANCE ROUTES (Phase 2-3)

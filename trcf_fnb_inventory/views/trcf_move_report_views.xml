@@ -5,7 +5,7 @@
             <head>
                 <meta charset="utf-8"/>
                 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-                <title>Báo cáo Nhập Xuất</title>
+                <title><t t-esc="t('Báo cáo Nhập Xuất')"/></title>
                 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
                 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -57,7 +57,7 @@
                             <button id="mobile-menu-btn" class="p-2 text-text-light-primary dark:text-dark-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
                                 <span class="material-symbols-outlined">menu</span>
                             </button>
-                            <h1 class="text-lg font-bold dark:text-white">Nhập Xuất</h1>
+                            <h1 class="text-lg font-bold dark:text-white"><t t-esc="t('Nhập Xuất')"/></h1>
                             <div class="w-10"></div>
                         </div>
 
@@ -65,17 +65,17 @@
                             <div class="flex flex-col gap-6 mb-8">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div>
-                                        <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Báo cáo Nhập Xuất</h1>
-                                        <p class="text-text-light-secondary dark:text-text-dark-secondary mt-1">Theo dõi biến động kho cho <span class="font-semibold text-primary">Sản phẩm có theo dõi tồn kho</span>.</p>
+                                        <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white"><t t-esc="t('Báo cáo Nhập Xuất')"/></h1>
+                                        <p class="text-text-light-secondary dark:text-text-dark-secondary mt-1"><t t-esc="t('Theo dõi biến động kho cho')"/> <span class="font-semibold text-primary"><t t-esc="t('Sản phẩm có theo dõi tồn kho')"/></span>.</p>
                                     </div>
 
                                     <div class="flex items-center gap-1 bg-white dark:bg-slate-900 p-1 rounded-xl shadow-sm border border-border-light dark:border-border-dark">
                                         <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=today&amp;search=#{search_query or ''}" 
-                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'today' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}">Hôm nay</a>
-                                        <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=week&amp;search=#{search_query or ''}" 
-                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'week' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}">Tuần</a>
-                                        <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=month&amp;search=#{search_query or ''}" 
-                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'month' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}">Tháng</a>
+                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'today' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}"><t t-esc="t('Hôm nay')"/></a>
+                                        <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=week&amp;search=#{search_query or ''}"
+                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'week' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}"><t t-esc="t('Tuần')"/></a>
+                                        <a t-attf-href="/trcf_fnb_inventory/move_report?filter_type=month&amp;search=#{search_query or ''}"
+                                           t-attf-class="px-4 py-2 rounded-lg text-sm font-medium transition-all #{filter_type == 'month' and 'bg-primary text-white shadow-sm' or 'text-text-light-secondary dark:text-text-dark-secondary hover:bg-gray-100 dark:hover:bg-slate-800'}"><t t-esc="t('Tháng')"/></a>
                                     </div>
                                 </div>
 
@@ -88,10 +88,10 @@
                                             </span>
                                             <input type="text" name="search" id="product-search" 
                                                    class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark text-gray-900 dark:text-white text-sm rounded-xl focus:ring-primary focus:border-primary block w-full pl-10 p-2.5 outline-none transition-all" 
-                                                   placeholder="Tìm kiếm sản phẩm (ví dụ: NL...)" 
+                                                   t-att-placeholder="t('Tìm kiếm sản phẩm (ví dụ: NL...)')"
                                                    t-att-value="search_query or ''"/>
                                         </div>
-                                        <button type="submit" class="ml-2 px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-sm">Tìm</button>
+                                        <button type="submit" class="ml-2 px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary-dark transition-colors shadow-sm"><t t-esc="t('Tìm')"/></button>
                                     </form>
                                 </div>
                             </div>
@@ -102,7 +102,7 @@
                                 <div class="px-6 py-4 border-b border-border-light dark:border-border-dark flex items-center justify-between">
                                     <h2 class="text-lg font-bold flex items-center gap-2">
                                         <span class="material-symbols-outlined text-primary">analytics</span>
-                                        Bảng chi tiết (<t t-esc="len(move_stats)"/> SP)
+                                        <t t-esc="t('Bảng chi tiết')"/> (<t t-esc="len(move_stats)"/> <t t-esc="t('SP')"/>)
                                     </h2>
                                 </div>
                                 <div class="overflow-x-auto">
@@ -111,45 +111,45 @@
                                             <tr class="bg-gray-50 dark:bg-slate-800/50 text-center font-bold text-[10px] uppercase tracking-widest text-text-light-secondary dark:text-text-dark-secondary border-b dark:border-border-dark">
                                                 <th rowspan="2" class="px-6 py-4 text-left border-r dark:border-border-dark min-w-[200px]">
                                                     <div class="flex items-center justify-between">
-                                                        <span>Sản phẩm</span>
+                                                        <span><t t-esc="t('Sản phẩm')"/></span>
                                                         <span class="material-symbols-outlined sort-icon" onclick="sortTable(0, 'string')">swap_vert</span>
                                                     </div>
                                                 </th>
-                                                <th rowspan="2" class="px-3 py-4 border-r dark:border-border-dark">ĐVT</th>
+                                                <th rowspan="2" class="px-3 py-4 border-r dark:border-border-dark"><t t-esc="t('ĐVT')"/></th>
                                                 <th colspan="3" class="px-4 py-2 border-r dark:border-border-dark text-red-600 dark:text-red-400 text-center">
                                                     <div class="flex items-center justify-center gap-2">
-                                                        <span>Chiều Xuất</span>
+                                                        <span><t t-esc="t('Chiều Xuất')"/></span>
                                                         <span class="material-symbols-outlined sort-icon" onclick="sortCombined(2, 3, 4)">swap_vert</span>
                                                     </div>
                                                 </th>
-                                                <th colspan="2" class="px-4 py-2 text-green-600 dark:text-green-400 text-center">Chiều Nhập</th>
+                                                <th colspan="2" class="px-4 py-2 text-green-600 dark:text-green-400 text-center"><t t-esc="t('Chiều Nhập')"/></th>
                                             </tr>
                                             <tr class="bg-gray-50/50 dark:bg-slate-800/30 text-[9px] uppercase font-bold text-text-light-secondary dark:text-text-dark-secondary border-b dark:border-border-dark">
                                                 <th class="px-4 py-2 border-r dark:border-border-dark text-right">
                                                     <div class="flex items-center justify-end gap-1">
-                                                        <span>Bán hàng</span>
+                                                        <span><t t-esc="t('Bán hàng')"/></span>
                                                         <span class="material-symbols-outlined sort-icon text-[14px]" onclick="sortTable(2, 'number')">unfold_more</span>
                                                     </div>
                                                 </th>
                                                 <th class="px-4 py-2 border-r dark:border-border-dark text-right">
                                                     <div class="flex items-center justify-end gap-1">
-                                                        <span>Sản xuất</span>
+                                                        <span><t t-esc="t('Sản xuất')"/></span>
                                                         <span class="material-symbols-outlined sort-icon text-[14px]" onclick="sortTable(3, 'number')">unfold_more</span>
                                                     </div>
                                                 </th>
                                                 <th class="px-4 py-2 border-r dark:border-border-dark text-right">
                                                     <div class="flex items-center justify-end gap-1">
-                                                        <span>Huỷ</span>
+                                                        <span><t t-esc="t('Huỷ')"/></span>
                                                         <span class="material-symbols-outlined sort-icon text-[14px]" onclick="sortTable(4, 'number')">unfold_more</span>
                                                     </div>
                                                 </th>
-                                                <th class="px-4 py-2 border-r dark:border-border-dark text-right">Mua hàng</th>
-                                                <th class="px-4 py-2 text-right">Sản xuất</th>
+                                                <th class="px-4 py-2 border-r dark:border-border-dark text-right"><t t-esc="t('Mua hàng')"/></th>
+                                                <th class="px-4 py-2 text-right"><t t-esc="t('Sản xuất')"/></th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-border-light dark:divide-border-dark text-gray-900 dark:text-gray-100">
                                             <t t-if="not move_stats">
-                                                <tr><td colspan="7" class="px-6 py-12 text-center text-text-light-secondary italic">Không tìm thấy sản phẩm.</td></tr>
+                                                <tr><td colspan="7" class="px-6 py-12 text-center text-text-light-secondary italic"><t t-esc="t('Không tìm thấy sản phẩm.')"/></td></tr>
                                             </t>
                                             <t t-foreach="move_stats" t-as="stat">
                                                 <tr class="hover:bg-gray-50/80 dark:hover:bg-slate-800/40 transition-colors">
