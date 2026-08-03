@@ -7,74 +7,80 @@
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeOsAlV_kN5CiucZser69FgmTC5AAnDme1lxSTY3AbhvESPQf4U4WqKxU4eJtzWd0BsCvuf2RDHkAl4EsCHIF1KfhzkY3kqtGH8Bo8cpF00UHeM-Q2HGYLE6e-10npr1MkzJMiXOS7Y0gY2Q9Fc9JlkJjV2dvk1e-8Us1XLt6k3N6Fx2wPWWtCSG2gt2GuXP0FSXLteHZiS_8GrTgSDLCmDmVKkWAgKq4Ws14ejlPDsR6FEsBIyFmFZgZvF1qSoeJRbtehkWfY10Ly");'></div>
                     <div class="flex flex-col">
                         <h1 class="text-slate-900 dark:text-slate-200 text-base font-medium leading-normal"><t t-esc="request.env.user.name"/></h1>
-                        <p class="text-neutral-text dark:text-gray-400 text-sm font-normal leading-normal"><t t-if="request.env.user.has_group('base.group_system')" t-esc="'Quản trị viên'"/><t t-else="" t-esc="'Nhân viên'"/></p>
+                        <p class="text-neutral-text dark:text-gray-400 text-sm font-normal leading-normal"><t t-if="request.env.user.has_group('base.group_system')" t-esc="t('Quản trị viên')"/><t t-else="" t-esc="t('Nhân viên')"/></p>
                     </div>
+                </div>
+                <div class="flex items-center gap-1.5 px-1">
+                    <a t-attf-href="/trcf_fnb_inventory/set_lang/vi_VN"
+                       t-attf-class="px-2.5 py-1 rounded-md text-xs font-bold transition-colors #{'bg-primary text-white' if (request.env.user.lang or 'vi_VN') == 'vi_VN' else 'bg-gray-100 text-gray-500 hover:bg-gray-200'}">VI</a>
+                    <a t-attf-href="/trcf_fnb_inventory/set_lang/en_US"
+                       t-attf-class="px-2.5 py-1 rounded-md text-xs font-bold transition-colors #{'bg-primary text-white' if (request.env.user.lang or 'vi_VN') == 'en_US' else 'bg-gray-100 text-gray-500 hover:bg-gray-200'}">EN</a>
                 </div>
                 <nav class="flex flex-col gap-2" id="sidebar-nav">
                     <!-- Nhóm Tồn Kho -->
                     <div class="px-3 pt-2 pb-1">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tồn Kho</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><t t-esc="t('Tồn Kho')"/></p>
                     </div>
                     
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/dashboard" data-path="/trcf_fnb_inventory/dashboard">
                         <span class="material-symbols-outlined">dashboard</span>
-                        <p class="text-sm font-medium leading-normal">TỔNG QUAN</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('TỔNG QUAN')"/></p>
                     </a>
 
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/purchase_list" data-path="/trcf_fnb_inventory/purchase_list">
                         <span class="material-symbols-outlined">archive</span>
-                        <p class="text-sm font-medium leading-normal">NHẬP HÀNG</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('NHẬP HÀNG')"/></p>
                     </a>
 
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/transfer_list" data-path="/trcf_fnb_inventory/transfer_list">
                         <span class="material-symbols-outlined">swap_horiz</span>
-                        <p class="text-sm font-medium leading-normal">CHUYỂN KHO</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('CHUYỂN KHO')"/></p>
                     </a>
                
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/processing_list" data-path="/trcf_fnb_inventory/processing_list">
                         <span class="material-symbols-outlined">restaurant_menu</span>
-                        <p class="text-sm font-medium leading-normal">CHẾ BIẾN</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('CHẾ BIẾN')"/></p>
                     </a>
 
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/scrap_list" data-path="/trcf_fnb_inventory/scrap_list">
                         <span class="material-symbols-outlined">cancel</span>
-                        <p class="text-sm font-medium leading-normal">HUỶ HÀNG</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('HUỶ HÀNG')"/></p>
                     </a>
 
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/check_inventory_list" data-path="/trcf_fnb_inventory/check_inventory_list">
                         <span class="material-symbols-outlined">inventory</span>
-                        <p class="text-sm font-medium leading-normal">KIỂM KÊ</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('KIỂM KÊ')"/></p>
                     </a>
 
                     <!-- Nhóm Kế Toán -->
                     <div class="px-3 pt-4 pb-1">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kế Toán</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><t t-esc="t('Kế Toán')"/></p>
                     </div>
 
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/expense_list" data-path="/trcf_fnb_inventory/expense_list">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
-                        <p class="text-sm font-medium leading-normal">CHI PHÍ</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('CHI PHÍ')"/></p>
                     </a>
                     
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/move_report" data-path="/trcf_fnb_inventory/move_report">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">package_2</span>
-                        <p class="text-sm font-medium leading-normal">BÁO CÁO NHẬP XUẤT</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('BÁO CÁO NHẬP XUẤT')"/></p>
                     </a>
 
                     <a class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="/trcf_fnb_inventory/daily_report" data-path="/trcf_fnb_inventory/daily_report">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
-                        <p class="text-sm font-medium leading-normal">BÁO CÁO</p>
+                        <p class="text-sm font-medium leading-normal"><t t-esc="t('BÁO CÁO')"/></p>
                     </a>
                 </nav>
             </div>
             <div class="mt-auto flex flex-col gap-1">
                 <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
                     <span class="material-symbols-outlined">settings</span>
-                    <p class="text-sm font-medium leading-normal">CÀI ĐẶT</p>
+                    <p class="text-sm font-medium leading-normal"><t t-esc="t('CÀI ĐẶT')"/></p>
                 </a>
                 <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-primary/10" href="#">
                     <span class="material-symbols-outlined">help_center</span>
-                    <p class="text-sm font-medium leading-normal">HỖ TRỢ</p>
+                    <p class="text-sm font-medium leading-normal"><t t-esc="t('HỖ TRỢ')"/></p>
                 </a>
             </div>
         </aside>

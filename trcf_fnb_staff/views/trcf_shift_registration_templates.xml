@@ -7,7 +7,7 @@
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
             <head>
-                <title>Đăng ký ca &amp; Bảng giờ công</title>
+                <title><t t-esc="t('Đăng ký ca &amp; Bảng giờ công')"/></title>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
                 <link rel="stylesheet" t-att-href="'/trcf_fnb_staff/static/src/css/shift_registration.css'"/>
             </head>
@@ -15,33 +15,33 @@
             <div class="shift-registration-container">
                 <!-- Header chào tên nhân viên -->
                 <div class="shift-registration-header">
-                    <h1>Quản lý ca làm việc</h1>
-                    <p>Xin chào, <strong t-esc="employee.name"/>!</p>
+                    <h1><t t-esc="t('Quản lý ca làm việc')"/></h1>
+                    <p><t t-esc="t('Xin chào,')"/> <strong t-esc="employee.name"/>!</p>
                 </div>
 
                 <!-- ===== TAB NAVIGATION ===== -->
                 <div class="tab-nav">
                     <button class="tab-btn active" data-tab="dang-ky-ca" id="btn-tab-dang-ky-ca">
-                        <i class="fa fa-calendar-check-o"/> Đăng ký ca
+                        <i class="fa fa-calendar-check-o"/> <t t-esc="t('Đăng ký ca')"/>
                     </button>
                     <button class="tab-btn" data-tab="gio-cong" id="btn-tab-gio-cong">
-                        <i class="fa fa-clock-o"/> Bảng giờ công
+                        <i class="fa fa-clock-o"/> <t t-esc="t('Bảng giờ công')"/>
                     </button>
                     <button class="tab-btn" data-tab="cham-cong" id="btn-tab-cham-cong">
-                        <i class="fa fa-map-marker"/> Chấm Công
+                        <i class="fa fa-map-marker"/> <t t-esc="t('Chấm Công')"/>
                     </button>
                 </div>
 
                 <!-- ===== PANEL 1: ĐĂNG KÝ CA (giữ nguyên nội dung cũ) ===== -->
                 <div id="panel-dang-ky-ca" class="tab-panel active">
-                    <p class="text-muted tab-subtitle">Chọn các ca bạn muốn đăng ký trong 2 tuần tới</p>
+                    <p class="text-muted tab-subtitle"><t t-esc="t('Chọn các ca bạn muốn đăng ký trong 2 tuần tới')"/></p>
 
                     <!-- Bảng đăng ký ca -->
                     <div class="shift-registration-table-wrapper">
                         <table class="shift-registration-table">
                             <thead>
                                 <tr>
-                                    <th class="date-header">Ngày</th>
+                                    <th class="date-header"><t t-esc="t('Ngày')"/></th>
                                     <t t-foreach="shifts" t-as="shift">
                                         <th class="shift-header">
                                             <div class="shift-name" t-esc="shift.name"/>
@@ -72,7 +72,7 @@
                                                 <div class="shift-checkbox">
                                                     <t t-if="is_confirmed">
                                                         <i class="fa fa-check-circle"></i>
-                                                        <span class="confirmed-label">Đã duyệt</span>
+                                                        <span class="confirmed-label"><t t-esc="t('Đã duyệt')"/></span>
                                                     </t>
                                                     <t t-elif="is_draft">
                                                         <i class="fa fa-clock-o"></i>
@@ -92,28 +92,28 @@
                     <!-- Nút lưu -->
                     <div class="shift-registration-actions">
                         <button type="button" class="btn btn-primary btn-lg" id="btnSaveRegistration">
-                            <i class="fa fa-save"></i> Lưu đăng ký
+                            <i class="fa fa-save"></i> <t t-esc="t('Lưu đăng ký')"/>
                         </button>
-                        <span class="selection-count">Đã chọn: <span id="selectedCount">0</span> ca</span>
+                        <span class="selection-count"><t t-esc="t('Đã chọn:')"/> <span id="selectedCount">0</span> <t t-esc="t('ca')"/></span>
                     </div>
 
                     <!-- Chú thích -->
                     <div class="shift-registration-legend">
                         <div class="legend-item">
                             <span class="legend-box confirmed"></span>
-                            <span>Đã duyệt</span>
+                            <span><t t-esc="t('Đã duyệt')"/></span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-box registered"></span>
-                            <span>Đã đăng ký (chờ duyệt)</span>
+                            <span><t t-esc="t('Đã đăng ký (chờ duyệt)')"/></span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-box selected"></span>
-                            <span>Đang chọn</span>
+                            <span><t t-esc="t('Đang chọn')"/></span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-box"></span>
-                            <span>Chưa chọn</span>
+                            <span><t t-esc="t('Chưa chọn')"/></span>
                         </div>
                     </div>
                 </div><!-- end panel-dang-ky-ca -->
@@ -121,20 +121,20 @@
                 <!-- ===== PANEL 2: BẢNG GIỜ CÔNG ===== -->
                 <div id="panel-gio-cong" class="tab-panel">
                     <div class="attendance-toolbar">
-                        <span class="attendance-filter-label"><i class="fa fa-filter"/> Xem tháng:</span>
+                        <span class="attendance-filter-label"><i class="fa fa-filter"/> <t t-esc="t('Xem tháng:')"/></span>
                         <select id="filter-month" class="attendance-select">
-                            <option value="1">Tháng 1</option>
-                            <option value="2">Tháng 2</option>
-                            <option value="3">Tháng 3</option>
-                            <option value="4">Tháng 4</option>
-                            <option value="5">Tháng 5</option>
-                            <option value="6">Tháng 6</option>
-                            <option value="7">Tháng 7</option>
-                            <option value="8">Tháng 8</option>
-                            <option value="9">Tháng 9</option>
-                            <option value="10">Tháng 10</option>
-                            <option value="11">Tháng 11</option>
-                            <option value="12">Tháng 12</option>
+                            <option value="1"><t t-esc="t('Tháng 1')"/></option>
+                            <option value="2"><t t-esc="t('Tháng 2')"/></option>
+                            <option value="3"><t t-esc="t('Tháng 3')"/></option>
+                            <option value="4"><t t-esc="t('Tháng 4')"/></option>
+                            <option value="5"><t t-esc="t('Tháng 5')"/></option>
+                            <option value="6"><t t-esc="t('Tháng 6')"/></option>
+                            <option value="7"><t t-esc="t('Tháng 7')"/></option>
+                            <option value="8"><t t-esc="t('Tháng 8')"/></option>
+                            <option value="9"><t t-esc="t('Tháng 9')"/></option>
+                            <option value="10"><t t-esc="t('Tháng 10')"/></option>
+                            <option value="11"><t t-esc="t('Tháng 11')"/></option>
+                            <option value="12"><t t-esc="t('Tháng 12')"/></option>
                         </select>
                         <select id="filter-year" class="attendance-select">
                             <!-- Year options injected by JS -->
@@ -144,23 +144,23 @@
                     <!-- Bảng giờ công -->
                     <div class="attendance-table-wrapper" id="attendance-table-wrapper">
                         <div id="attendance-loading" class="attendance-loading" style="display:none;">
-                            <i class="fa fa-spinner fa-spin fa-2x"/> Đang tải...
+                            <i class="fa fa-spinner fa-spin fa-2x"/> <t t-esc="t('Đang tải...')"/>
                         </div>
                         <div id="attendance-empty" class="attendance-empty" style="display:none;">
                             <i class="fa fa-calendar-times-o fa-3x"/>
-                            <p>Không có dữ liệu chấm công trong tháng này.</p>
+                            <p><t t-esc="t('Không có dữ liệu chấm công trong tháng này.')"/></p>
                         </div>
                         <table class="attendance-table" id="attendance-table" style="display:none;">
                             <thead>
                                 <tr>
-                                    <th class="att-col-date">Ngày</th>
-                                    <th class="att-col-in">Giờ vào</th>
-                                    <th class="att-col-out">Giờ ra</th>
-                                    <th class="att-col-worked">TG làm việc</th>
-                                    <th class="att-col-status">Đi</th>
-                                    <th class="att-col-status">Về</th>
-                                    <th class="att-col-salary">Lương phiên</th>
-                                    <th class="att-col-source" title="Nguồn chấm công"><i class="fa fa-map-marker"/></th>
+                                    <th class="att-col-date"><t t-esc="t('Ngày')"/></th>
+                                    <th class="att-col-in"><t t-esc="t('Giờ vào')"/></th>
+                                    <th class="att-col-out"><t t-esc="t('Giờ ra')"/></th>
+                                    <th class="att-col-worked"><t t-esc="t('TG làm việc')"/></th>
+                                    <th class="att-col-status"><t t-esc="t('Đi')"/></th>
+                                    <th class="att-col-status"><t t-esc="t('Về')"/></th>
+                                    <th class="att-col-salary"><t t-esc="t('Lương phiên')"/></th>
+                                    <th class="att-col-source" t-att-title="t('Nguồn chấm công')"><i class="fa fa-map-marker"/></th>
                                 </tr>
                             </thead>
                             <tbody id="attendance-body">
@@ -169,8 +169,8 @@
                             <tfoot>
                                 <tr class="attendance-footer-row">
                                     <td colspan="7" class="attendance-footer-label">
-                                        Tổng lương tháng
-                                        <span id="provisional-badge" class="provisional-badge">Tạm tính</span>
+                                        <t t-esc="t('Tổng lương tháng')"/>
+                                        <span id="provisional-badge" class="provisional-badge"><t t-esc="t('Tạm tính')"/></span>
                                     </td>
                                     <td class="attendance-footer-total" id="attendance-total">–</td>
                                 </tr>
@@ -186,8 +186,7 @@
 
                     <!-- GPS unsupported message -->
                     <div id="geo-unsupported-msg" class="geo-warning-accuracy" style="display:none;text-align:center;padding:20px;">
-                        <i class="fa fa-exclamation-triangle"/> Trình duyệt của bạn không hỗ trợ GPS.
-                        Vui lòng dùng trình duyệt hiện đại (Chrome / Safari / Firefox).
+                        <i class="fa fa-exclamation-triangle"/> <t t-esc="t('Trình duyệt của bạn không hỗ trợ GPS. Vui lòng dùng trình duyệt hiện đại (Chrome / Safari / Firefox).')"/>
                     </div>
                     <!-- GPS error/denied message -->
                     <div id="geo-error-msg" class="geo-warning-accuracy" style="display:none;text-align:center;padding:20px;"/>
@@ -196,15 +195,14 @@
                     <div id="geo-idle-panel" class="geo-status-panel">
                         <!-- GPS Status Badge -->
                         <div id="geo-status-badge" class="geo-status-badge loading">
-                            <span class="geo-loading-spinner"/>Đang xác định vị trí...
+                            <span class="geo-loading-spinner"/><t t-esc="t('Đang xác định vị trí...')"/>
                         </div>
                         <div id="geo-distance-text" class="geo-distance-display"/>
                         <div id="geo-location-name" class="geo-location-name"/>
 
                         <!-- Accuracy warning -->
                         <div id="geo-accuracy-warning" class="geo-warning-accuracy" style="display:none;">
-                            <i class="fa fa-exclamation-triangle"/> Độ chính xác GPS rất cao (&lt; 5m).
-                            Có thể dùng GPS giả lập. Hệ thống sẽ ghi nhận cảnh báo.
+                            <i class="fa fa-exclamation-triangle"/> <t t-esc="t('Độ chính xác GPS rất cao (&lt; 5m). Có thể dùng GPS giả lập. Hệ thống sẽ ghi nhận cảnh báo.')"/>
                         </div>
 
                         <!-- Check-in button -->
@@ -219,13 +217,13 @@
                     <!-- ===== CHECKED IN PANEL ===== -->
                     <div id="geo-checked-in-panel" class="geo-status-panel" style="display:none;">
                         <div class="geo-status-badge valid">
-                            <i class="fa fa-check-circle"/> Đang trong ca
+                            <i class="fa fa-check-circle"/> <t t-esc="t('Đang trong ca')"/>
                         </div>
                         <div id="geo-distance-text-out" class="geo-distance-display"/>
                         <div id="geo-location-name-out" class="geo-location-name"/>
 
                         <div class="geo-session-info">
-                            <div class="session-label">Giờ vào</div>
+                            <div class="session-label"><t t-esc="t('Giờ vào')"/></div>
                             <div class="session-value" id="geo-checkin-time-display">–</div>
                         </div>
 
@@ -238,7 +236,7 @@
                         </div>
                         <div class="geo-distance-display" id="geo-checkout-gps-warning"
                              style="display:none;margin-top:8px;color:#dc3545;">
-                            <i class="fa fa-exclamation-triangle"/> B&#x1EA1;n &#x111;ang n&#x1EB1;m ngo&#xE0;i v&#xF9;ng cho ph&#xE9;p. Check-out s&#x1EBD; b&#x1ECB; t&#x1EEB; ch&#x1ED1;i.
+                            <i class="fa fa-exclamation-triangle"/> <t t-esc="t('Bạn đang nằm ngoài vùng cho phép. Check-out sẽ bị từ chối.')"/>
                         </div>
                     </div>
 
@@ -246,9 +244,9 @@
                     <div id="geo-done-panel" class="geo-done-panel" style="display:none;">
                         <div class="geo-done-icon"><i class="fa fa-check-circle"/></div>
                         <div class="geo-done-summary">
-                            <div>Tổng giờ làm hôm nay:</div>
+                            <div><t t-esc="t('Tổng giờ làm hôm nay:')"/></div>
                             <div class="summary-hours" id="geo-done-hours">–</div>
-                            <div style="margin-top:8px;">Lương tạm tính: <strong id="geo-done-salary">–</strong></div>
+                            <div style="margin-top:8px;"><t t-esc="t('Lương tạm tính:')"/> <strong id="geo-done-salary">–</strong></div>
                         </div>
                     </div>
                 </div><!-- end panel-cham-cong -->
@@ -264,6 +262,9 @@
                     // ============================================================
                     let attendanceLoaded = false;
                     let geoChamCongInitialized = false;
+
+                    // JS-side translations for geo_attendance.js (static asset, can't call t() itself)
+                    window.TRCF_STAFF_I18N = <t t-out="staff_i18n_json or '{}'"/>;
 
                     // GEO DATA from server (injected by controller)
                     var geoLocationsData = <t t-out="geo_locations_json or '[]'"/>;
@@ -315,7 +316,7 @@
                     for (let y = currentYear; y >= currentYear - 2; y--) {
                         const opt = document.createElement('option');
                         opt.value = y;
-                        opt.textContent = 'Năm ' + y;
+                        opt.textContent = '<t t-esc="t('Năm')"/> ' + y;
                         yearSelect.appendChild(opt);
                     }
 
@@ -360,13 +361,13 @@
                             if (data.result &amp;&amp; data.result.success) {
                                 renderAttendanceTable(data.result);
                             } else {
-                                const msg = (data.result &amp;&amp; data.result.message) || 'Lỗi không xác định';
+                                const msg = (data.result &amp;&amp; data.result.message) || '<t t-esc="t('Lỗi không xác định')"/>';
                                 showAttendanceError(msg);
                             }
                         })
                         .catch(function(err) {
                             document.getElementById('attendance-loading').style.display = 'none';
-                            showAttendanceError('Lỗi kết nối: ' + err);
+                            showAttendanceError('<t t-esc="t('Lỗi kết nối:')"/> ' + err);
                         });
                     }
 
@@ -387,16 +388,16 @@
                         data.records.forEach(function(rec) {
                             const tr = document.createElement('tr');
 
-                            const checkOutDisplay = rec.check_out || '<span class="working-now">Đang làm</span>';
+                            const checkOutDisplay = rec.check_out || '<span class="working-now"><t t-esc="t('Đang làm')"/></span>';
 
                             // Build cells using textContent to prevent XSS
                             const cells = [
                                 {text: rec.date, html: false},
                                 {text: rec.check_in, html: false},
-                                {text: rec.check_out, html: true, fallback: '<span class="working-now">Đang làm</span>'},
+                                {text: rec.check_out, html: true, fallback: '<span class="working-now"><t t-esc="t('Đang làm')"/></span>'},
                                 {text: rec.worked_hours_display, html: false},
-                                {text: rec.check_in_status, html: false, cls: getStatusClass(rec.check_in_status)},
-                                {text: rec.check_out_status, html: false, cls: getStatusClass(rec.check_out_status)},
+                                {text: rec.check_in_status, html: false, cls: getStatusClass(rec.check_in_status_key)},
+                                {text: rec.check_out_status, html: false, cls: getStatusClass(rec.check_out_status_key)},
                                 {text: rec.salary_display + ' đ', html: false, cls: 'att-salary-cell'},
                                 {text: null, html: true, fallback: getSourceIcon(rec.attendance_source), cls: 'att-source-cell'},
                             ];
@@ -425,11 +426,11 @@
                         document.getElementById('attendance-table').style.display = 'table';
                     }
 
-                    function getStatusClass(status) {
-                        if (!status || status === '–') return 'att-status-none';
-                        if (status.startsWith('Trễ')) return 'att-status-late';
-                        if (status.startsWith('Sớm')) return 'att-status-early';
-                        return 'att-status-ok';
+                    function getStatusClass(statusKey) {
+                        if (statusKey === 'late') return 'att-status-late';
+                        if (statusKey === 'early') return 'att-status-early';
+                        if (statusKey === 'ontime') return 'att-status-ok';
+                        return 'att-status-none';
                     }
 
                     function getSourceIcon(source) {
@@ -462,7 +463,7 @@
                             }
 
                             if (isRegistered &amp;&amp; state === 'draft') {
-                                if (confirm('Bạn muốn hủy đăng ký ca này?')) {
+                                if (confirm('<t t-esc="t('Bạn muốn hủy đăng ký ca này?')"/>')) {
                                     removeRegistration(date, shiftId, this);
                                 }
                             } else if (!isRegistered) {
@@ -487,12 +488,12 @@
 
                     document.getElementById('btnSaveRegistration').addEventListener('click', function() {
                         if (newSelections.length === 0) {
-                            alert('Vui lòng chọn ít nhất một ca!');
+                            alert('<t t-esc="t('Vui lòng chọn ít nhất một ca!')"/>');
                             return;
                         }
 
                         this.disabled = true;
-                        this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...';
+                        this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> <t t-esc="t('Đang lưu...')"/>';
 
                         fetch('/dang-ky-ca/save', {
                             method: 'POST',
@@ -509,15 +510,15 @@
                                 alert(data.result.message);
                                 location.reload();
                             } else {
-                                alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                alert('<t t-esc="t('Lỗi:')"/> ' + (data.result ? data.result.message : '<t t-esc="t('Không xác định')"/>'));
                                 this.disabled = false;
-                                this.innerHTML = '<i class="fa fa-save"></i> Lưu đăng ký';
+                                this.innerHTML = '<i class="fa fa-save"></i> <t t-esc="t('Lưu đăng ký')"/>';
                             }
                         })
                         .catch(error => {
-                            alert('Lỗi kết nối: ' + error);
+                            alert('<t t-esc="t('Lỗi kết nối:')"/> ' + error);
                             this.disabled = false;
-                            this.innerHTML = '<i class="fa fa-save"></i> Lưu đăng ký';
+                            this.innerHTML = '<i class="fa fa-save"></i> <t t-esc="t('Lưu đăng ký')"/>';
                         });
                     });
 
@@ -538,7 +539,7 @@
                                 cell.dataset.registered = 'false';
                                 cell.querySelector('i').className = 'fa fa-circle-o';
                             } else {
-                                alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                alert('<t t-esc="t('Lỗi:')"/> ' + (data.result ? data.result.message : '<t t-esc="t('Không xác định')"/>'));
                             }
                         });
                     }
@@ -552,12 +553,12 @@
     <!-- Template: Không có thông tin nhân viên -->
     <template id="shift_registration_no_employee" name="Không có nhân viên">
         <t t-call="web.frontend_layout">
-            <t t-set="title">Lỗi</t>
+            <t t-set="title"><t t-esc="t('Lỗi')"/></t>
             <div class="container mt-5">
                 <div class="alert alert-warning text-center">
-                    <h4><i class="fa fa-exclamation-triangle"></i> Không tìm thấy thông tin nhân viên</h4>
-                    <p>Tài khoản của bạn chưa được liên kết với nhân viên. Vui lòng liên hệ quản trị viên.</p>
-                    <a href="/" class="btn btn-primary">Về trang chủ</a>
+                    <h4><i class="fa fa-exclamation-triangle"></i> <t t-esc="t('Không tìm thấy thông tin nhân viên')"/></h4>
+                    <p><t t-esc="t('Tài khoản của bạn chưa được liên kết với nhân viên. Vui lòng liên hệ quản trị viên.')"/></p>
+                    <a href="/" class="btn btn-primary"><t t-esc="t('Về trang chủ')"/></a>
                 </div>
             </div>
         </t>

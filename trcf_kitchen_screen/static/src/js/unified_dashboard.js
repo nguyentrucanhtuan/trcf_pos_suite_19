@@ -3,6 +3,7 @@ import { registry } from "@web/core/registry";
 const { Component, useState, onWillStart, onMounted } = owl;
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
+import { _t } from "@web/core/l10n/translation";
 import { TrcfKitchenDashboard } from "./trcf_kitchen_dashboard";
 
 export class TrcfUnifiedDashboard extends Component {
@@ -99,6 +100,11 @@ export class TrcfUnifiedDashboard extends Component {
     goToTasks() {
         this.state.showTaskPopup = false;
         this.switchTab('tasks');
+    }
+
+    get upcomingTaskDescription() {
+        return (this.state.upcomingTask && this.state.upcomingTask.description)
+            || _t('Vui lòng thực hiện công việc đúng hạn.');
     }
 }
 

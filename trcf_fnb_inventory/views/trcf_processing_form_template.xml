@@ -5,7 +5,7 @@
             <meta charset="utf-8"/>
             <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
             <meta name="csrf-token" t-att-content="request.csrf_token()"/>
-            <title>Chế biến</title>
+            <title><t t-esc="t('Chế biến')"/></title>
             <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
             <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -70,7 +70,7 @@
                                 <button id="mobile-menu-btn" class="p-2 text-text-light-primary dark:text-dark-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
                                     <span class="material-symbols-outlined">menu</span>
                                 </button>
-                                <span class="font-bold text-lg dark:text-white">Phiếu Chế Biến</span>
+                                <span class="font-bold text-lg dark:text-white"><t t-esc="t('Phiếu Chế Biến')"/></span>
                                 <div class="w-10"></div>
                             </div>
                             
@@ -92,25 +92,25 @@
                                 
                                 <header class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div class="text-center md:text-left">
-                                        <p class="text-text-light-primary dark:text-text-dark-primary text-2xl md:text-4xl font-black leading-tight tracking-[-0.033em] mb-2">Tạo Phiếu Chế Biến</p>
+                                        <p class="text-text-light-primary dark:text-text-dark-primary text-2xl md:text-4xl font-black leading-tight tracking-[-0.033em] mb-2"><t t-esc="t('Tạo Phiếu Chế Biến')"/></p>
                                     </div>
                                     <button type="button" id="confirmProcessingBtn" onclick="submitForm()" class="flex items-center justify-center gap-x-2 h-12 md:h-10 px-6 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white dark:text-white transition-colors text-base md:text-sm font-bold w-full md:w-auto">
                                         <span class="material-symbols-outlined text-xl md:text-base">save</span>
-                                        <span>Xác nhận chế biến</span>
+                                        <span><t t-esc="t('Xác nhận chế biến')"/></span>
                                     </button>
                                 </header>
                                 
                                 <div class="flex flex-col gap-8">
                                     <!-- BOM Search Section -->
                                     <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Tìm kiếm công thức</h2>
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6"><t t-esc="t('Tìm kiếm công thức')"/></h2>
                                         <div class="grid grid-cols-1 gap-5">
                                             <label class="flex flex-col w-full">
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
-                                                    Chọn món cần chế biến <span class="text-red-500">*</span>
+                                                    <t t-esc="t('Chọn món cần chế biến')"/> <span class="text-red-500">*</span>
                                                 </p>
                                                 <select id="bom_select" onchange="loadBomComponents()" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
-                                                    <option value="">-- Chọn món --</option>
+                                                    <option value=""><t t-esc="t('-- Chọn món --')"/></option>
                                                     <t t-foreach="boms" t-as="bom">
                                                         <option t-att-value="bom['id']" 
                                                                 t-att-data-product-id="bom['product_id']"
@@ -128,12 +128,12 @@
                                             <!-- Picking Type -->
                                             <label class="flex flex-col w-full">
                                                 <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">
-                                                    Chọn phiếu sản xuất <span class="text-red-500">*</span>
+                                                    <t t-esc="t('Chọn phiếu sản xuất')"/> <span class="text-red-500">*</span>
                                                 </p>
                                                 <!-- Nếu cho phép nhân viên chọn: hiển thị dropdown -->
                                                 <t t-if="allow_employee_select">
                                                     <select name="picking_type_id" id="picking_type_select" required="required" class="form-select flex w-full min-w-0 flex-1 overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-3.5 text-sm font-normal leading-normal">
-                                                        <option value="">-- Chọn phiếu sản xuất --</option>
+                                                        <option value=""><t t-esc="t('-- Chọn phiếu sản xuất --')"/></option>
                                                         <t t-foreach="picking_types" t-as="pt">
                                                             <option t-att-value="pt.id" t-att-selected="pt.id == default_picking_type_id">
                                                                 <t t-esc="pt.warehouse_id.name if pt.warehouse_id else 'N/A'"/>: <t t-esc="pt.name"/>
@@ -144,7 +144,7 @@
                                                 <!-- Nếu không cho phép: hiển thị giá trị mặc định (readonly) + hidden input -->
                                                 <t t-else="">
                                                     <input type="hidden" name="picking_type_id" id="picking_type_select" t-att-value="default_picking_type_id"/>
-                                                    <input readonly="readonly" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px] text-sm font-normal leading-normal cursor-not-allowed" type="text" t-att-value="default_picking_type_name or 'Chưa cấu hình'" title="Phiếu sản xuất mặc định do admin cấu hình"/>
+                                                    <input readonly="readonly" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px] text-sm font-normal leading-normal cursor-not-allowed" type="text" t-att-value="default_picking_type_name or t('Chưa cấu hình')" t-att-title="t('Phiếu sản xuất mặc định do admin cấu hình')"/>
                                                 </t>
                                             </label>
                                         </div>
@@ -152,16 +152,16 @@
                                     
                                     <!-- BOM Details Section (Hidden initially) -->
                                     <div id="bomDetailsSection" class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6" style="display: none;">
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Thông tin sản phẩm</h2>
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6"><t t-esc="t('Thông tin sản phẩm')"/></h2>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                             <div class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Tên sản phẩm</p>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2"><t t-esc="t('Tên sản phẩm')"/></p>
                                                 <div class="flex items-center w-full min-w-0 flex-1 rounded-lg border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px]">
                                                     <p class="text-text-light-primary dark:text-white text-sm font-normal leading-normal" id="product_name_display">-</p>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Số lượng sản xuất</p>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2"><t t-esc="t('Số lượng sản xuất')"/></p>
                                                 <div class="flex items-center gap-2">
                                                     <input id="product_qty_input" onchange="updateComponentQuantities()" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary p-[15px] text-sm font-normal leading-normal" placeholder="1" type="number" min="0.01" step="0.01" value="1"/>
                                                     <div class="flex items-center justify-center w-20 h-12 rounded-lg border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800">
@@ -173,15 +173,15 @@
                                         
                                         <hr class="my-6 border-border-light dark:border-border-dark"/>
                                         
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Danh sách nguyên liệu</h2>
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6"><t t-esc="t('Danh sách nguyên liệu')"/></h2>
                                         <div class="overflow-hidden rounded-xl border border-border-light dark:border-border-dark">
                                             <div class="overflow-x-auto">
                                                 <table class="w-full text-left">
                                                     <thead class="bg-slate-50 dark:bg-slate-800/50">
                                                         <tr>
-                                                            <th class="px-3 md:px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Tên nguyên liệu</th>
-                                                            <th class="px-3 md:px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal">Số lượng</th>
-                                                            <th class="px-3 md:px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal hidden sm:table-cell">Đơn vị</th>
+                                                            <th class="px-3 md:px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal"><t t-esc="t('Tên nguyên liệu')"/></th>
+                                                            <th class="px-3 md:px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal"><t t-esc="t('Số lượng')"/></th>
+                                                            <th class="px-3 md:px-6 py-4 text-left text-text-light-secondary dark:text-text-dark-secondary text-sm font-semibold leading-normal hidden sm:table-cell"><t t-esc="t('Đơn vị')"/></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="divide-y divide-border-light dark:divide-border-dark text-text-light-primary dark:text-white" id="componentsTableBody">
@@ -197,6 +197,19 @@
                     </main>
                 </div>
                 
+                <!-- JS-side translations (rendered outside CDATA so t() can run) -->
+                <script>
+                    window.TRCF_I18N = {
+                        error_prefix: <t t-esc="json.dumps(t('Lỗi:'))"/>,
+                        error_load_bom: <t t-esc="json.dumps(t('Không thể tải thông tin BOM'))"/>,
+                        error_loading_bom: <t t-esc="json.dumps(t('Lỗi khi tải thông tin BOM'))"/>,
+                        alert_select_bom: <t t-esc="json.dumps(t('Vui lòng chọn món cần chế biến'))"/>,
+                        alert_valid_qty: <t t-esc="json.dumps(t('Vui lòng nhập số lượng sản xuất hợp lệ'))"/>,
+                        alert_select_picking_type: <t t-esc="json.dumps(t('Vui lòng chọn phiếu sản xuất'))"/>,
+                        processing_label: <t t-esc="json.dumps(t('Đang xử lý...'))"/>
+                    };
+                </script>
+
                 <!-- JavaScript -->
                 <script>
                 <![CDATA[
@@ -249,12 +262,12 @@
                                 renderComponents();
                                 document.getElementById('bomDetailsSection').style.display = 'block';
                             } else {
-                                alert('Lỗi: ' + (data.result.error || 'Không thể tải thông tin BOM'));
+                                alert(window.TRCF_I18N.error_prefix + ' ' + (data.result.error || window.TRCF_I18N.error_load_bom));
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Lỗi khi tải thông tin BOM');
+                            alert(window.TRCF_I18N.error_loading_bom);
                         });
                     }
                     
@@ -326,19 +339,19 @@
                             // Validate
                             const bomId = document.getElementById('bom_id').value;
                             if (!bomId) {
-                                alert('Vui lòng chọn món cần chế biến');
+                                alert(window.TRCF_I18N.alert_select_bom);
                                 return;
                             }
-                            
+
                             const productQty = parseFloat(document.getElementById('product_qty_input').value);
                             if (!productQty || productQty <= 0) {
-                                alert('Vui lòng nhập số lượng sản xuất hợp lệ');
+                                alert(window.TRCF_I18N.alert_valid_qty);
                                 return;
                             }
-                            
+
                             const pickingTypeId = document.getElementById('picking_type_select').value;
                             if (!pickingTypeId) {
-                                alert('Vui lòng chọn phiếu sản xuất');
+                                alert(window.TRCF_I18N.alert_select_picking_type);
                                 return;
                             }
 
@@ -346,7 +359,7 @@
                             const btn = document.getElementById('confirmProcessingBtn');
                             if (btn) {
                                 btn.disabled = true;
-                                btn.textContent = 'Đang xử lý...';
+                                btn.textContent = window.TRCF_I18N.processing_label;
                             }
                             
                             // Collect component data

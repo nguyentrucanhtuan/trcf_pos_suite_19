@@ -3,6 +3,7 @@ from odoo.http import request
 from datetime import datetime
 import calendar
 import logging
+from ..i18n import get_translator
 
 _logger = logging.getLogger(__name__)
 
@@ -43,6 +44,7 @@ class TrcfCheckInventoryController(http.Controller):
             })
         
         return request.render('trcf_fnb_inventory.check_inventory_list_template', {
+            't': get_translator(request),
             'checks': check_list,
         })
 
@@ -73,6 +75,7 @@ class TrcfCheckInventoryController(http.Controller):
             success_msg = 'Phiếu kiểm kho đã được tạo và cập nhật tồn kho thành công!'
         
         return request.render('trcf_fnb_inventory.check_inventory_form_template', {
+            't': get_translator(request),
             'templates': template_list,
             'current_user': request.env.user.name,
             'success': success_msg,
@@ -279,6 +282,7 @@ class TrcfCheckInventoryController(http.Controller):
             } for t in templates]
             
             return request.render('trcf_fnb_inventory.check_inventory_form_template', {
+                't': get_translator(request),
                 'templates': template_list,
                 'current_user': request.env.user.name,
                 'error': f'Lỗi: {str(e)}',

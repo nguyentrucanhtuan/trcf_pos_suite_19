@@ -7,7 +7,7 @@
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
             <head>
-                <title>Xếp ca theo tuần</title>
+                <title><t t-esc="t('Xếp ca theo tuần')"/></title>
                 <script src="https://cdn.tailwindcss.com"></script>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
                 <script>
@@ -31,11 +31,11 @@
                         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                             <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
                                 <i class="fa fa-calendar text-primary"></i>
-                                Xếp ca theo tuần
+                                <t t-esc="t('Xếp ca theo tuần')"/>
                             </h1>
                             <div class="flex items-center gap-3 flex-wrap">
                                 <button type="button" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-medium transition" id="btnPrevWeek">
-                                    <i class="fa fa-chevron-left mr-1"></i> Tuần trước
+                                    <i class="fa fa-chevron-left mr-1"></i> <t t-esc="t('Tuần trước')"/>
                                 </button>
                                 <span class="px-4 py-2 bg-slate-200 rounded-lg font-semibold text-slate-700">
                                     <span id="weekStartDisplay" t-esc="schedule_data.get('start_date', '')"/>
@@ -43,25 +43,25 @@
                                     <span id="weekEndDisplay" t-esc="schedule_data.get('end_date', '')"/>
                                 </span>
                                 <button type="button" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-medium transition" id="btnNextWeek">
-                                    Tuần sau <i class="fa fa-chevron-right ml-1"></i>
+                                    <t t-esc="t('Tuần sau')"/> <i class="fa fa-chevron-right ml-1"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Actions -->
                     <div class="flex gap-3 mb-5 flex-wrap">
                         <button type="button" class="px-5 py-2.5 bg-success hover:bg-green-600 text-white rounded-lg font-medium shadow transition flex items-center gap-2" id="btnApproveAll">
-                            <i class="fa fa-check-circle"></i> Duyệt tất cả
+                            <i class="fa fa-check-circle"></i> <t t-esc="t('Duyệt tất cả')"/>
                         </button>
                     </div>
-                    
+
                     <!-- Grid Table -->
                     <div class="bg-white rounded-xl shadow-md overflow-x-auto mb-5">
                         <table class="w-full min-w-[1200px] border-collapse" id="scheduleGridTable">
                             <thead>
                                 <tr>
-                                    <th class="bg-slate-700 text-white p-4 text-center font-semibold border-r border-slate-600 min-w-[150px]">Ca / Ngày</th>
+                                    <th class="bg-slate-700 text-white p-4 text-center font-semibold border-r border-slate-600 min-w-[150px]"><t t-esc="t('Ca / Ngày')"/></th>
                                     <t t-foreach="schedule_data.get('dates', [])" t-as="date_info">
                                         <th t-attf-class="p-4 text-center text-white font-semibold border-r border-blue-400 min-w-[180px] #{'bg-green-500' if date_info.get('is_today') else 'bg-primary'}">
                                             <div class="text-sm opacity-90" t-esc="date_info.get('weekday', '')"/>
@@ -77,7 +77,7 @@
                                             <div class="font-semibold text-slate-800" t-esc="shift.get('name', '')"/>
                                             <div class="text-sm text-slate-500" t-esc="shift.get('time_display', '')"/>
                                             <div class="text-xs text-slate-400">
-                                                (<t t-esc="shift.get('min_employees', 0)"/>-<t t-esc="shift.get('max_employees', 0)"/> NV)
+                                                (<t t-esc="shift.get('min_employees', 0)"/>-<t t-esc="shift.get('max_employees', 0)"/> <t t-esc="t('NV')"/>)
                                             </div>
                                         </td>
                                         <t t-foreach="schedule_data.get('dates', [])" t-as="date_info">
@@ -94,25 +94,25 @@
                                                          t-att-data-state="emp.get('state')">
                                                         <span t-esc="emp.get('name', '')"/>
                                                         <t t-if="emp.get('state') == 'draft'">
-                                                            <button type="button" class="ml-1 text-green-600 hover:text-green-800 btn-approve-emp" title="Duyệt">
+                                                            <button type="button" class="ml-1 text-green-600 hover:text-green-800 btn-approve-emp" t-att-title="t('Duyệt')">
                                                                 <i class="fa fa-check"></i>
                                                             </button>
-                                                            <button type="button" class="ml-1 text-red-500 hover:text-red-700 btn-reject-emp" title="Từ chối">
+                                                            <button type="button" class="ml-1 text-red-500 hover:text-red-700 btn-reject-emp" t-att-title="t('Từ chối')">
                                                                 <i class="fa fa-ban"></i>
                                                             </button>
-                                                            <button type="button" class="ml-1 hover:text-red-600 text-lg btn-remove-emp" title="Xóa">×</button>
+                                                            <button type="button" class="ml-1 hover:text-red-600 text-lg btn-remove-emp" t-att-title="t('Xóa')">×</button>
                                                         </t>
                                                         <t t-if="emp.get('state') == 'rejected'">
-                                                            <button type="button" class="ml-1 text-green-600 hover:text-green-800 btn-approve-emp" title="Duyệt lại">
+                                                            <button type="button" class="ml-1 text-green-600 hover:text-green-800 btn-approve-emp" t-att-title="t('Duyệt lại')">
                                                                 <i class="fa fa-check"></i>
                                                             </button>
-                                                            <button type="button" class="ml-1 hover:text-red-600 text-lg btn-remove-emp" title="Xóa">×</button>
+                                                            <button type="button" class="ml-1 hover:text-red-600 text-lg btn-remove-emp" t-att-title="t('Xóa')">×</button>
                                                         </t>
                                                     </div>
                                                 </t>
                                                 
                                                 <!-- Nút thêm -->
-                                                <button type="button" class="w-8 h-8 rounded-full border-2 border-dashed border-slate-300 text-slate-400 hover:border-primary hover:text-primary hover:bg-blue-50 transition flex items-center justify-center mt-2 btn-add-employee" title="Thêm nhân viên">
+                                                <button type="button" class="w-8 h-8 rounded-full border-2 border-dashed border-slate-300 text-slate-400 hover:border-primary hover:text-primary hover:bg-blue-50 transition flex items-center justify-center mt-2 btn-add-employee" t-att-title="t('Thêm nhân viên')">
                                                     <i class="fa fa-plus text-sm"></i>
                                                 </button>
                                             </td>
@@ -127,15 +127,15 @@
                     <div class="bg-white rounded-xl shadow-sm p-4 flex justify-center gap-8 flex-wrap">
                         <div class="flex items-center gap-2 text-sm text-slate-600">
                             <span class="w-5 h-4 rounded-full bg-green-500"></span>
-                            <span>Đã duyệt</span>
+                            <span><t t-esc="t('Đã duyệt')"/></span>
                         </div>
                         <div class="flex items-center gap-2 text-sm text-slate-600">
                             <span class="w-5 h-4 rounded-full bg-amber-100 border border-dashed border-amber-400"></span>
-                            <span>Chờ duyệt</span>
+                            <span><t t-esc="t('Chờ duyệt')"/></span>
                         </div>
                         <div class="flex items-center gap-2 text-sm text-slate-600">
                             <span class="w-5 h-4 rounded-full bg-red-100 border border-dashed border-red-400"></span>
-                            <span>Từ chối</span>
+                            <span><t t-esc="t('Từ chối')"/></span>
                         </div>
                     </div>
                 </div>
@@ -144,18 +144,18 @@
                 <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" id="addEmployeeModal">
                     <div class="bg-white rounded-2xl w-[420px] max-w-[90vw] max-h-[85vh] flex flex-col shadow-2xl">
                         <div class="flex items-center justify-between p-5 border-b border-slate-200">
-                            <h3 class="text-lg font-bold text-slate-800">Thêm nhân viên</h3>
+                            <h3 class="text-lg font-bold text-slate-800"><t t-esc="t('Thêm nhân viên')"/></h3>
                             <button type="button" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500 text-2xl btn-close-modal">×</button>
                         </div>
                         <div class="p-5 flex-1 overflow-hidden flex flex-col">
-                            <input type="text" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 mb-4" id="employeeSearch" placeholder="🔍 Tìm kiếm nhân viên..."/>
+                            <input type="text" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 mb-4" id="employeeSearch" t-att-placeholder="'🔍 ' + t('Tìm kiếm nhân viên...')"/>
                             <div class="flex-1 overflow-y-auto space-y-2" id="employeeList">
                                 <!-- JS will populate this -->
                             </div>
                         </div>
                         <div class="flex justify-end gap-3 p-5 border-t border-slate-200">
-                            <button type="button" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 rounded-xl font-medium text-slate-700 transition" id="btnCloseModal">Đóng</button>
-                            <button type="button" class="px-5 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-xl font-medium shadow transition" id="btnAddEmployee">Thêm</button>
+                            <button type="button" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 rounded-xl font-medium text-slate-700 transition" id="btnCloseModal"><t t-esc="t('Đóng')"/></button>
+                            <button type="button" class="px-5 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-xl font-medium shadow transition" id="btnAddEmployee"><t t-esc="t('Thêm')"/></button>
                         </div>
                     </div>
                 </div>
@@ -163,8 +163,8 @@
                 <!-- JavaScript -->
                 <script type="text/javascript">
                     document.addEventListener('DOMContentLoaded', function() {
-                        const scheduleData = <t t-raw="schedule_data_json"/>;
-                        const allEmployees = <t t-raw="employees_json"/>;
+                        const scheduleData = <t t-out="schedule_data_json"/>;
+                        const allEmployees = <t t-out="employees_json"/>;
                         let currentStartDate = scheduleData.start_date;
                         let selectedCell = null;
                         let selectedEmployee = null;
@@ -195,7 +195,7 @@
                         document.querySelectorAll('.btn-remove-emp').forEach(btn => {
                             btn.addEventListener('click', function(e) {
                                 e.stopPropagation();
-                                if (!confirm('Bạn có chắc muốn xóa nhân viên này?')) return;
+                                if (!confirm('<t t-esc="t('Bạn có chắc muốn xóa nhân viên này?')"/>')) return;
                                 
                                 const chip = this.closest('div');
                                 const registrationId = chip.dataset.registrationId;
@@ -214,7 +214,7 @@
                                     if (data.result <![CDATA[&&]]> data.result.success) {
                                         chip.remove();
                                     } else {
-                                        alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                        alert('<t t-esc="t('Lỗi:')"/> ' + (data.result ? data.result.message : '<t t-esc="t('Không xác định')"/>'));
                                     }
                                 });
                             });
@@ -242,7 +242,7 @@
                                     if (data.result <![CDATA[&&]]> data.result.success) {
                                         location.reload();
                                     } else {
-                                        alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                        alert('<t t-esc="t('Lỗi:')"/> ' + (data.result ? data.result.message : '<t t-esc="t('Không xác định')"/>'));
                                     }
                                 });
                             });
@@ -270,7 +270,7 @@
                                     if (data.result <![CDATA[&&]]> data.result.success) {
                                         location.reload();
                                     } else {
-                                        alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                        alert('<t t-esc="t('Lỗi:')"/> ' + (data.result ? data.result.message : '<t t-esc="t('Không xác định')"/>'));
                                     }
                                 });
                             });
@@ -329,7 +329,7 @@
                         
                         document.getElementById('btnAddEmployee').addEventListener('click', function() {
                             if (!selectedCell || !selectedEmployee) {
-                                alert('Vui lòng chọn nhân viên!');
+                                alert('<t t-esc="t('Vui lòng chọn nhân viên!')"/>');
                                 return;
                             }
                             
@@ -350,17 +350,17 @@
                                 if (data.result <![CDATA[&&]]> data.result.success) {
                                     location.reload();
                                 } else {
-                                    alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                    alert('<t t-esc="t('Lỗi:')"/> ' + (data.result ? data.result.message : '<t t-esc="t('Không xác định')"/>'));
                                 }
                             });
                         });
                         
                         // Duyệt tất cả
                         document.getElementById('btnApproveAll').addEventListener('click', function() {
-                            if (!confirm('Bạn có chắc muốn duyệt tất cả đăng ký ca trong tuần này?')) return;
-                            
+                            if (!confirm('<t t-esc="t('Bạn có chắc muốn duyệt tất cả đăng ký ca trong tuần này?')"/>')) return;
+
                             this.disabled = true;
-                            this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang duyệt...';
+                            this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> <t t-esc="t('Đang duyệt...')"/>';
                             
                             fetch('/shift-schedule/approve-all', {
                                 method: 'POST',
@@ -377,10 +377,10 @@
                                     alert(data.result.message);
                                     location.reload();
                                 } else {
-                                    alert('Lỗi: ' + (data.result ? data.result.message : 'Không xác định'));
+                                    alert('<t t-esc="t('Lỗi:')"/> ' + (data.result ? data.result.message : '<t t-esc="t('Không xác định')"/>'));
                                 }
                                 this.disabled = false;
-                                this.innerHTML = '<i class="fa fa-check-circle"></i> Duyệt tất cả';
+                                this.innerHTML = '<i class="fa fa-check-circle"></i> <t t-esc="t('Duyệt tất cả')"/>';
                             });
                         });
                     });
@@ -395,15 +395,15 @@
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
             <head>
-                <title>Không có quyền</title>
+                <title><t t-esc="t('Không có quyền')"/></title>
                 <script src="https://cdn.tailwindcss.com"></script>
             </head>
             <body class="bg-slate-100 min-h-screen flex items-center justify-center">
                 <div class="text-center p-8">
                     <div class="text-6xl text-red-500 mb-4"><i class="fa fa-lock"></i></div>
-                    <h1 class="text-2xl font-bold text-slate-800 mb-2">Từ chối truy cập</h1>
-                    <p class="text-slate-600 mb-6">Bạn không có quyền truy cập trang này. Chỉ HR mới có thể xem lịch xếp ca.</p>
-                    <a href="/" class="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-blue-600 transition inline-block">Về trang chủ</a>
+                    <h1 class="text-2xl font-bold text-slate-800 mb-2"><t t-esc="t('Từ chối truy cập')"/></h1>
+                    <p class="text-slate-600 mb-6"><t t-esc="t('Bạn không có quyền truy cập trang này. Chỉ HR mới có thể xem lịch xếp ca.')"/></p>
+                    <a href="/" class="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-blue-600 transition inline-block"><t t-esc="t('Về trang chủ')"/></a>
                 </div>
             </body>
         </t>

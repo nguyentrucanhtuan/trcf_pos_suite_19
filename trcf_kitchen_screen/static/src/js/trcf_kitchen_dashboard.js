@@ -2,6 +2,7 @@
 import { registry } from "@web/core/registry";
 const { Component, onWillStart, useState, onMounted, markup } = owl;
 import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
 
 export class TrcfKitchenDashboard extends Component {
     setup(env) {
@@ -38,7 +39,7 @@ export class TrcfKitchenDashboard extends Component {
             order_details: [],
             order_lines: [],
             config_id: null,
-            screen_name: 'Đơn Hàng Bếp',  // ✅ Tên màn hình
+            screen_name: _t('Đơn Hàng Bếp'),  // ✅ Tên màn hình
             screen_category_ids: [],  // ✅ Category IDs của screen để filter
             stages: 'draft',
             draft_count: 0,
@@ -192,7 +193,7 @@ export class TrcfKitchenDashboard extends Component {
             if (result['screen_info']) {
                 const screenInfo = result['screen_info'];  // ✅ Object, không phải array!
                 self.config_id = screenInfo.config_id || null;
-                self.state.screen_name = screenInfo.screen_name || 'Đơn Hàng Bếp';
+                self.state.screen_name = screenInfo.screen_name || _t('Đơn Hàng Bếp');
                 self.state.screen_category_ids = screenInfo.categories || [];  // ✅ Lưu category IDs
             }
 
@@ -631,13 +632,13 @@ export class TrcfKitchenDashboard extends Component {
         const diffMs = now - orderDate;
         const diffMins = Math.floor(diffMs / 60000);
 
-        if (diffMins < 1) return 'Vừa xong';
-        if (diffMins < 60) return `${diffMins} phút trước`;
+        if (diffMins < 1) return _t('Vừa xong');
+        if (diffMins < 60) return `${diffMins} ${_t('phút trước')}`;
 
         const diffHours = Math.floor(diffMins / 60);
-        if (diffHours < 24) return `${diffHours} giờ trước`;
+        if (diffHours < 24) return `${diffHours} ${_t('giờ trước')}`;
 
-        return `${Math.floor(diffHours / 24)} ngày trước`;
+        return `${Math.floor(diffHours / 24)} ${_t('ngày trước')}`;
     }
 
     // Lấy class cho thời gian (màu sắc dựa trên độ trễ)

@@ -4,6 +4,7 @@ import pytz
 from datetime import datetime, time
 import json
 import logging
+from ..i18n import get_translator
 
 _logger = logging.getLogger(__name__)
 
@@ -74,6 +75,7 @@ class TrcfScrapController(http.Controller):
         
         
         values = {
+            't': get_translator(request),
             'scraps': scrap_list,
             'today': datetime.now(tz).strftime('%d/%m/%Y'),
         }
@@ -254,6 +256,7 @@ class TrcfScrapController(http.Controller):
                 default_scrap_location_name = default_scrap.display_name
         
         values = {
+            't': get_translator(request),
             'products': product_list,
             'reasons': reason_list,
             'source_locations': source_location_list,

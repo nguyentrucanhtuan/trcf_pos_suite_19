@@ -97,7 +97,7 @@
                         
                         <!-- Section 1: TỒN KHO -->
                         <div class="mb-8 md:mb-12">
-                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-6">TỒN KHO</h1>
+                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-6"><t t-esc="t('TỒN KHO')"/></h1>
                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 md:gap-6 lg:gap-8">
                                 
                                 <!-- Nhập hàng -->
@@ -106,7 +106,7 @@
                                         <span class="material-symbols-outlined text-green-600 dashboard-icon" style="font-size: 160px;">inventory_2</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Nhập hàng</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Nhập hàng')"/></h2>
                                     </div>
                                 </a>
 
@@ -116,7 +116,7 @@
                                         <span class="material-symbols-outlined text-orange-600 dashboard-icon" style="font-size: 160px;">swap_horiz</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Chuyển kho</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Chuyển kho')"/></h2>
                                     </div>
                                 </a>
 
@@ -126,7 +126,7 @@
                                         <span class="material-symbols-outlined text-purple-600 dashboard-icon" style="font-size: 160px;">settings</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Chế biến</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Chế biến')"/></h2>
                                     </div>
                                 </a>
 
@@ -136,7 +136,7 @@
                                         <span class="material-symbols-outlined text-red-600 dashboard-icon" style="font-size: 160px;">cancel</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Hủy hàng</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Hủy hàng')"/></h2>
                                     </div>
                                 </a>
 
@@ -146,7 +146,7 @@
                                         <span class="material-symbols-outlined text-yellow-600 dashboard-icon" style="font-size: 160px;">checklist</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Kiểm kê</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Kiểm kê')"/></h2>
                                     </div>
                                 </a>
 
@@ -155,7 +155,7 @@
 
                         <!-- Section 2: KẾ TOÁN -->
                         <div>
-                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-6">KẾ TOÁN</h1>
+                            <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-6"><t t-esc="t('KẾ TOÁN')"/></h1>
                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 md:gap-6 lg:gap-8">
                                 
                                 <!-- Chi phí -->
@@ -164,7 +164,7 @@
                                         <span class="material-symbols-outlined text-blue-600 dashboard-icon" style="font-size: 160px;">receipt_long</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Chi phí</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Chi phí')"/></h2>
                                     </div>
                                 </a>
 
@@ -174,7 +174,7 @@
                                         <span class="material-symbols-outlined text-sky-600 dashboard-icon" style="font-size: 160px;">analytics</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Báo cáo nhập xuất</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Báo cáo nhập xuất')"/></h2>
                                     </div>
                                 </a>
 
@@ -184,7 +184,7 @@
                                         <span class="material-symbols-outlined text-indigo-600 dashboard-icon" style="font-size: 160px;">bar_chart</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800">Báo cáo</h2>
+                                        <h2 class="text-sm md:text-base font-medium leading-tight text-gray-800"><t t-esc="t('Báo cáo')"/></h2>
                                     </div>
                                 </a>
 

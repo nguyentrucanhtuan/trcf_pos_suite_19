@@ -1,0 +1,319 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* trcf_kitchen_screen
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260630\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-03 06:15+0000\n"
+"PO-Revision-Date: 2026-08-03 06:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order_line__trcf_order_status__cancel
+msgid "Cancel"
+msgstr "Cancel"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,help:trcf_kitchen_screen.field_trcf_kitchenscreen__pos_categ_ids
+msgid "Chỉ những món thuộc danh mục này sẽ hiện lên bếp"
+msgstr "Chỉ những món thuộc danh mục này sẽ hiện lên bếp"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order_line__trcf_order_status__waiting
+msgid "Cooking"
+msgstr "Cooking"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__create_uid
+msgid "Created by"
+msgstr "Created by"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__create_date
+msgid "Created on"
+msgstr "Created on"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/unified_dashboard.xml:0
+msgid "CÔNG VIỆC TEAM"
+msgstr "CÔNG VIỆC TEAM"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "Công thức"
+msgstr "Công thức"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,help:trcf_kitchen_screen.field_trcf_kitchenscreen__pos_config_id
+msgid "Cấu hình POS sẽ hiển thị màn hình bếp này"
+msgstr "Cấu hình POS sẽ hiển thị màn hình bếp này"
+
+#. module: trcf_kitchen_screen
+#: model:ir.ui.menu,name:trcf_kitchen_screen.menu_trcf_kitchen_config
+msgid "Cấu hình màn hình"
+msgstr "Cấu hình màn hình"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__pos_categ_ids
+msgid "Danh mục món hiển thị"
+msgstr "Danh mục món hiển thị"
+
+#. module: trcf_kitchen_screen
+#: model:ir.actions.client,name:trcf_kitchen_screen.trcf_unified_dashboard_action
+msgid "Dashboard Tổng Hợp (Bếp + Công Việc)"
+msgstr "Dashboard Tổng Hợp (Bếp + Công Việc)"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_pos_order__display_name
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_pos_order_line__display_name
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__display_name
+msgid "Display Name"
+msgstr "Display Name"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order_line__trcf_order_status__draft
+msgid "Draft"
+msgstr "Draft"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order__trcf_order_status__done
+msgid "Hoàn thành"
+msgstr "Hoàn thành"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order__trcf_order_status__cancel
+msgid "Huỷ"
+msgstr "Huỷ"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_pos_order__id
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_pos_order_line__id
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__id
+msgid "ID"
+msgstr "ID"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "Không có đơn hàng mới"
+msgstr "Không có đơn hàng mới"
+
+#. module: trcf_kitchen_screen
+#: model:ir.actions.client,name:trcf_kitchen_screen.kitchen_dashboard_action
+msgid "Kitchen Dashboard Screen"
+msgstr "Kitchen Dashboard Screen"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model,name:trcf_kitchen_screen.model_trcf_kitchenscreen
+msgid "Kitchen Screen for Tuấn Rang Cà Phê"
+msgstr "Kitchen Screen for Tuấn Rang Cà Phê"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__write_uid
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__write_date
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/unified_dashboard.xml:0
+msgid "MÀN HÌNH BẾP"
+msgstr "MÀN HÌNH BẾP"
+
+#. module: trcf_kitchen_screen
+#: model_terms:ir.ui.view,arch_db:trcf_kitchen_screen.kitchen_screen_iframe_template
+msgid "Màn hình Bếp"
+msgstr "Màn hình Bếp"
+
+#. module: trcf_kitchen_screen
+#: model:ir.actions.act_window,name:trcf_kitchen_screen.action_trcf_kitchenscreen
+#: model_terms:ir.ui.view,arch_db:trcf_kitchen_screen.view_trcf_kitchenscreen_form
+#: model_terms:ir.ui.view,arch_db:trcf_kitchen_screen.view_trcf_kitchenscreen_list
+msgid "Màn hình bếp"
+msgstr "Màn hình bếp"
+
+#. module: trcf_kitchen_screen
+#: model_terms:ir.ui.view,arch_db:trcf_kitchen_screen.view_trcf_kitchenscreen_form
+#: model_terms:ir.ui.view,arch_db:trcf_kitchen_screen.view_trcf_kitchenscreen_list
+msgid "Màn hình tổng hợp"
+msgstr "Màn hình tổng hợp"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/unified_dashboard.xml:0
+msgid "Nhắc việc sắp tới"
+msgstr "Nhắc việc sắp tới"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_pos_order__trcf_order_status
+msgid "Order Status"
+msgstr "Order Status"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__pos_config_id
+msgid "POS áp dụng"
+msgstr "POS áp dụng"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model,name:trcf_kitchen_screen.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Point of Sale Order Lines"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model,name:trcf_kitchen_screen.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Point of Sale Orders"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order_line__trcf_order_status__ready
+msgid "Ready"
+msgstr "Ready"
+
+#. module: trcf_kitchen_screen
+#: model:ir.ui.menu,name:trcf_kitchen_screen.menu_trcf_kitchen_root
+msgid "TRCF Màn hình bếp"
+msgstr "TRCF Màn hình bếp"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_pos_order_line__trcf_order_status
+msgid "Trcf Order Status"
+msgstr "Trcf Order Status"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,help:trcf_kitchen_screen.field_pos_order__trcf_order_status
+msgid "Trạng thái của đơn hàng"
+msgstr "Trạng thái của đơn hàng"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,help:trcf_kitchen_screen.field_pos_order_line__trcf_order_status
+msgid "Trạng thái hoàn thành của sản phẩm"
+msgstr "Trạng thái hoàn thành của sản phẩm"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__screen_name
+msgid "Tên màn hình"
+msgstr "Tên màn hình"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "Tất cả đơn hàng đã được xử lý"
+msgstr "Tất cả đơn hàng đã được xử lý"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "Tổng hợp"
+msgstr "Tổng hợp"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "Tổng hợp món đang chờ"
+msgstr "Tổng hợp món đang chờ"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/js/unified_dashboard.js:0
+msgid "Vui lòng thực hiện công việc đúng hạn."
+msgstr "Vui lòng thực hiện công việc đúng hạn."
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/js/trcf_kitchen_dashboard.js:0
+msgid "Vừa xong"
+msgstr "Vừa xong"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/unified_dashboard.xml:0
+msgid "XEM NGAY"
+msgstr "XEM NGAY"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "XONG"
+msgstr "XONG"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "Xong"
+msgstr "Xong"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "analytics"
+msgstr "analytics"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "món khác nhau"
+msgstr "món khác nhau"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields,field_description:trcf_kitchen_screen.field_trcf_kitchenscreen__is_active
+msgid "Đang hoạt động"
+msgstr "Đang hoạt động"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order__trcf_order_status__waiting
+msgid "Đang làm"
+msgstr "Đang làm"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "Đã xong!"
+msgstr "Đã xong!"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/js/trcf_kitchen_dashboard.js:0
+msgid "Đơn Hàng Bếp"
+msgstr "Đơn Hàng Bếp"
+
+#. module: trcf_kitchen_screen
+#: model:ir.model.fields.selection,name:trcf_kitchen_screen.selection__pos_order__trcf_order_status__draft
+msgid "Đơn mới"
+msgstr "Đơn mới"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/unified_dashboard.xml:0
+msgid "ĐỂ SAU"
+msgstr "ĐỂ SAU"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "đơn"
+msgstr "đơn"
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "⏳ Đang xử lý..."
+msgstr "⏳ Đang xử lý..."
+
+#. module: trcf_kitchen_screen
+#. odoo-javascript
+#: code:addons/trcf_kitchen_screen/static/src/xml/trcf_kitchen_dashboard.xml:0
+msgid "✓ Đã xong"
+msgstr "✓ Đã xong"

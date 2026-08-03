@@ -1,6 +1,7 @@
 /** @odoo-module */
 
 import { patch } from "@web/core/utils/patch";
+import { _t } from "@web/core/l10n/translation";
 import { ClosePosPopup } from "@point_of_sale/app/components/popups/closing_popup/closing_popup";
 
 patch(ClosePosPopup.prototype, {
@@ -88,7 +89,7 @@ patch(ClosePosPopup.prototype, {
             const amount = -Math.abs(expense.trcf_amount || 0);
             moves.push({
                 id: `expense_${i}`,
-                name: `Chi phí: ${expense.name || 'N/A'}`,
+                name: `${_t('Chi phí')}: ${expense.name || 'N/A'}`,
                 amount: amount,
             });
             total += amount;
@@ -345,7 +346,7 @@ patch(ClosePosPopup.prototype, {
 
             const cashData = {
                 id: cashPMId,
-                name: this.props.default_cash_details.name?.toUpperCase() || 'TIỀN MẶT',
+                name: this.props.default_cash_details.name?.toUpperCase() || _t('TIỀN MẶT'),
                 opening: opening,
                 income: income,
                 expenses: expenseTotal,
