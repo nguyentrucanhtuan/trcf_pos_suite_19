@@ -4,6 +4,7 @@ import pytz
 from datetime import datetime, time
 import json
 import logging
+from ..i18n import get_translator
 
 _logger = logging.getLogger(__name__)
 
@@ -72,6 +73,7 @@ class TrcfProcessingController(http.Controller):
             })
         
         values = {
+            't': get_translator(request),
             'manufacturing_orders': mo_list,
             'today': datetime.now(tz).strftime('%d/%m/%Y'),
         }
@@ -174,6 +176,7 @@ class TrcfProcessingController(http.Controller):
                 default_picking_type_name = f"{warehouse_name}: {default_pt.name}"
         
         values = {
+            't': get_translator(request),
             'boms': bom_list,
             'picking_types': picking_types,
             'today': datetime.now().strftime('%d/%m/%Y'),

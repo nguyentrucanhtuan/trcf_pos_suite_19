@@ -114,13 +114,14 @@
      * @param {GeolocationPositionError} err
      */
     function onPositionError(err) {
-        let msg = 'Không thể xác định vị trí GPS.';
+        const i18n = window.TRCF_STAFF_I18N || {};
+        let msg = i18n.gps_error_default || 'Unable to determine GPS location.';
         if (err.code === err.PERMISSION_DENIED) {
-            msg = 'Bạn đã từ chối quyền truy cập vị trí. Vui lòng bật lại trong cài đặt trình duyệt.';
+            msg = i18n.gps_error_permission_denied || msg;
         } else if (err.code === err.POSITION_UNAVAILABLE) {
-            msg = 'Tín hiệu GPS không khả dụng. Vui lòng thử lại.';
+            msg = i18n.gps_error_unavailable || msg;
         } else if (err.code === err.TIMEOUT) {
-            msg = 'Hết thời gian chờ GPS. Đang thử lại...';
+            msg = i18n.gps_error_timeout || msg;
         }
         showGpsError(msg);
     }
@@ -188,9 +189,12 @@
                     if (result.success) {
                         currentStatus = 'checked_in';
                         updateUI();
-                        showToast('Check-in thành công lúc ' + result.check_in + ' tại ' + result.location_name, 'success');
+                        const i18n = window.TRCF_STAFF_I18N || {};
+                        const msg = (i18n.checkin_success || 'Checked in successfully at {time} at {location}')
+                            .replace('{time}', result.check_in).replace('{location}', result.location_name);
+                        showToast(msg, 'success');
                         if (result.ip_suspicious) {
-                            showToast('⚠️ Cảnh báo: Thiết bị không kết nối đúng mạng WiFi văn phòng.', 'warning');
+                            showToast(i18n.ip_suspicious_warning || 'Warning: device not on office WiFi.', 'warning');
                         }
                     } else {
                         handleCheckError(result.error, result);
@@ -198,7 +202,7 @@
                     }
                 })
                 .catch(function () {
-                    showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
+                    showToast((window.TRCF_STAFF_I18N || {}).connection_error || 'Connection error. Please try again.', 'error');
                     setCheckinButtonEnabled(true);
                 });
         }, onPositionError, GPS_OPTIONS);
@@ -221,10 +225,10 @@
                     if (result.success) {
                         currentStatus = 'done';
                         updateUI();
-                        showToast(
-                            'Check-out thành công! Tổng giờ làm: ' + result.worked_hours_display,
-                            'success'
-                        );
+                        const i18n = window.TRCF_STAFF_I18N || {};
+                        const msg = (i18n.checkout_success || 'Checked out successfully! Total hours worked: {hours}')
+                            .replace('{hours}', result.worked_hours_display);
+                        showToast(msg, 'success');
                         renderDoneSummary(result);
                     } else {
                         handleCheckError(result.error, result);
@@ -232,7 +236,7 @@
                     }
                 })
                 .catch(function () {
-                    showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
+                    showToast((window.TRCF_STAFF_I18N || {}).connection_error || 'Connection error. Please try again.', 'error');
                     setCheckoutButtonEnabled(true);
                 });
         }, onPositionError, GPS_OPTIONS);
@@ -244,15 +248,18 @@
      * @param {Object} result - Full result object from server
      */
     function handleCheckError(errorCode, result) {
+        const i18n = window.TRCF_STAFF_I18N || {};
         const messages = {
-            out_of_range: 'Bạn đang ở ngoài vùng cho phép. Khoảng cách: ' + (result.distance_m || '?') + 'm (bán kính: ' + (result.radius_m || '?') + 'm)',
-            ip_blocked: 'Thiết bị không kết nối đúng mạng WiFi văn phòng.',
-            already_checked_in: 'Bạn đã check-in lúc ' + (result.check_in || '') + '. Vui lòng check-out trước.',
-            no_open_session: 'Không có phiên làm việc đang mở. Vui lòng check-in trước.',
-            no_location_configured: 'Cơ sở chưa được cấu hình vị trí GPS. Vui lòng liên hệ quản trị.',
-            no_employee: 'Không tìm thấy thông tin nhân viên. Vui lòng liên hệ HR.',
+            out_of_range: (i18n.error_out_of_range || 'Out of range. Distance: {distance}m (radius: {radius}m)')
+                .replace('{distance}', result.distance_m || '?').replace('{radius}', result.radius_m || '?'),
+            ip_blocked: i18n.error_ip_blocked || 'Device is not connected to the office WiFi network.',
+            already_checked_in: (i18n.error_already_checked_in || 'Already checked in at {time}. Please check out first.')
+                .replace('{time}', result.check_in || ''),
+            no_open_session: i18n.error_no_open_session || 'No open work session. Please check in first.',
+            no_location_configured: i18n.error_no_location_configured || 'Location has no GPS configuration. Please contact admin.',
+            no_employee: i18n.error_no_employee || 'Employee information not found. Please contact HR.',
         };
-        const msg = messages[errorCode] || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+        const msg = messages[errorCode] || i18n.error_default || 'An error occurred. Please try again.';
         showToast(msg, 'error');
     }
 
@@ -283,16 +290,17 @@
         const distText = document.getElementById('geo-distance-text');
         const locName = document.getElementById('geo-location-name');
 
+        const i18n = window.TRCF_STAFF_I18N || {};
         if (badge) {
             badge.className = 'geo-status-badge ' + (inRange ? 'valid' : 'invalid');
             badge.innerHTML = inRange
-                ? '<i class="fa fa-map-marker"></i> Hợp lệ ✓'
-                : '<i class="fa fa-map-marker"></i> Ngoài vùng ✗';
+                ? '<i class="fa fa-map-marker"></i> ' + (i18n.gps_valid || 'Valid ✓')
+                : '<i class="fa fa-map-marker"></i> ' + (i18n.gps_invalid || 'Out of range ✗');
         }
         if (distText && dist !== null) {
             distText.textContent = dist < 1000
-                ? Math.round(dist) + ' mét so với cơ sở gần nhất'
-                : (dist / 1000).toFixed(1) + ' km so với cơ sở gần nhất';
+                ? Math.round(dist) + ' ' + (i18n.meters_from_nearest || 'meters from nearest location')
+                : (dist / 1000).toFixed(1) + ' ' + (i18n.km_from_nearest || 'km from nearest location');
         }
         if (locName && locationName) {
             locName.textContent = locationName;

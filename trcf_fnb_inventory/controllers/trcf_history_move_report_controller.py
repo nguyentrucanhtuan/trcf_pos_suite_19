@@ -2,6 +2,7 @@ import pytz
 from datetime import datetime, time, timedelta
 from odoo import http
 from odoo.http import request
+from ..i18n import get_translator
 
 class TrcfHistoryMoveReportController(http.Controller):
 
@@ -39,6 +40,7 @@ class TrcfHistoryMoveReportController(http.Controller):
             return formatted.replace(',', 'TEMP').replace('.', ',').replace('TEMP', '.')
 
         vals = {
+            't': get_translator(request),
             'filter_type': filter_type,
             'date_from': date_from,
             'date_to': date_to,

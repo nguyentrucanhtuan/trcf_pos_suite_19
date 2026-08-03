@@ -2,6 +2,7 @@ from odoo import http
 from odoo.http import request
 import pytz
 from datetime import datetime, time
+from ..i18n import get_translator
 
 class TrcfExpenseController(http.Controller):
 
@@ -91,6 +92,7 @@ class TrcfExpenseController(http.Controller):
 
         # Truyền dữ liệu chi phí vào template
         return request.render('trcf_fnb_inventory.expense_list_template', {
+            't': get_translator(request),
             'total_expenses': expenses,
             'total_amount': total_amount,
             'total_amount_formatted': total_amount_formatted,
@@ -155,6 +157,7 @@ class TrcfExpenseController(http.Controller):
                 # print("error_message", error_message) # Use logging instead of print in production
 
         return request.render('trcf_fnb_inventory.expense_form_template', {
+            't': get_translator(request),
             'expense_categories': expense_categories,
             'payment_methods': payment_methods,
             'error_message': error_message

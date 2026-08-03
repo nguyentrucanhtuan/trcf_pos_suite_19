@@ -4,6 +4,7 @@ import pytz
 from datetime import datetime, time
 import json
 import logging
+from ..i18n import get_translator
 
 _logger = logging.getLogger(__name__)
 
@@ -84,6 +85,7 @@ class TrcfTransferController(http.Controller):
             })
         
         values = {
+            't': get_translator(request),
             'transfers': transfer_list,
             'today': datetime.now(tz).strftime('%d/%m/%Y'),
         }
@@ -335,6 +337,7 @@ class TrcfTransferController(http.Controller):
         ], limit=1)
         
         values = {
+            't': get_translator(request),
             'products': product_list,
             'locations': location_list,
             'default_source_location_id': int(default_source_id) if default_source_id else False,

@@ -5,7 +5,7 @@
         <xpath expr="//head" position="inside">
             <meta charset="utf-8"/>
             <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-            <title>Tạo Phiếu Kiểm Kho</title>
+            <title><t t-esc="t('Tạo Phiếu Kiểm Kho')"/></title>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
@@ -78,7 +78,7 @@
                                 <button id="mobile-menu-btn" class="p-2 text-text-light-primary dark:text-dark-primary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
                                     <span class="material-symbols-outlined">menu</span>
                                 </button>
-                                <span class="font-bold text-lg dark:text-white">Kiểm Kho</span>
+                                <span class="font-bold text-lg dark:text-white"><t t-esc="t('Kiểm Kho')"/></span>
                                 <div class="w-10"></div>
                             </div>
                             
@@ -103,7 +103,7 @@
                             </t>
 
                             <header class="mb-6 text-center md:text-left">
-                                <h1 class="text-text-light-primary dark:text-text-dark-primary text-2xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Tạo Phiếu Kiểm Kho</h1>
+                                <h1 class="text-text-light-primary dark:text-text-dark-primary text-2xl md:text-4xl font-black leading-tight tracking-[-0.033em]"><t t-esc="t('Tạo Phiếu Kiểm Kho')"/></h1>
                             </header>
 
                             <form id="inventoryCheckForm" method="POST" action="/trcf_fnb_inventory/check_inventory_add">
@@ -112,17 +112,17 @@
                                 <div class="flex flex-col gap-8">
                                     <!-- Thông tin Phiếu kiểm -->
                                     <div class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6">
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Thông tin Phiếu kiểm</h2>
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6"><t t-esc="t('Thông tin Phiếu kiểm')"/></h2>
                                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                            
+
                                             <!-- Template Selector -->
                                             <label class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Chọn Template <span class="text-red-500">*</span></p>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2"><t t-esc="t('Chọn Template')"/> <span class="text-red-500">*</span></p>
                                                 <div class="relative">
                                                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary">inventory_2</span>
                                                     <select id="templateSelect" name="template_id" required="required"
                                                             class="form-select pl-12 appearance-none flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-text-light-secondary dark:placeholder:text-text-dark-secondary px-3.5 text-sm font-normal leading-normal">
-                                                        <option value="">-- Chọn template --</option>
+                                                        <option value=""><t t-esc="t('-- Chọn template --')"/></option>
                                                         <t t-foreach="templates" t-as="template">
                                                             <option t-att-value="template['id']" t-att-data-warehouse="template['warehouse_name']">
                                                                 <t t-esc="template['name']"/>
@@ -134,7 +134,7 @@
 
                                             <!-- Người kiểm (readonly) -->
                                             <label class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Người kiểm</p>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2"><t t-esc="t('Người kiểm')"/></p>
                                                 <div class="relative">
                                                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary">person</span>
                                                     <input type="text" readonly="readonly" t-att-value="current_user"
@@ -144,10 +144,10 @@
 
                                             <!-- Kho (auto-fill from template) -->
                                             <label class="flex flex-col w-full">
-                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2">Kho</p>
+                                                <p class="text-text-light-secondary dark:text-text-dark-secondary text-sm font-medium leading-normal pb-2"><t t-esc="t('Kho')"/></p>
                                                 <div class="relative">
                                                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-light-secondary dark:text-text-dark-secondary">storefront</span>
-                                                    <input id="locationDisplay" type="text" readonly="readonly" placeholder="Chọn template để xem kho"
+                                                    <input id="locationDisplay" type="text" readonly="readonly" t-att-placeholder="t('Chọn template để xem kho')"
                                                            class="form-input pl-12 flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light-primary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-slate-100 dark:bg-slate-800 h-12 p-[15px] text-sm font-normal leading-normal cursor-not-allowed"/>
                                                 </div>
                                             </label>
@@ -156,8 +156,8 @@
 
                                     <!-- Chi tiết Sản phẩm -->
                                     <div id="productsSection" class="bg-white dark:bg-slate-900 border border-border-light dark:border-border-dark rounded-xl p-6" style="display: none;">
-                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6">Chi tiết Sản phẩm</h2>
-                                        
+                                        <h2 class="text-text-light-primary dark:text-white text-xl font-bold leading-tight mb-6"><t t-esc="t('Chi tiết Sản phẩm')"/></h2>
+
                                         <div id="loadingSpinner" class="flex justify-center items-center py-8" style="display: none;">
                                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                                         </div>
@@ -170,14 +170,14 @@
                                                             <table class="min-w-full">
                                                                 <thead class="border-b border-border-light dark:border-border-dark">
                                                                     <tr>
-                                                                        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary sm:pl-0 w-[20%]" scope="col">Sản phẩm</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Đơn vị</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Hệ thống</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Tối thiểu</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Tối đa</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Thực tế</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col">Chênh lệch</th>
-                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col">Cần đặt</th>
+                                                                        <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary sm:pl-0 w-[20%]" scope="col"><t t-esc="t('Sản phẩm')"/></th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col"><t t-esc="t('Đơn vị')"/></th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col"><t t-esc="t('Hệ thống')"/></th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col"><t t-esc="t('Tối thiểu')"/></th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col"><t t-esc="t('Tối đa')"/></th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col"><t t-esc="t('Thực tế')"/></th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[10%]" scope="col"><t t-esc="t('Chênh lệch')"/></th>
+                                                                        <th class="px-3 py-3.5 text-left text-sm font-semibold text-text-light-secondary dark:text-text-dark-secondary w-[15%]" scope="col"><t t-esc="t('Cần đặt')"/></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="productsTableBody" class="text-text-light-primary dark:text-white">
@@ -195,11 +195,11 @@
                                     <div id="submitButtons" class="flex items-center gap-3 justify-end" style="display: none;">
                                         <button type="button" onclick="window.location.href='/trcf_fnb_inventory/check_inventory_list'"
                                                 class="px-5 py-2.5 rounded-lg border border-border-light dark:border-border-dark text-text-light-primary dark:text-white text-sm font-medium leading-normal hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
-                                            Hủy
+                                            <t t-esc="t('Hủy')"/>
                                         </button>
                                         <button type="submit" id="submitBtn"
                                                 class="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-dark dark:bg-primary dark:hover:bg-blue-700 text-white text-sm font-bold leading-normal transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                            Hoàn tất
+                                            <t t-esc="t('Hoàn tất')"/>
                                         </button>
                                     </div>
                                 </div>
@@ -207,6 +207,18 @@
                         </div>
                     </main>
                 </div>
+
+                <!-- JS-side translations (rendered outside CDATA so t() can run) -->
+                <script>
+                    window.TRCF_I18N = {
+                        error_prefix: <t t-esc="json.dumps(t('Lỗi:'))"/>,
+                        error_load_products: <t t-esc="json.dumps(t('Không thể tải sản phẩm'))"/>,
+                        error_connection: <t t-esc="json.dumps(t('Lỗi kết nối:'))"/>,
+                        no_products_in_template: <t t-esc="json.dumps(t('Không có sản phẩm nào trong template này'))"/>,
+                        alert_select_template: <t t-esc="json.dumps(t('Vui lòng chọn template'))"/>,
+                        processing_label: <t t-esc="json.dumps(t('Đang xử lý...'))"/>
+                    };
+                </script>
 
                 <!-- JavaScript -->
                 <script type="text/javascript">
@@ -248,13 +260,13 @@
                                     $('#loadingSpinner').hide();
                                     
                                     if (response.error) {
-                                        alert('Lỗi: ' + (response.error.data?.message || response.error.message || 'Không thể tải sản phẩm'));
+                                        alert(window.TRCF_I18N.error_prefix + ' ' + (response.error.data?.message || response.error.message || window.TRCF_I18N.error_load_products));
                                         return;
                                     }
 
                                     const result = response.result;
                                     if (result.error) {
-                                        alert('Lỗi: ' + result.error);
+                                        alert(window.TRCF_I18N.error_prefix + ' ' + result.error);
                                         return;
                                     }
 
@@ -266,7 +278,7 @@
                                 error: function(xhr, status, error) {
                                     $('#loadingSpinner').hide();
                                     console.error('AJAX Error:', error);
-                                    alert('Lỗi kết nối: ' + error);
+                                    alert(window.TRCF_I18N.error_connection + ' ' + error);
                                 }
                             });
                         });
@@ -279,7 +291,7 @@
                                 tbody.append(`
                                     <tr>
                                         <td colspan="5" class="text-center py-8 text-gray-500">
-                                            Không có sản phẩm nào trong template này
+                                            ${window.TRCF_I18N.no_products_in_template}
                                         </td>
                                     </tr>
                                 `);
@@ -412,12 +424,12 @@
                             const templateId = $('#templateSelect').val();
                             if (!templateId) {
                                 e.preventDefault();
-                                alert('Vui lòng chọn template');
+                                alert(window.TRCF_I18N.alert_select_template);
                                 return false;
                             }
 
                             // Disable submit button to prevent double submission
-                            $('#submitBtn').prop('disabled', true).text('Đang xử lý...');
+                            $('#submitBtn').prop('disabled', true).text(window.TRCF_I18N.processing_label);
                             return true;
                         });
                     });

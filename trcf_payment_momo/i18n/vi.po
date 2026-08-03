@@ -1,0 +1,257 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* trcf_payment_momo
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260630\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-03 06:15+0000\n"
+"PO-Revision-Date: 2026-08-03 06:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid ""
+"<b>Partner Code, Access Key, Secret Key</b> là bắt buộc. Lấy từ tài khoản "
+"MoMo Business (M4B)."
+msgstr ""
+"<b>Partner Code, Access Key, Secret Key</b> là bắt buộc. Lấy từ tài khoản MoMo Business (M4B)."
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid "<strong>Lưu ý QUAN TRỌNG:</strong>"
+msgstr "<strong>Lưu ý QUAN TRỌNG:</strong>"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_pos_payment_method__momo_access_key
+msgid "Access Key"
+msgstr "Access Key"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__amount
+msgid "Amount"
+msgstr "Amount"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid ""
+"Bật <b>\"Chế độ Test\"</b> để thử nghiệm với sandbox của MoMo trước khi đưa "
+"vào production."
+msgstr ""
+"Bật <b>\"Chế độ Test\"</b> để thử nghiệm với sandbox của MoMo trước khi đưa vào production."
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,help:trcf_payment_momo.field_pos_payment_method__momo_test_mode
+msgid "Bật để sử dụng môi trường sandbox của MoMo"
+msgstr "Bật để sử dụng môi trường sandbox của MoMo"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_pos_payment_method__momo_test_mode
+msgid "Chế độ Test"
+msgstr "Chế độ Test"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__create_uid
+msgid "Created by"
+msgstr "Created by"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__create_date
+msgid "Created on"
+msgstr "Created on"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid "Cấu hình MoMo API"
+msgstr "Cấu hình MoMo API"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_pos_payment_method__display_name
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__display_name
+msgid "Display Name"
+msgstr "Display Name"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields.selection,name:trcf_payment_momo.selection__trcf_momo_transaction__status__expired
+msgid "Expired"
+msgstr "Expired"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields.selection,name:trcf_payment_momo.selection__trcf_momo_transaction__status__failed
+msgid "Failed"
+msgstr "Failed"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_pos_payment_method__id
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__id
+msgid "ID"
+msgstr "ID"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid ""
+"Kiểm tra <b>web.base.url</b> trong System Parameters để đảm bảo MoMo có thể "
+"gọi webhook IPN."
+msgstr ""
+"Kiểm tra <b>web.base.url</b> trong System Parameters để đảm bảo MoMo có thể gọi webhook IPN."
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__write_uid
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__write_date
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__message
+msgid "Message"
+msgstr "Message"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,help:trcf_payment_momo.field_pos_payment_method__momo_access_key
+msgid "MoMo Access Key từ tài khoản M4B"
+msgstr "MoMo Access Key từ tài khoản M4B"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__momo_order_id
+msgid "MoMo Order ID"
+msgstr "MoMo Order ID"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,help:trcf_payment_momo.field_pos_payment_method__momo_partner_code
+msgid "MoMo Partner Code từ tài khoản M4B"
+msgstr "MoMo Partner Code từ tài khoản M4B"
+
+#. module: trcf_payment_momo
+#: model:ir.model,name:trcf_payment_momo.model_trcf_momo_transaction
+msgid "MoMo Payment Transaction"
+msgstr "MoMo Payment Transaction"
+
+#. module: trcf_payment_momo
+#. odoo-javascript
+#: code:addons/trcf_payment_momo/static/src/xml/momo_payment_screen.xml:0
+msgid "MoMo QR Code"
+msgstr "MoMo QR Code"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__momo_request_id
+msgid "MoMo Request ID"
+msgstr "MoMo Request ID"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,help:trcf_payment_momo.field_pos_payment_method__momo_secret_key
+msgid "MoMo Secret Key từ tài khoản M4B"
+msgstr "MoMo Secret Key từ tài khoản M4B"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__trans_id
+msgid "MoMo Transaction ID"
+msgstr "MoMo Transaction ID"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_pos_payment_method__momo_qr_code
+msgid "Mã QR MoMo (Tĩnh)"
+msgstr "Mã QR MoMo (Tĩnh)"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid "Nhập Access Key từ MoMo M4B"
+msgstr "Nhập Access Key từ MoMo M4B"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid "Nhập Partner Code từ MoMo M4B"
+msgstr "Nhập Partner Code từ MoMo M4B"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid "Nhập Secret Key từ MoMo M4B"
+msgstr "Nhập Secret Key từ MoMo M4B"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__pos_config_id
+msgid "POS Config"
+msgstr "POS Config"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__pos_order_ref
+msgid "POS Order Reference"
+msgstr "POS Order Reference"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__pos_session_id
+msgid "POS Session"
+msgstr "POS Session"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_pos_payment_method__momo_partner_code
+msgid "Partner Code"
+msgstr "Partner Code"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__payment_time
+msgid "Payment Time"
+msgstr "Payment Time"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields.selection,name:trcf_payment_momo.selection__trcf_momo_transaction__status__pending
+msgid "Pending"
+msgstr "Pending"
+
+#. module: trcf_payment_momo
+#: model:ir.model,name:trcf_payment_momo.model_pos_payment_method
+msgid "Point of Sale Payment Methods"
+msgstr "Point of Sale Payment Methods"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid "QR Tĩnh (Dự phòng)"
+msgstr "QR Tĩnh (Dự phòng)"
+
+#. module: trcf_payment_momo
+#: model_terms:ir.ui.view,arch_db:trcf_payment_momo.view_trcf_pos_payment_method_form
+msgid "QR tĩnh sẽ được dùng làm backup khi không thể gọi API MoMo."
+msgstr "QR tĩnh sẽ được dùng làm backup khi không thể gọi API MoMo."
+
+#. module: trcf_payment_momo
+#. odoo-javascript
+#: code:addons/trcf_payment_momo/static/src/xml/momo_payment_screen.xml:0
+msgid "Quét mã QR bằng MoMo"
+msgstr "Quét mã QR bằng MoMo"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__result_code
+msgid "Result Code"
+msgstr "Result Code"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_pos_payment_method__momo_secret_key
+msgid "Secret Key"
+msgstr "Secret Key"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,field_description:trcf_payment_momo.field_trcf_momo_transaction__status
+msgid "Status"
+msgstr "Status"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields.selection,name:trcf_payment_momo.selection__trcf_momo_transaction__status__success
+msgid "Success"
+msgstr "Success"
+
+#. module: trcf_payment_momo
+#: model:ir.model.fields,help:trcf_payment_momo.field_pos_payment_method__momo_qr_code
+msgid ""
+"Ảnh mã QR MoMo tĩnh để hiển thị khi không thể gọi API. Có thể lấy từ ứng "
+"dụng MoMo > Ví của tôi > Nhận tiền"
+msgstr ""
+"Ảnh mã QR MoMo tĩnh để hiển thị khi không thể gọi API. Có thể lấy từ ứng dụng MoMo > Ví của tôi > Nhận tiền"

@@ -1,0 +1,1700 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* trcf_fnb_staff
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260630\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-23 14:44+0000\n"
+"PO-Revision-Date: 2026-07-23 14:44+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+"Language: en_US\n"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_shift_registration_action
+msgid "/shift-registration"
+msgstr "/shift-registration"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "<i class=\"fa fa-crosshairs\"/> Dùng vị trí hiện tại"
+msgstr "<i class=\"fa fa-crosshairs\"/> Use current location"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "<i class=\"fa fa-search\"/> Tìm"
+msgstr "<i class=\"fa fa-search\"/> Search"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid ""
+"<span class=\"text-muted\" style=\"font-size:0.85rem; line-height:2rem;\">\n"
+"                                    Hoặc nhấp trên bản đồ để đặt tâm geofence\n"
+"                                </span>"
+msgstr ""
+"<span class=\"text-muted\" style=\"font-size:0.85rem; line-height:2rem;\">\n"
+"                                    Or click on the map to set the geofence center\n"
+"                                </span>"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "<span>Tạo task hôm nay</span>"
+msgstr "<span>Create today's task</span>"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Accuracy ra (m)"
+msgstr "Accuracy out (m)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Accuracy vào (m)"
+msgstr "Accuracy in (m)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__active
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_search
+msgid "Active"
+msgstr "Active"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_hr_attendance
+msgid "Attendance"
+msgstr "Attendance"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_list_view
+msgid "Bán kính (m)"
+msgstr "Radius (m)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__radius
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Bán kính (mét)"
+msgstr "Radius (meters)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__radius
+msgid "Bán kính vùng cho phép chấm công tính từ tâm (mét)"
+msgstr "Radius of the allowed attendance zone from the center (meters)"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.trcf_attendance_payroll_action
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_attendance_payroll_menu
+msgid "Bảng lương"
+msgstr "Payroll"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_attendance_payroll_action
+msgid "Bảng lương hiển thị thông tin chấm công kèm ca làm việc và tiền lương."
+msgstr "Payroll shows attendance information along with shift and pay."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__active
+msgid "Bật/tắt ca làm việc này"
+msgstr "Enable/disable this shift"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_geo_location__ip_check_mode__strict
+msgid "Bắt buộc (từ chối nếu IP không hợp lệ)"
+msgstr "Strict (reject if IP is invalid)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Bắt đầu"
+msgstr "Start"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.trcf_work_shift_action
+#: model:ir.model,name:trcf_fnb_staff.model_trcf_work_shift
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__shift_id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__shift_id
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_work_shift_menu
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_form
+msgid "Ca làm việc"
+msgstr "Shift"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__shift_registration_id
+msgid "Ca làm việc đã đăng ký cho ngày này"
+msgstr "Shift registered for this date"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__shift_id
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_registration__shift_id
+msgid "Ca làm việc đăng ký"
+msgstr "Registered shift"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__shift_registration_id
+msgid "Ca đã đăng ký"
+msgstr "Registered shift"
+
+#. module: trcf_fnb_staff
+#. odoo-python
+#: code:addons/trcf_fnb_staff/models/trcf_zkteco_device.py:0
+msgid "Cannot connect to device."
+msgstr "Cannot connect to device."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_suspicious_reason
+msgid "Chi tiết lý do flag: low_accuracy, impossible_velocity hoặc kết hợp"
+msgstr "Flag reason details: low_accuracy, impossible_velocity, or a combination"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__frequency
+msgid "Chu kỳ"
+msgstr "Frequency"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "Chu kỳ áp dụng"
+msgstr "Applicable frequency"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_shift_task_action
+msgid "Chưa có công việc nào!"
+msgstr "No tasks yet!"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.action_trcf_geo_location
+msgid "Chưa có cơ sở nào được cấu hình"
+msgstr "No locations configured yet"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_attendance_payroll_action
+msgid "Chưa có dữ liệu chấm công"
+msgstr "No attendance data yet"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_shift_registration_action
+msgid "Chưa có đăng ký ca nào!"
+msgstr "No shift registrations yet!"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_list_view
+msgid "Chế độ IP"
+msgstr "IP mode"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__ip_check_mode
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Chế độ kiểm tra IP"
+msgstr "IP check mode"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__assignment_type__specific
+msgid "Chỉ định nhân viên cụ thể"
+msgstr "Assign specific employees"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_res_config_settings__trcf_weekly_tasks_time
+msgid "Chọn giờ trong ngày để chạy tác vụ tự động (tính theo giờ địa phương)."
+msgstr "Select the time of day to run the automated task (local time)."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_task_template__day_of_month
+msgid "Chọn ngày 1-31"
+msgstr "Select day 1-31"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_res_config_settings__trcf_weekly_tasks_day
+msgid "Chọn ngày trong tuần để tự động tạo công việc cho tuần sau."
+msgstr "Select the day of the week to automatically create tasks for next week."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "Chọn thứ:"
+msgstr "Select weekday:"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task__state__pending
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Chờ thực hiện"
+msgstr "Pending"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekday_sun
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__res_config_settings__trcf_weekly_tasks_day__6
+msgid "Chủ nhật"
+msgstr "Sunday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__assigned_job_ids
+msgid "Chức vụ"
+msgstr "Job Position"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_res_config_settings
+msgid "Config Settings"
+msgstr "Config Settings"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__create_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__create_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__create_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__create_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__create_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__create_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__create_uid
+msgid "Created by"
+msgstr "Created by"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__create_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__create_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__create_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__create_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__create_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__create_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__create_date
+msgid "Created on"
+msgstr "Created on"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__assignment_scope__individual
+msgid "Cá nhân"
+msgstr "Individual"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_task_template__assignment_scope
+msgid "Cá nhân: Gán cho 1 người. Team: Tất cả trong ca đều thấy"
+msgstr "Individual: assigned to one person. Team: everyone on the shift can see it"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.action_attendance_suspicious
+msgid "Các bản ghi có cờ GPS hoặc IP bất thường sẽ xuất hiện ở đây."
+msgstr "Records flagged with abnormal GPS or IP will appear here."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekdays
+msgid "Các thứ trong tuần"
+msgstr "Days of the week"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__assignment_type
+msgid "Cách giao"
+msgstr "Assignment method"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "Cách giao việc"
+msgstr "Assignment method"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__company_id
+msgid "Công ty"
+msgstr "Company"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__company_id
+msgid "Công ty sở hữu cơ sở này (multi-company)"
+msgstr "Company that owns this location (multi-company)"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.trcf_shift_task_action
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_shift_task_menu
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_tree
+msgid "Công việc"
+msgstr "Tasks"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_trcf_shift_task
+msgid "Công việc ca làm việc"
+msgstr "Shift task"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_tree_with_shift
+msgid "Cơ sở"
+msgstr "Location"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_location_id
+msgid "Cơ sở check-in"
+msgstr "Check-in location"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_location_id
+msgid "Cơ sở gần nhất khớp GPS tại thời điểm check-in"
+msgstr "Nearest location matching GPS at check-in time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_geo_location__ip_check_mode__warning
+msgid "Cảnh báo (ghi flag nhưng cho check-in)"
+msgstr "Warning (flags but allows check-in)"
+
+#. module: trcf_fnb_staff
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_shift_config_menu
+msgid "Cấu hình"
+msgstr "Configuration"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.trcf_shift_config_settings_action
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_shift_config_settings_menu
+msgid "Cấu hình chung"
+msgstr "General Configuration"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.res_config_settings_view_form
+msgid "Cấu hình thời gian hệ thống tự động tạo danh sách công việc cho tuần mới."
+msgstr "Configure when the system automatically creates the task list for the new week."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_tree
+msgid "Danh sách Ca làm việc"
+msgstr "Shift List"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__allowed_ips
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Danh sách IP WiFi văn phòng"
+msgstr "Office WiFi IP list"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__allowed_ips
+msgid "Danh sách public IP của đường truyền WiFi văn phòng, cách nhau bởi dấu phẩy. Ví dụ: 203.113.1.1, 14.178.2.2. Để trống để bỏ qua kiểm tra IP."
+msgstr "List of public IPs for the office WiFi connection, comma-separated. Example: 203.113.1.1, 14.178.2.2. Leave empty to skip IP checking."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_list
+msgid "Danh sách thiết bị ZKTeco"
+msgstr "ZKTeco Device List"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_tree
+msgid "Danh sách đăng ký ca"
+msgstr "Shift Registration List"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__display_name
+msgid "Display Name"
+msgstr "Display Name"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+msgid "Duyệt"
+msgstr "Approve"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_hr_employee
+msgid "Employee"
+msgstr "Employee"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_tree_with_shift
+msgid "GPS ?"
+msgstr "GPS?"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_check_in_accuracy
+msgid "GPS Accuracy Check-in (m)"
+msgstr "GPS Accuracy Check-in (m)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_check_out_accuracy
+msgid "GPS Accuracy Check-out (m)"
+msgstr "GPS Accuracy Check-out (m)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_search_geo
+msgid "Geo (Web)"
+msgstr "Geo (Web)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Geo Attendance"
+msgstr "Geo Attendance"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__hr_attendance__attendance_source__geo
+msgid "Geolocation (Web)"
+msgstr "Geolocation (Web)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__description
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__note
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__note
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+msgid "Ghi chú"
+msgstr "Notes"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_registration__note
+msgid "Ghi chú của nhân viên"
+msgstr "Employee's notes"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+msgid "Ghi chú của nhân viên..."
+msgstr "Employee's notes..."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__note
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Ghi chú hoàn thành"
+msgstr "Completion notes"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Ghi chú khi hoàn thành..."
+msgstr "Notes on completion..."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__note
+msgid "Ghi chú thêm về ca làm việc"
+msgstr "Additional notes about the shift"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_form
+msgid "Ghi chú thêm về ca làm việc..."
+msgstr "Additional notes about the shift..."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__time_start
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_tree
+msgid "Giờ bắt đầu"
+msgstr "Start time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__shift_start_time
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__time_start
+msgid "Giờ bắt đầu ca (VD: 7.0 = 07:00, 7.5 = 07:30)"
+msgstr "Shift start time (e.g. 7.0 = 07:00, 7.5 = 07:30)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_res_config_settings__trcf_weekly_tasks_time
+msgid "Giờ chạy"
+msgstr "Run time"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.res_config_settings_view_form
+msgid "Giờ chạy (Giờ địa phương)"
+msgstr "Run time (local time)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__time_end
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_tree
+msgid "Giờ kết thúc"
+msgstr "End time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__shift_end_time
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__time_end
+msgid "Giờ kết thúc ca (VD: 14.0 = 14:00)"
+msgstr "Shift end time (e.g. 14.0 = 14:00)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__shift_end_time
+msgid "Giờ tan ca"
+msgstr "Shift end time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__shift_start_time
+msgid "Giờ vào ca"
+msgstr "Shift start time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task__state__done
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Hoàn thành"
+msgstr "Done"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__frequency__daily
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_search
+msgid "Hàng ngày"
+msgstr "Daily"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_search
+msgid "Hàng tháng"
+msgstr "Monthly"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_search
+msgid "Hàng tuần"
+msgstr "Weekly"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Hôm nay"
+msgstr "Today"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_generate_week_tasks_wizard_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Hủy"
+msgstr "Cancel"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_employee__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_res_config_settings__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__id
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__id
+msgid "ID"
+msgstr "ID"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_tree_with_shift
+msgid "IP ?"
+msgstr "IP?"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_tree_with_shift
+msgid "IP Check-in"
+msgstr "IP Check-in"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__request_ip
+msgid "IP Check-in/out"
+msgstr "IP Check-in/out"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__ip_suspicious
+msgid "IP đáng ngờ?"
+msgstr "Suspicious IP?"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_employee__trcf_device_id_num
+msgid "Id của nhân viên trên thiết bị"
+msgstr "Employee ID on the device"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_search
+msgid "Inactive"
+msgstr "Inactive"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_task_template__weekdays
+msgid "JSON array. 0=T2, 1=T3, 2=T4, 3=T5, 4=T6, 5=T7, 6=CN"
+msgstr "JSON array. 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__time_display
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__time_display
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_tree
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_tree
+msgid "Khung giờ"
+msgstr "Time slot"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.action_attendance_suspicious
+msgid "Không có bản ghi đáng ngờ nào ☺"
+msgstr "No suspicious records ☺"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_geo_location__ip_check_mode__none
+msgid "Không kiểm tra"
+msgstr "No check"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_list_view
+msgid "Kinh độ"
+msgstr "Longitude"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__longitude
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Kinh độ (Longitude)"
+msgstr "Longitude"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_check_in_lon
+msgid "Kinh độ GPS tại thời điểm check-in"
+msgstr "GPS longitude at check-in"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_check_out_lon
+msgid "Kinh độ GPS tại thời điểm check-out"
+msgstr "GPS longitude at check-out"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__longitude
+msgid "Kinh độ tâm geofence (decimal degrees, ví dụ: 106.7009)"
+msgstr "Geofence center longitude (decimal degrees, e.g. 106.7009)"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.server,name:trcf_fnb_staff.trcf_cron_check_overdue_tasks_ir_actions_server
+msgid "Kiểm tra công việc quá hạn"
+msgstr "Check overdue tasks"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Kiểm tra kết nối"
+msgstr "Test connection"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Kiểm tra kết nối đến thiết bị ZKTeco"
+msgstr "Test connection to the ZKTeco device"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Kéo rìa vòng tròn trên bản đồ để thay đổi"
+msgstr "Drag the circle's edge on the map to change it"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__active
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__active
+msgid "Kích hoạt"
+msgstr "Active"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__active
+msgid "Kích hoạt/Vô hiệu hóa thiết bị"
+msgstr "Enable/disable the device"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__write_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__write_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__write_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__write_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__write_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__write_uid
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__write_uid
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__write_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__write_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__write_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__write_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__write_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__write_date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__write_date
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Lat ra"
+msgstr "Lat out"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Lat vào"
+msgstr "Lat in"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_check_in_lat
+msgid "Latitude Check-in"
+msgstr "Latitude Check-in"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_check_out_lat
+msgid "Latitude Check-out"
+msgstr "Latitude Check-out"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.server,name:trcf_fnb_staff.action_attendance_recompute_shift
+msgid "Liên kết ca làm việc"
+msgstr "Link shift"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Lon ra"
+msgstr "Lon out"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Lon vào"
+msgstr "Lon in"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_check_in_lon
+msgid "Longitude Check-in"
+msgstr "Longitude Check-in"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_check_out_lon
+msgid "Longitude Check-out"
+msgstr "Longitude Check-out"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__assignment_type__rotation
+msgid "Luân phiên trong ca"
+msgstr "Rotate within shift"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__overtime_minutes
+msgid "Làm thêm (phút)"
+msgstr "Overtime (minutes)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__is_overtime
+msgid "Làm thêm?"
+msgstr "Overtime?"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_suspicious_reason
+msgid "Lý do nghi ngờ GPS"
+msgstr "GPS suspicion reason"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Lương"
+msgstr "Pay"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_employee__trcf_hourly_salary
+msgid "Lương theo giờ"
+msgstr "Hourly wage"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Lấy dữ liệu từ máy chấm công"
+msgstr "Fetch data from the time clock"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Lấy dữ liệu từ thiết bịL: Xoá dữ liệu cũ và lấy lại dữ liệu từ máy chấm công trong thời gian đã chọn"
+msgstr "Fetch data from device: delete old data and re-fetch data from the time clock for the selected period"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__last_sync_date
+msgid "Lần sync cuối"
+msgstr "Last sync"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_calendar
+msgid "Lịch công việc"
+msgstr "Task calendar"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_calendar
+msgid "Lịch đăng ký"
+msgstr "Registration calendar"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_task_template__description
+msgid "Mô tả chi tiết các bước cần thực hiện"
+msgstr "Detailed description of the steps to perform"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "Mô tả chi tiết các bước cần thực hiện..."
+msgstr "Detailed description of the steps to perform..."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__description
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__description
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Mô tả công việc"
+msgstr "Task description"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__description
+msgid "Mô tả thêm về cơ sở"
+msgstr "Additional description of the location"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.trcf_shift_task_template_action
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__template_id
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_shift_task_template_menu
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_tree
+msgid "Mẫu công việc"
+msgstr "Task Template"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_trcf_shift_task_template
+msgid "Mẫu công việc ca làm việc"
+msgstr "Shift task template"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__password
+msgid "Mật khẩu"
+msgstr "Password"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__password
+msgid "Mật khẩu kết nối đến thiết bị (nếu có)"
+msgstr "Password to connect to the device (if any)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_search_geo
+msgid "Mọi nghi ngờ"
+msgstr "Any suspicion"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__trcf_hourly_salary_display
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_employee__trcf_hourly_salary
+msgid "Mức lương theo giờ của nhân viên"
+msgstr "Employee's hourly wage"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__geo_suspicious
+msgid "Nghi ngờ GPS?"
+msgstr "Suspicious GPS?"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__attendance_source
+msgid "Nguồn chấm công"
+msgstr "Attendance source"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__attendance_source
+msgid "Nguồn gốc của bản ghi chấm công"
+msgstr "Origin of the attendance record"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__date
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__date
+msgid "Ngày"
+msgstr "Date"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__start_date
+msgid "Ngày bắt đầu tuần (Thứ 2)"
+msgstr "Week start date (Monday)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_res_config_settings__trcf_weekly_tasks_day
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.res_config_settings_view_form
+msgid "Ngày chạy hàng tuần"
+msgstr "Weekly run day"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_generate_week_tasks_wizard__end_date
+msgid "Ngày kết thúc (Chủ nhật)"
+msgstr "End date (Sunday)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__day_of_month
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__frequency__monthly
+msgid "Ngày trong tháng"
+msgstr "Day of month"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_registration__date
+msgid "Ngày đăng ký làm việc"
+msgstr "Work registration date"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__completed_by
+msgid "Người hoàn thành"
+msgstr "Completed by"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_registration__state__draft
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_search
+msgid "Nháp"
+msgstr "Draft"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__employee_id
+msgid "Nhân viên"
+msgstr "Employee"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__assigned_employee_ids
+msgid "Nhân viên chỉ định"
+msgstr "Assigned employees"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_shift_registration_action
+msgid "Nhân viên có thể đăng ký ca từ trang"
+msgstr "Employees can register for shifts from the page"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__assigned_employee_id
+msgid "Nhân viên phụ trách"
+msgstr "Assigned employee"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_registration__employee_id
+msgid "Nhân viên đăng ký ca"
+msgstr "Employee registering the shift"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_search
+msgid "Nhóm theo Ca"
+msgstr "Group by Shift"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Nhóm theo NV"
+msgstr "Group by Employee"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_search
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Nhóm theo Ngày"
+msgstr "Group by Date"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_search
+msgid "Nhóm theo Nhân viên"
+msgstr "Group by Employee"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Nhóm theo Trạng thái"
+msgstr "Group by Status"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__assignment_scope__team
+msgid "Nhóm/Team"
+msgstr "Group/Team"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Nhấp trên bản đồ để điền tự động"
+msgstr "Click on the map to auto-fill"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_form
+msgid "Nhập tên ca..."
+msgstr "Enter shift name..."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_res_config_settings__trcf_auto_generate_weekly_tasks
+msgid "Nếu bật, hệ thống sẽ tự động tạo danh sách công việc cho tuần kế tiếp."
+msgstr "If enabled, the system will automatically create the task list for the next week."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Phân công"
+msgstr "Assignment"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Phân tích chấm công"
+msgstr "Attendance analysis"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__assignment_scope
+msgid "Phạm vi"
+msgstr "Scope"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__port
+msgid "Port"
+msgstr "Port"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__port
+msgid "Port kết nối đến thiết bị (mặc định: 4370)"
+msgstr "Port to connect to the device (default: 4370)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__request_ip
+msgid "Public IP của thiết bị tại thời điểm check-in/check-out (do server đọc)"
+msgstr "Device's public IP at check-in/check-out time (read by the server)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__is_overdue
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task__state__overdue
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Quá hạn"
+msgstr "Overdue"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__min_employees
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_tree
+msgid "Số NV tối thiểu"
+msgstr "Min. staff"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__max_employees
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_tree
+msgid "Số NV tối đa"
+msgstr "Max. staff"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_tree
+msgid "Số giờ công"
+msgstr "Hours"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__standard_hours
+msgid "Số giờ công chuẩn"
+msgstr "Standard hours"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__standard_hours
+msgid "Số giờ công chuẩn của ca (tự tính từ giờ bắt đầu và kết thúc)"
+msgstr "Standard hours for the shift (auto-computed from start and end time)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_form
+msgid "Số lượng nhân viên"
+msgstr "Number of employees"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__min_employees
+msgid "Số nhân viên tối thiểu cần có trong ca"
+msgstr "Minimum number of employees required for the shift"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__max_employees
+msgid "Số nhân viên tối đa được xếp vào ca này"
+msgstr "Maximum number of employees that can be assigned to this shift"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__overtime_minutes
+msgid "Số phút làm thêm sau giờ tan ca"
+msgstr "Minutes of overtime after shift end"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__early_leave_minutes
+msgid "Số phút về sớm so với giờ tan ca"
+msgstr "Minutes leaving early compared to shift end time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__late_minutes
+msgid "Số phút đi trễ so với giờ vào ca"
+msgstr "Minutes late compared to shift start time"
+
+#. module: trcf_fnb_staff
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_shift_management_menu_root
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.res_config_settings_view_form
+msgid "TRCF Quản lý ca"
+msgstr "TRCF Shift Management"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__assignment_type__position
+msgid "Theo chức vụ"
+msgstr "By job position"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.action_trcf_zkteco_device
+msgid "Thiết Bị ZKTeco"
+msgstr "ZKTeco Device"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_trcf_zkteco_device
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Thiết bị ZKTeco"
+msgstr "ZKTeco Device"
+
+#. module: trcf_fnb_staff
+#. odoo-python
+#: code:addons/trcf_fnb_staff/controllers/trcf_shift_registration_controller.py:0
+msgid "Thiết bị không kết nối đúng mạng WiFi văn phòng."
+msgstr "Device is not connected to the office WiFi network."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.action_trcf_geo_location
+msgid "Thêm cơ sở và kéo bản đồ để thiết lập vùng geofence chấm công."
+msgstr "Add a location and drag the map to set up the attendance geofence."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.action_trcf_zkteco_device
+msgid "Thêm thiết bị ZKTeco"
+msgstr "Add ZKTeco Device"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Thông tin"
+msgstr "Information"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_form_with_shift
+msgid "Thông tin ca làm việc"
+msgstr "Shift information"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Thông tin chi tiết"
+msgstr "Details"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__device_info
+msgid "Thông tin chi tiết về thiết bị"
+msgstr "Detailed information about the device"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_form
+msgid "Thông tin khác"
+msgstr "Other information"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_employee_form_inherit
+msgid "Thông tin lương và thiết bị"
+msgstr "Wage and device information"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__device_info
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Thông tin thiết bị"
+msgstr "Device information"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+msgid "Thông tin đăng ký"
+msgstr "Registration information"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_tree
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_form
+msgid "Thời gian"
+msgstr "Time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__shift_time_display
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__shift_time_display
+msgid "Thời gian ca"
+msgstr "Shift time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__timeout
+msgid "Thời gian chờ kết nối tối đa (10-300 giây)"
+msgstr "Maximum connection timeout (10-300 seconds)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_tree_with_shift
+msgid "Thời gian đăng ký"
+msgstr "Registration time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__completed_at
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "Thời điểm hoàn thành"
+msgstr "Completion time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__last_sync_date
+msgid "Thời điểm đồng bộ dữ liệu gần nhất"
+msgstr "Last data sync time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__hr_attendance__attendance_source__manual
+msgid "Thủ công"
+msgstr "Manual"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekday_mon
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__res_config_settings__trcf_weekly_tasks_day__0
+msgid "Thứ 2"
+msgstr "Monday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekday_tue
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__res_config_settings__trcf_weekly_tasks_day__1
+msgid "Thứ 3"
+msgstr "Tuesday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekday_wed
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__res_config_settings__trcf_weekly_tasks_day__2
+msgid "Thứ 4"
+msgstr "Wednesday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekday_thu
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__res_config_settings__trcf_weekly_tasks_day__3
+msgid "Thứ 5"
+msgstr "Thursday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekday_fri
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__res_config_settings__trcf_weekly_tasks_day__4
+msgid "Thứ 6"
+msgstr "Friday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__weekday_sat
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__res_config_settings__trcf_weekly_tasks_day__5
+msgid "Thứ 7"
+msgstr "Saturday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task_template__frequency__weekly
+msgid "Thứ trong tuần"
+msgstr "Weekday"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__sequence
+msgid "Thứ tự"
+msgstr "Sequence"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__timeout
+msgid "Timeout (giây)"
+msgstr "Timeout (seconds)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__trcf_hourly_salary_sum
+msgid "Tiền lương"
+msgstr "Pay"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__trcf_hourly_salary_sum
+msgid "Tiền lương cho phiên làm việc này"
+msgstr "Pay for this work session"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__trcf_hourly_salary_display
+msgid "Tiền lương/giờ"
+msgstr "Pay/hour"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__ip_suspicious
+msgid "True nếu IP không thuộc danh sách allowed_ips của cơ sở (chế độ cảnh báo)"
+msgstr "True if the IP is not in the location's allowed_ips list (warning mode)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_suspicious
+msgid "True nếu phát hiện dấu hiệu bất thường: accuracy < 5m hoặc velocity > 500km/h"
+msgstr "True if abnormal signs are detected: accuracy < 5m or velocity > 500km/h"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__state
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__state
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Trạng thái"
+msgstr "Status"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__is_connected
+msgid "Trạng thái kết nối"
+msgstr "Connection status"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__is_connected
+msgid "Trạng thái kết nối hiện tại với thiết bị"
+msgstr "Current connection status with the device"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__check_out_status
+msgid "Trạng thái tan ca: Sớm/Trễ/Đúng giờ"
+msgstr "Shift-end status: Early/Late/On time"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__check_in_status
+msgid "Trạng thái đi làm: Sớm/Trễ/Đúng giờ"
+msgstr "Check-in status: Early/Late/On time"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Tuần này"
+msgstr "This week"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.res_config_settings_view_form
+msgid "Tác vụ tự động"
+msgstr "Automated task"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__shift_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_work_shift__name
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_tree
+msgid "Tên ca"
+msgstr "Shift name"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__shift_name
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_work_shift__name
+msgid "Tên ca làm việc (VD: Ca sáng, Ca chiều)"
+msgstr "Shift name (e.g. Morning shift, Afternoon shift)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__name
+msgid "Tên công việc"
+msgstr "Task name"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "Tên công việc..."
+msgstr "Task name..."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__name
+msgid "Tên cơ sở"
+msgstr "Location name"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Tên cơ sở / chi nhánh"
+msgstr "Location / branch name"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__name
+msgid "Tên cơ sở hoặc chi nhánh"
+msgstr "Location or branch name"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_registration__display_name
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__display_name
+msgid "Tên hiển thị"
+msgstr "Display Name"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__name
+msgid "Tên hiển thị của thiết bị ZKTeco"
+msgstr "Display name of the ZKTeco device"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__name
+msgid "Tên thiết bị"
+msgstr "Device name"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Tìm công việc"
+msgstr "Search tasks"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_search
+msgid "Tìm kiếm Ca làm việc"
+msgstr "Search shifts"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_search
+msgid "Tìm kiếm thiết bị"
+msgstr "Search devices"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_search
+msgid "Tìm kiếm đăng ký"
+msgstr "Search registrations"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_search
+msgid "Tìm mẫu công việc"
+msgstr "Search task templates"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Tìm địa chỉ... (vd: 123 Lê Lợi, TP.HCM)"
+msgstr "Search address... (e.g. 123 Le Loi, HCMC)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_work_shift_action
+msgid "Tạo ca làm việc đầu tiên!"
+msgstr "Create your first shift!"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_generate_week_tasks_wizard_form
+msgid "Tạo công việc"
+msgstr "Create task"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.trcf_generate_week_tasks_wizard_action
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_generate_week_tasks_menu
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_generate_week_tasks_wizard_form
+msgid "Tạo công việc tuần"
+msgstr "Generate Week Tasks"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.server,name:trcf_fnb_staff.trcf_cron_generate_weekly_tasks_ir_actions_server
+msgid "Tạo công việc tuần tự động"
+msgstr "Auto-generate weekly tasks"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_shift_task_action
+msgid "Tạo mẫu công việc và nhấn \"Tạo lịch tuần\" để tự động tạo công việc."
+msgstr "Create a task template and click \"Generate Week Tasks\" to automatically create tasks."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_shift_task_template_action
+msgid "Tạo mẫu công việc đầu tiên!"
+msgstr "Create your first task template!"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_trcf_zkteco_device_form
+msgid "Tải dữ liệu từ máy chấm công"
+msgstr "Load data from the time clock"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_form
+msgid "Tắt"
+msgstr "Off"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__active
+msgid "Tắt để ẩn cơ sở này khỏi danh sách kiểm tra vị trí"
+msgstr "Disable to hide this location from the location check list"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Tọa độ & Geofence"
+msgstr "Coordinates & Geofence"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_tree_with_shift
+msgid "Tổng tiền lương"
+msgstr "Total pay"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_registration__state__rejected
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_search
+msgid "Từ chối"
+msgstr "Rejected"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__time_start
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__time_start
+msgid "Từ giờ"
+msgstr "From"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__sync_date_from
+msgid "Từ ngày"
+msgstr "From date"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_res_config_settings__trcf_auto_generate_weekly_tasks
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.res_config_settings_view_form
+msgid "Tự động tạo công việc tuần"
+msgstr "Auto-generate weekly tasks"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_task_template__time_start
+msgid "VD: 15.0 = 15:00"
+msgstr "e.g. 15.0 = 15:00"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_task_template__time_end
+msgid "VD: 15.5 = 15:30"
+msgstr "e.g. 15.5 = 15:30"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_shift_task_template__name
+msgid "VD: Dọn vệ sinh, Kiểm kê tồn kho"
+msgstr "e.g. Clean up, Inventory count"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_list_view
+msgid "Vĩ độ"
+msgstr "Latitude"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__latitude
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Vĩ độ (Latitude)"
+msgstr "Latitude"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_check_in_lat
+msgid "Vĩ độ GPS tại thời điểm check-in"
+msgstr "GPS latitude at check-in"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_check_out_lat
+msgid "Vĩ độ GPS tại thời điểm check-out"
+msgstr "GPS latitude at check-out"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__latitude
+msgid "Vĩ độ tâm geofence (decimal degrees, ví dụ: 10.7769)"
+msgstr "Geofence center latitude (decimal degrees, e.g. 10.7769)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__check_out_status
+msgid "Về"
+msgstr "Out"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__early_leave_minutes
+msgid "Về sớm (phút)"
+msgstr "Early leave (minutes)"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.action_trcf_geo_location
+#: model:ir.ui.menu,name:trcf_fnb_staff.menu_trcf_geo_location
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_list_view
+msgid "Vị trí Geofence"
+msgstr "Geofence Location"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_trcf_geo_location
+msgid "Vị trí Geofence Chấm Công"
+msgstr "Attendance Geofence Location"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_trcf_generate_week_tasks_wizard
+msgid "Wizard tạo công việc tuần"
+msgstr "Generate week tasks wizard"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_form_view
+msgid "Xác thực IP WiFi"
+msgstr "WiFi IP verification"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.client,name:trcf_fnb_staff.trcf_shift_schedule_grid_client_action
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_shift_schedule_grid_menu
+msgid "Xếp lịch làm"
+msgstr "Shift Schedule"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__hr_attendance__attendance_source__zkteco
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_search_geo
+msgid "ZKTeco"
+msgstr "ZKTeco"
+
+#. module: trcf_fnb_staff
+#: model:ir.ui.menu,name:trcf_fnb_staff.menu_attendance_zkteco_devices
+msgid "ZKTeco Devices"
+msgstr "ZKTeco Devices"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_employee__trcf_device_id_num
+msgid "ZkTeco Device ID"
+msgstr "ZkTeco Device ID"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_geo_location__ip_check_mode
+msgid "none: bỏ qua kiểm tra IP; warning: ghi flag ip_suspicious nhưng vẫn cho check-in; strict: từ chối check-in nếu IP không thuộc danh sách allowed_ips"
+msgstr "none: skip IP checking; warning: flags ip_suspicious but still allows check-in; strict: rejects check-in if IP is not in the allowed_ips list"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_geo_location__active
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_geo_location_list_view
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_search
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_search
+msgid "Đang hoạt động"
+msgstr "Active"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task__state__in_progress
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_search
+msgid "Đang thực hiện"
+msgstr "In progress"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__check_in_status
+msgid "Đi"
+msgstr "In"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__late_minutes
+msgid "Đi trễ (phút)"
+msgstr "Late (minutes)"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_hr_attendance__is_late
+msgid "Đi trễ?"
+msgstr "Late?"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.action_attendance_suspicious
+msgid "Điều tra bản ghi đáng ngờ"
+msgstr "Investigate suspicious records"
+
+#. module: trcf_fnb_staff
+#: model:ir.ui.menu,name:trcf_fnb_staff.menu_attendance_suspicious
+msgid "Điều tra đáng ngờ"
+msgstr "Investigate Suspicious"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_search_geo
+msgid "Đáng ngờ GPS"
+msgstr "GPS suspicious"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.view_attendance_search_geo
+msgid "Đáng ngờ IP"
+msgstr "IP suspicious"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_registration__state__confirmed
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_search
+msgid "Đã duyệt"
+msgstr "Approved"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields.selection,name:trcf_fnb_staff.selection__trcf_shift_task__state__cancelled
+msgid "Đã hủy"
+msgstr "Cancelled"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_template_view_search
+msgid "Đã tắt"
+msgstr "Disabled"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_work_shift_view_search
+msgid "Đã ẩn"
+msgstr "Hidden"
+
+#. module: trcf_fnb_staff
+#: model:ir.actions.act_window,name:trcf_fnb_staff.trcf_shift_registration_action
+#: model:ir.ui.menu,name:trcf_fnb_staff.trcf_shift_registration_menu
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+msgid "Đăng ký ca"
+msgstr "Shift Registration"
+
+#. module: trcf_fnb_staff
+#: model:ir.model,name:trcf_fnb_staff.model_trcf_shift_registration
+msgid "Đăng ký ca làm việc"
+msgstr "Shift registration"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_registration_view_form
+#: model_terms:ir.ui.view,arch_db:trcf_fnb_staff.trcf_shift_task_view_form
+msgid "Đặt lại"
+msgstr "Reset"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task__time_end
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_shift_task_template__time_end
+msgid "Đến giờ"
+msgstr "To"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__sync_date_to
+msgid "Đến ngày"
+msgstr "To date"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,field_description:trcf_fnb_staff.field_trcf_zkteco_device__ip_address
+msgid "Địa chỉ IP"
+msgstr "IP Address"
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_trcf_zkteco_device__ip_address
+msgid "Địa chỉ IP của thiết bị (VD: 192.168.1.100)"
+msgstr "Device IP address (e.g. 192.168.1.100)"
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_work_shift_action
+msgid "Định nghĩa các ca làm việc với thời gian bắt đầu, kết thúc và số lượng nhân viên."
+msgstr "Define shifts with start time, end time, and number of employees."
+
+#. module: trcf_fnb_staff
+#: model_terms:ir.actions.act_window,help:trcf_fnb_staff.trcf_shift_task_template_action
+msgid "Định nghĩa các công việc lặp lại theo chu kỳ với cách gán nhân viên tự động."
+msgstr "Define recurring tasks with automatic employee assignment."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_check_in_accuracy
+msgid "Độ chính xác GPS lúc check-in (mét). < 5m có thể là giả mạo."
+msgstr "GPS accuracy at check-in (meters). < 5m may indicate spoofing."
+
+#. module: trcf_fnb_staff
+#: model:ir.model.fields,help:trcf_fnb_staff.field_hr_attendance__geo_check_out_accuracy
+msgid "Độ chính xác GPS lúc check-out (mét)"
+msgstr "GPS accuracy at check-out (meters)"

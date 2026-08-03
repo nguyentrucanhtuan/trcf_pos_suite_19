@@ -2,6 +2,7 @@ import pytz
 from datetime import datetime, time, timedelta
 from odoo import http
 from odoo.http import request
+from ..i18n import get_translator
 
 class TrcfReportController(http.Controller):
 
@@ -51,12 +52,13 @@ class TrcfReportController(http.Controller):
         qty_comparison = self.calculate_comparison(total_qty, previous_qty)
 
         # Xác định text so sánh
-        comparison_text = {
+        t = get_translator(request)
+        comparison_text = t({
             'today': 'so với hôm qua',
             'week': 'so với tuần trước',
             'month': 'so với tháng trước',
             'custom': 'so với kỳ trước'
-        }.get(filter_type, 'so với kỳ trước')
+        }.get(filter_type, 'so với kỳ trước'))
 
         # 1. Lấy tiền tệ của công ty hiện tại (VND, USD, EUR...)
         currency = request.env.company.currency_id
@@ -138,6 +140,7 @@ class TrcfReportController(http.Controller):
                     })
         
         vals = {
+            't': t,
             'filter_type': filter_type,
             'date_from': date_from,
             'date_to': date_to,
