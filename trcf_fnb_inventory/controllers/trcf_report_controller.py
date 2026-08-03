@@ -182,6 +182,11 @@ class TrcfReportController(http.Controller):
             days_diff = (current_end - current_start).days
             previous_end = current_start - timedelta(days=1)
             previous_start = previous_end - timedelta(days=days_diff)
+        elif filter_type == 'custom':
+            # Kỳ tuỳ chỉnh: lấy khoảng thời gian liền trước có cùng độ dài
+            days_diff = (current_end - current_start).days
+            previous_end = current_start - timedelta(days=1)
+            previous_start = previous_end - timedelta(days=days_diff)
         else:
             # Mặc định: ngày hôm qua
             previous_start = current_start - timedelta(days=1)
@@ -930,21 +935,25 @@ class TrcfReportController(http.Controller):
         session_list = []
         
         for session in sessions:
+            # Đơn đã thanh toán của phiên - tính 1 lần, dùng lại cho mọi phần bên dưới
+            # (không định nghĩa bên trong vòng lặp payment_method_ids: nếu phiên không
+            # có payment method nào thì biến sẽ không tồn tại, gây NameError ở dưới)
+            paid_orders = session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced'])
+
             # Tính tổng doanh thu
-            total_revenue = sum(session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']).mapped('amount_total'))
-            
+            total_revenue = sum(paid_orders.mapped('amount_total'))
+
             # Tính số món bán ra
-            total_qty = sum(session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced']).mapped('lines').mapped('qty'))
-            
+            total_qty = sum(paid_orders.mapped('lines').mapped('qty'))
+
             # Lấy tất cả payment methods của phiên
             payment_method_data = []
-            
+
             for pm in session.payment_method_ids:
                 # 1. Số dư đầu ca (chỉ cash có)
                 opening_balance = session.cash_register_balance_start if pm.is_cash_count else 0
-                
+
                 # 2. Thu từ bán hàng - Dùng _read_group
-                paid_orders = session.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced'])
                 domain_payments = [
                     ('pos_order_id', 'in', paid_orders.ids),
                     ('payment_method_id', '=', pm.id)
