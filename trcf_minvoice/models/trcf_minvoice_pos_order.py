@@ -165,8 +165,8 @@ class TrcfMinvoicePosOrder(models.Model):
             so_hchieu = order.vat_passport_number
 
         else:
-            inv_buyerDisplayName = "khách không lấy hoá đơn"
-            inv_buyerLegalName = "khách không lấy hoá đơn"
+            inv_buyerDisplayName = "Bán cho người tiêu dùng"
+            inv_buyerLegalName = "Bán cho người tiêu dùng"
             inv_buyerTaxCode = ""
             inv_buyerAddressLine = "."
             inv_buyerEmail = ""
